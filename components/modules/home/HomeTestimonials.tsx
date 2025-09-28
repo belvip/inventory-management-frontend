@@ -126,11 +126,18 @@ export function HomeTestimonials() {
         <section aria-label="Carrousel de temoignages clients" className="relative">
           <div 
             className="overflow-hidden"
+            role="application"
+            aria-label="Carrousel interactif"
+            tabIndex={0}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
+            onKeyDown={(e) => {
+              if (e.key === 'ArrowLeft') prevSlide()
+              if (e.key === 'ArrowRight') nextSlide()
+            }}
           >
             <div className="flex gap-6 transition-transform duration-500 ease-in-out">
               {visibleTestimonials.map((testimonial, index) => (
