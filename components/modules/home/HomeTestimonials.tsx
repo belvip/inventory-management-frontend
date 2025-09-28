@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Avatar } from "@/components/global/avatar"
 import { Star, Quote, ChevronLeft, ChevronRight } from "lucide-react"
 
 export function HomeTestimonials() {
@@ -161,12 +162,10 @@ export function HomeTestimonials() {
                     </p>
 
                     <div className="flex items-center gap-4">
-                      <div className="relative">
-                        <div className="w-14 h-14 bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-full flex items-center justify-center font-bold text-lg shadow-lg">
-                          {testimonial.avatar}
-                        </div>
-                        <div className="absolute -inset-1 bg-gradient-to-br from-primary/30 to-transparent rounded-full -z-10"></div>
-                      </div>
+                      <Avatar
+                        fallback={testimonial.avatar}
+                        size="lg"
+                      />
                       <div>
                         <h4 className="font-bold text-foreground text-lg">{testimonial.name}</h4>
                         <p className="text-sm text-muted-foreground font-medium">{testimonial.role}</p>
@@ -226,16 +225,16 @@ export function HomeTestimonials() {
           <div className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 rounded-full backdrop-blur-sm border border-primary/20 shadow-lg">
             <div className="flex -space-x-3">
               {["MD", "JN", "FB", "SK", "AD", "KM", "LT"].map((avatar, i) => (
-                <div key={i} className="relative">
-                  <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-full flex items-center justify-center text-sm font-bold border-3 border-background shadow-md">
-                    {avatar}
-                  </div>
-                  <div className="absolute -inset-0.5 bg-gradient-to-br from-primary/20 to-transparent rounded-full -z-10"></div>
-                </div>
+                <Avatar
+                  key={i}
+                  fallback={avatar}
+                  size="md"
+                  className="border-3 border-background"
+                />
               ))}
             </div>
             <span className="text-base font-semibold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent ml-2">
-              +115 entreprises nous font confiance
+              +121 entreprises nous font confiance
             </span>
           </div>
         </div>
