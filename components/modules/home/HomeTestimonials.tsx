@@ -119,8 +119,8 @@ export function HomeTestimonials() {
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
             Ce que disent nos clients
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Découvrez pourquoi plus de 120+ entreprises nous font confiance
+          <p className="text-muted-foreground">
+            Découvrez pourquoi plus de 121+ entreprises nous font confiance
           </p>
         </div>
 
@@ -222,18 +222,23 @@ export function HomeTestimonials() {
         </div>
 
         <div className="text-center mt-16">
-          <div className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 rounded-full backdrop-blur-sm border border-primary/20 shadow-lg">
-            <div className="flex -space-x-3">
-              {["MD", "JN", "FB", "SK", "AD", "KM", "LT"].map((avatar, i) => (
+          <div className="inline-flex items-center gap-2 sm:gap-3 px-4 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 rounded-full backdrop-blur-sm border border-primary/20 shadow-lg">
+            <div className="flex -space-x-2 sm:-space-x-3">
+              {["MD", "JN", "FB", "SK"].map((avatar, i) => (
                 <Avatar
                   key={i}
                   fallback={avatar}
-                  size="md"
-                  className="border-3 border-background"
+                  size="sm"
+                  className="border-2 border-background sm:border-3"
                 />
               ))}
+              <Avatar
+                fallback="AD"
+                size="sm"
+                className="hidden sm:flex border-2 border-background sm:border-3"
+              />
             </div>
-            <span className="text-base font-semibold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent ml-2">
+            <span className="text-sm sm:text-base font-semibold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent ml-1 sm:ml-2">
               +121 entreprises nous font confiance
             </span>
           </div>
