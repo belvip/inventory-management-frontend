@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Moon, Sun, Monitor, ChevronDown } from "lucide-react"
+import { Moon, Sun, Monitor } from "lucide-react"
 import { useTheme } from "next-themes"
 
 import { Button } from "@/components/ui/button"
@@ -40,7 +40,6 @@ export function ModeToggle() {
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="icon">
           {getCurrentIcon()}
-          <ChevronDown className="h-3 w-3 ml-1" />
           <span className="sr-only">Changer le thème</span>
         </Button>
       </DropdownMenuTrigger>
