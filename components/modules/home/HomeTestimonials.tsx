@@ -14,14 +14,14 @@ export function HomeTestimonials() {
 
   const testimonials = [
     {
-      name: "Marie Dubois",
+      name: "Fansi Aline",
       role: "Directrice, TechCorp Cameroun",
       content: "Inventory a révolutionné notre gestion de stock. Interface intuitive et fonctionnalités complètes.",
       rating: 5,
       avatar: "MD"
     },
     {
-      name: "Jean-Paul Nkomo",
+      name: "Tato Jean Pierre",
       role: "Manager, Solutions Plus",
       content: "Excellent outil pour optimiser nos opérations. Le support client est exceptionnel.",
       rating: 5,
@@ -42,7 +42,7 @@ export function HomeTestimonials() {
       avatar: "SK"
     },
     {
-      name: "Aminata Diallo",
+      name: "SAliou Bouba",
       role: "Responsable Logistique, LogiMax",
       content: "Grâce à Inventory, nous avons réduit nos erreurs de stock de 90%. Un investissement rentable!",
       rating: 5,
@@ -75,11 +75,11 @@ export function HomeTestimonials() {
   }, [isHovered, currentSlide])
 
   // Touch handlers
-  const handleTouchStart = (e) => {
+  const handleTouchStart = (e: React.TouchEvent) => {
     setTouchStart(e.targetTouches[0].clientX)
   }
 
-  const handleTouchMove = (e) => {
+  const handleTouchMove = (e: React.TouchEvent) => {
     setTouchEnd(e.targetTouches[0].clientX)
   }
 
@@ -93,7 +93,7 @@ export function HomeTestimonials() {
     if (isRightSwipe) prevSlide()
   }
 
-  const goToSlide = (slideIndex) => {
+  const goToSlide = (slideIndex: number) => {
     setCurrentSlide(slideIndex * slidesToShow)
   }
 
@@ -124,7 +124,7 @@ export function HomeTestimonials() {
         </div>
 
         <section aria-label="Carrousel de temoignages clients" className="relative">
-          <div 
+          <div
             className="overflow-hidden"
             role="application"
             aria-label="Carrousel interactif"
