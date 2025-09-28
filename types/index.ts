@@ -50,5 +50,13 @@ export interface ErrorResponse {
     details: string;
 }
 
+export interface TestAccount {
+    readonly role: string;
+    readonly username: string;
+    readonly password: string;
+    readonly name: string;
+    readonly icon: React.ComponentType<{ className?: string }>;
+}
+
 // export type
 export * from "./user"
