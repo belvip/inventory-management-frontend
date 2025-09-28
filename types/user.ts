@@ -1,6 +1,6 @@
-import { UseMutationResult } from "@tanstack/react-query"
-import { AddressDto } from "./index"
-import type { ApiError } from "./index"
+import { UseMutationResult } from "@tanstack/react-query";
+import { AddressDto } from "./index";
+import type { ApiError } from "./index";
 
 export type User = {
     userId: number;
@@ -19,7 +19,7 @@ export type User = {
     isTwoFactorEnabled: boolean;
     signUpMethod?: string;
     roles: string[];
-}
+};
 
 export interface RegisterRequest {
     username: string;
@@ -38,8 +38,7 @@ export interface LoginRequest {
 }
 
 export interface SigninResponse {
-    username: string;
-    roles: string[];
+    user: User;
     jwtToken: string;
     refreshToken: string;
 }
@@ -47,15 +46,13 @@ export interface SigninResponse {
 export interface UpdateUserRequest {
     firstName: string;
     lastName: string;
-    userName: string;
+    username: string;
     email: string;
     password?: string;
     image?: string;
     address?: AddressDto;
 }
 
-
-
-export type CreateUserMutation = UseMutationResult<User, ApiError, { data: RegisterRequest }, unknown>
-export type UpdateUserMutation = UseMutationResult<User, ApiError, { id: number; data: UpdateUserRequest }, unknown>
-export type DeleteUserMutation = UseMutationResult<unknown, ApiError, number, unknown>
+export type CreateUserMutation = UseMutationResult<User, ApiError, { data: RegisterRequest }, unknown>;
+export type UpdateUserMutation = UseMutationResult<User, ApiError, { id: number; data: UpdateUserRequest }, unknown>;
+export type DeleteUserMutation = UseMutationResult<unknown, ApiError, number, unknown>;
