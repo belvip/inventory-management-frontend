@@ -1,4 +1,4 @@
-import { Shield, Users, Package } from "lucide-react"
+import { Shield, Users, Package, BarChart3, FileText, Search, Bell } from "lucide-react"
 
 export function HomeHowItWorks() {
     const howItWorks = [
@@ -22,6 +22,30 @@ export function HomeHowItWorks() {
                 "Consultez vos tableaux de bord, générez des rapports et optimisez votre rentabilité.",
             icon: Package,
         },
+        {
+            step: "4",
+            title: "Statistiques avancées",
+            description: "Visualisez les performances de vos produits, chiffre d'affaires quotidien et tendances. Exportez vos rapports en PDF ou Excel.",
+            icon: BarChart3,
+        },
+        {
+            step: "5",
+            title: "Génération de factures",
+            description: "Créez et personnalisez vos factures automatiquement. Téléchargement instantané en format PDF professionnel.",
+            icon: FileText,
+        },
+        {
+            step: "6",
+            title: "Audit et traçabilité",
+            description: "Suivez tous les mouvements de stock et modifications. Historique complet pour la conformité et le contrôle.",
+            icon: Search,
+        },
+        {
+            step: "7",
+            title: "Notifications intelligentes",
+            description: "Recevez des alertes en temps réel : commandes à confirmer, stocks faibles, échéances importantes.",
+            icon: Bell,
+        }
     ]
 
     return (
@@ -29,9 +53,9 @@ export function HomeHowItWorks() {
             <div className="max-w-7xl mx-auto">
                 <div className="text-center mb-12 animate-fade-in">
                     <h2 className="text-3xl font-bold text-foreground mb-4">Comment ça marche</h2>
-                    <p className="text-muted-foreground">Optimisez votre gestion d'inventaire en 3 étapes simples</p>
+                    <p className="text-muted-foreground">Optimisez votre gestion d'inventaire avec nos 7 fonctionnalités clés</p>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                     {howItWorks.map((step, index) => (
                         <div key={step.step} className="text-center animate-slide-in" style={{ animationDelay: `${index * 0.1}s` }}>
                             <div className="relative mb-6">

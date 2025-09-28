@@ -116,7 +116,25 @@
   * {
     @apply border-border outline-ring/50;
   }
-  body {
+  html, body {
     @apply bg-background text-foreground;
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+  * {
+    box-sizing: border-box;
+    max-width: 100%;
+  }
+  p {
+    text-align: justify;
+    text-align-last: left;
+    word-break: break-word;
+    hyphens: auto;
+    overflow-wrap: break-word;
+  }
+  @media (max-width: 640px) {
+    p {
+      text-align: left;
+    }
   }
 }

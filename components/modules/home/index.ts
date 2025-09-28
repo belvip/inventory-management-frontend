@@ -1,5 +1,5 @@
 export * from "./Home"
-export { HomeNav } from './HomeNav';
+export { HomeNav } from './HomeNav'
 export { HomeHero } from './HomeHero';
 export { HomeStats } from './HomeStats';
 export { HomeOffers } from './HomeOffers';
