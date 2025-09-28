@@ -143,7 +143,7 @@ export function HomeTestimonials() {
               {visibleTestimonials.map((testimonial, index) => (
                 <Card 
                   key={currentSlide + index} 
-                  className="flex-shrink-0 w-full md:w-1/2 lg:w-1/3 relative overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-500 bg-background/70 backdrop-blur-md rounded-2xl hover:scale-105 hover:-translate-y-2"
+                  className="flex-shrink-0 w-full md:w-1/2 lg:w-1/3 relative overflow-hidden border border-border/20 dark:border-white/10 shadow-2xl hover:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] dark:hover:shadow-[0_25px_50px_-12px_rgba(255,255,255,0.1)] transition-all duration-500 bg-background/70 backdrop-blur-md rounded-2xl hover:scale-105 hover:-translate-y-2"
                 >
                   <CardContent className="p-8">
                     <div className="absolute top-4 right-4 text-primary/15">
