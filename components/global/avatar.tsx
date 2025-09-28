@@ -2,11 +2,11 @@ import { cn } from "@/lib/utils"
 import Image from "next/image"
 
 interface AvatarProps {
-  src?: string
-  alt?: string
-  fallback: string
-  size?: "sm" | "md" | "lg" | "xl"
-  className?: string
+  readonly src?: string
+  readonly alt?: string
+  readonly fallback: string
+  readonly size?: "sm" | "md" | "lg" | "xl"
+  readonly className?: string
 }
 
 const sizeClasses = {
@@ -14,7 +14,7 @@ const sizeClasses = {
   md: "w-10 h-10 text-sm", 
   lg: "w-14 h-14 text-lg",
   xl: "w-16 h-16 text-xl"
-}
+} as const
 
 export function Avatar({ src, alt, fallback, size = "md", className }: AvatarProps) {
   return (
