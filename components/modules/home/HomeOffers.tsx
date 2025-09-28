@@ -32,7 +32,7 @@ export function HomeOffers() {
         },
         {
             title: "Sécurité et accès",
-            description: "Contrôle d'accès basé sur les rôles (Admin, Manager, Employé).",
+            description: "Contrôle d'accès basé sur les rôles (Admin, Manager, Vendeur).",
             icon: Shield,
         },
     ]
