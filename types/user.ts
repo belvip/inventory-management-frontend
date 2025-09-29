@@ -38,7 +38,8 @@ export interface LoginRequest {
 }
 
 export interface SigninResponse {
-    user: User;
+    username: string;
+    roles: string[];
     jwtToken: string;
     refreshToken: string;
 }

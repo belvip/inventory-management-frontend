@@ -16,6 +16,7 @@ import { SubmitButton, Logo } from "@/components/global"
 import { useUserStore } from "@/stores/userStore"
 import { LoginRequest, User } from "@/types/user"
 import { TEST_ACCOUNTS } from "@/lib/testAccounts"
+import { authService } from "@/lib/authService"
 
 const LoginSchema = z.object({
     username: z.string().min(1, "Nom d'utilisateur requis"),
@@ -53,68 +54,42 @@ export function LoginForm() {
 
         setForgotPasswordLoading(true)
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/forgot-password`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: username }),
-            })
-
-            if (response.ok) {
-                toast.success('Email de réinitialisation envoyé!')
-            } else {
-                throw new Error('Erreur lors de l\'envoi')
-            }
-        } catch (error) {
-            toast.error('Erreur lors de l\'envoi de l\'email')
+            await authService.forgotPassword(username)
+        } catch {
+            // Error already handled by apiClient
         } finally {
             setForgotPasswordLoading(false)
         }
     }
 
     async function onSubmit(data: LoginRequest) {
-  setLoading(true)
-  try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/signin`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    })
+        setLoading(true)
+        try {
+            const result = await authService.signIn(data)
 
-    const result = await response.json().catch(() => ({}))
+            const user: User = {
+                userId: 0,
+                firstName: "",
+                lastName: "",
+                username: result.username,
+                email: "",
+                accountNonLocked: true,
+                accountNonExpired: true,
+                credentialsNonExpired: true,
+                enabled: true,
+                isTwoFactorEnabled: false,
+                roles: result.roles,
+            }
 
-    if (!response.ok) {
-      throw new Error(result.message || "Identifiants incorrects")
+            setUser(user)
+            setTokens(result.jwtToken, result.refreshToken)
+            router.push("/dashboard")
+        } catch {
+            // Error already handled by apiClient
+        } finally {
+            setLoading(false)
+        }
     }
-
-    const user: User = {
-      userId: 0,
-      firstName: "",
-      lastName: "",
-      username: result.username,
-      email: "",
-      accountNonLocked: true,
-      accountNonExpired: true,
-      credentialsNonExpired: true,
-      enabled: true,
-      isTwoFactorEnabled: false,
-      roles: result.roles,
-    }
-
-    setUser(user)
-    setTokens(result.jwtToken, result.refreshToken)
-
-    toast.success("🎉 Connexion réussie!", {
-      description: "Bienvenue sur Inventory Management!",
-    })
-    router.push("/dashboard")
-  } catch (error: unknown) {
-    toast.error("Échec de l'authentification", {
-      description: error instanceof Error ? error.message : "Une erreur est survenue",
-    })
-  } finally {
-    setLoading(false)
-  }
-}
 
 
     return (
