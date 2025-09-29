@@ -265,8 +265,23 @@ export function SignupForm() {
                           placeholder="••••••••"
                           {...field}
                           disabled={signupMutation.isPending}
-                          className="h-11 pr-10"
+                          className={`h-11 pr-20 transition-colors ${
+                            form.formState.errors.password 
+                              ? "border-red-500 focus:border-red-500" 
+                              : field.value && !form.formState.errors.password 
+                              ? "border-green-500 focus:border-green-500" 
+                              : ""
+                          }`}
                         />
+                        {field.value && (
+                          <div className="absolute right-12 top-1/2 -translate-y-1/2">
+                            {form.formState.errors.password ? (
+                              <X className="h-4 w-4 text-red-500" />
+                            ) : (
+                              <Check className="h-4 w-4 text-green-500" />
+                            )}
+                          </div>
+                        )}
                         <Button
                           type="button"
                           variant="ghost"
@@ -300,8 +315,23 @@ export function SignupForm() {
                           placeholder="••••••••"
                           {...field}
                           disabled={signupMutation.isPending}
-                          className="h-11 pr-10"
+                          className={`h-11 pr-20 transition-colors ${
+                            form.formState.errors.confirmPassword 
+                              ? "border-red-500 focus:border-red-500" 
+                              : field.value && !form.formState.errors.confirmPassword 
+                              ? "border-green-500 focus:border-green-500" 
+                              : ""
+                          }`}
                         />
+                        {field.value && (
+                          <div className="absolute right-12 top-1/2 -translate-y-1/2">
+                            {form.formState.errors.confirmPassword ? (
+                              <X className="h-4 w-4 text-red-500" />
+                            ) : (
+                              <Check className="h-4 w-4 text-green-500" />
+                            )}
+                          </div>
+                        )}
                         <Button
                           type="button"
                           variant="ghost"
