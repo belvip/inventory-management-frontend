@@ -40,51 +40,34 @@ class ApiClient {
       headers.Authorization = `Bearer ${this.token}`
     }
 
-    try {
-      const response = await fetch(`${this.baseURL}${endpoint}`, {
-        ...options,
-        headers,
-      })
+    const response = await fetch(`${this.baseURL}${endpoint}`, {
+      ...options,
+      headers,
+    })
 
-      if (response.status === 401 || response.status === 403) {
-        this.onUnauthorized?.()
-        throw new Error("Non autorisé")
-      }
-
-      const data = await response.json().catch(() => ({}))
-
-      if (!response.ok) {
-        const errorMessage = data.message || `Erreur ${response.status}`
-        
-        if (showErrorToast) {
-          toast.error("Erreur", { description: errorMessage })
-        }
-        
-        const error: ApiError = {
-          response: {
-            data: {
-              message: errorMessage,
-              timestamp: data.timestamp,
-              details: data.details,
-            }
-          }
-        }
-        throw error
-      }
-
-      if (showSuccessToast && successMessage) {
-        toast.success(successMessage)
-      }
-
-      return data
-    } catch (error) {
-      if (error instanceof Error && showErrorToast && error.message !== "Non autorisé") {
-        toast.error("Erreur réseau", { 
-          description: "Impossible de contacter le serveur" 
-        })
-      }
-      throw error
+    if (response.status === 401 || response.status === 403) {
+      this.onUnauthorized?.()
+      throw new Error("Non autorisé")
     }
+
+    if (!response.ok) {
+      const errorRes = await response.json().catch(() => ({}))
+      const errorMessage = errorRes.message || `Erreur ${response.status}`
+      
+      if (showErrorToast) {
+        toast.error("Erreur", { description: errorMessage })
+      }
+      
+      throw new Error(errorMessage)
+    }
+
+    const data = await response.json().catch(() => ({}))
+
+    if (showSuccessToast && successMessage) {
+      toast.success(successMessage)
+    }
+
+    return data
   }
 
   async get<T>(endpoint: string, options?: ApiClientOptions): Promise<T> {

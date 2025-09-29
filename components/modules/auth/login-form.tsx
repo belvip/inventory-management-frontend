@@ -46,21 +46,8 @@ export function LoginForm() {
         window.location.href = `${baseUrl}/oauth2/authorization/github`
     }
 
-    const handleForgotPassword = async () => {
-        const username = form.getValues('username')
-        if (!username) {
-            toast.error('Veuillez saisir votre nom d\'utilisateur')
-            return
-        }
-
-        setForgotPasswordLoading(true)
-        try {
-            await authService.forgotPassword(username)
-        } catch {
-            // Error already handled by apiClient
-        } finally {
-            setForgotPasswordLoading(false)
-        }
+    const handleForgotPassword = () => {
+        router.push('/forgot-password')
     }
 
     async function onSubmit(data: LoginRequest) {
