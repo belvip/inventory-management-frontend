@@ -58,5 +58,12 @@ export interface TestAccount {
     readonly icon: React.ComponentType<{ className?: string }>;
 }
 
+export interface MessageResponse {
+    message: string;
+}
+
 // export type
 export * from "./user"
+export type { ForgotPasswordRequest } from "./forgotPassword"
+export type { ResetPasswordRequest } from "./resetPassword"
+export type { SignupRequest, SignupResponse } from "./signup"

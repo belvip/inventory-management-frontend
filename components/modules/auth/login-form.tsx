@@ -9,10 +9,11 @@ import { Input } from "@/components/ui/input"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { Info, Eye, EyeOff } from "lucide-react"
+import { Info, Eye, EyeOff, ArrowLeft } from "lucide-react"
 import { FaGithub } from "react-icons/fa"
 import { GoogleLogin } from "@/components/modules/auth/google-login"
 import { SubmitButton, Logo } from "@/components/global"
+import Link from "next/link"
 import { useUserStore } from "@/stores/userStore"
 import { LoginRequest, User } from "@/types/user"
 import { TEST_ACCOUNTS } from "@/lib/testAccounts"
@@ -223,6 +224,20 @@ export function LoginForm() {
                                 GitHub
                             </Button>
                         </div>
+                        
+                        <div className="text-center space-y-3">
+                            <p className="text-sm text-muted-foreground">Pas de compte ?</p>
+                            <Button asChild variant="outline" className="w-full">
+                                <Link href="/register">S'inscrire</Link>
+                            </Button>
+                        </div>
+                        
+                        <Button variant="ghost" asChild className="w-full">
+                            <Link href="/" className="flex items-center justify-center gap-2">
+                                <ArrowLeft className="h-4 w-4" />
+                                Retour à l'accueil
+                            </Link>
+                        </Button>
                     </div>
 
                     {/* Demo Accounts */}

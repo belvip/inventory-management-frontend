@@ -1,8 +1,7 @@
 import { useMutation } from "@tanstack/react-query"
 import { apiClient } from "@/lib/apiClient"
 import { toast } from "sonner"
-import { ForgotPasswordRequest, MessageResponse } from "@/types/forgotPassword"
-import { ResetPasswordRequest } from "@/types/resetPassword"
+import { ForgotPasswordRequest, MessageResponse, ResetPasswordRequest } from "@/types"
 
 import { forgotPasswordService } from "@/service/forgotPasswordService"
 import { resetPasswordService } from "@/service/resetPasswordService"
