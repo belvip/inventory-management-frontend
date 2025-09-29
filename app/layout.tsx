@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Poppins, Geist_Mono } from "next/font/google";
-import { ThemeProvider } from "@/provider";
+import { ThemeProvider, QueryProvider } from "@/provider";
 import { Toaster } from "sonner";
 import "./globals.css";
 
@@ -30,14 +30,16 @@ export default function RootLayout({
       <body
         className={`${poppins.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-        >
-          {children}
-          <Toaster richColors position="top-right" />
-        </ThemeProvider>
+        <QueryProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+          >
+            {children}
+            <Toaster richColors position="top-right" />
+          </ThemeProvider>
+        </QueryProvider>
       </body>
     </html>
   );

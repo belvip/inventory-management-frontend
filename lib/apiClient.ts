@@ -9,9 +9,19 @@ interface ApiClientOptions {
 
 class ApiClient {
   private readonly baseURL: string
+  private token: string | null = null
+  private onUnauthorized?: () => void
 
   constructor() {
     this.baseURL = process.env.NEXT_PUBLIC_API_URL || ""
+  }
+
+  setToken(token: string | null) {
+    this.token = token
+  }
+
+  setUnauthorizedHandler(handler: () => void) {
+    this.onUnauthorized = handler
   }
 
   private async request<T>(
@@ -21,14 +31,25 @@ class ApiClient {
   ): Promise<T> {
     const { showErrorToast = true, showSuccessToast = false, successMessage } = clientOptions
 
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+      ...options.headers as Record<string, string>,
+    }
+
+    if (this.token) {
+      headers.Authorization = `Bearer ${this.token}`
+    }
+
     try {
       const response = await fetch(`${this.baseURL}${endpoint}`, {
-        headers: {
-          "Content-Type": "application/json",
-          ...options.headers,
-        },
         ...options,
+        headers,
       })
+
+      if (response.status === 401 || response.status === 403) {
+        this.onUnauthorized?.()
+        throw new Error("Non autorisé")
+      }
 
       const data = await response.json().catch(() => ({}))
 
@@ -57,7 +78,7 @@ class ApiClient {
 
       return data
     } catch (error) {
-      if (error instanceof Error && showErrorToast) {
+      if (error instanceof Error && showErrorToast && error.message !== "Non autorisé") {
         toast.error("Erreur réseau", { 
           description: "Impossible de contacter le serveur" 
         })
@@ -66,7 +87,6 @@ class ApiClient {
     }
   }
 
-  // Méthodes HTTP
   async get<T>(endpoint: string, options?: ApiClientOptions): Promise<T> {
     return this.request<T>(endpoint, { method: "GET" }, options)
   }

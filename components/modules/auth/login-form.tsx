@@ -10,8 +10,8 @@ import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { Info, Eye, EyeOff } from "lucide-react"
-import { FcGoogle } from "react-icons/fc"
 import { FaGithub } from "react-icons/fa"
+import { GoogleLogin } from "@/components/modules/auth/google-login"
 import { SubmitButton, Logo } from "@/components/global"
 import { useUserStore } from "@/stores/userStore"
 import { LoginRequest, User } from "@/types/user"
@@ -41,8 +41,9 @@ export function LoginForm() {
         form.setValue("password", password)
     }
 
-    const handleOAuth = (provider: 'google' | 'github') => {
-        window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/oauth2/authorization/${provider}`
+    const handleGithubLogin = () => {
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api/v1', '') || 'http://localhost:8282'
+        window.location.href = `${baseUrl}/oauth2/authorization/github`
     }
 
     const handleForgotPassword = async () => {
@@ -223,21 +224,13 @@ export function LoginForm() {
                             </div>
                         </div>
                         
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-3">
+                            <GoogleLogin />
                             <Button
                                 variant="outline"
-                                onClick={() => handleOAuth('google')}
+                                onClick={handleGithubLogin}
                                 disabled={loading}
-                                className="h-11"
-                            >
-                                <FcGoogle className="mr-2 h-4 w-4" />
-                                Google
-                            </Button>
-                            <Button
-                                variant="outline"
-                                onClick={() => handleOAuth('github')}
-                                disabled={loading}
-                                className="h-11"
+                                className="w-full h-11"
                             >
                                 <FaGithub className="mr-2 h-4 w-4" />
                                 GitHub
