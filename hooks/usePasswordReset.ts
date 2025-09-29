@@ -10,7 +10,7 @@ export function useForgotPassword() {
   return useMutation<MessageResponse, Error, ForgotPasswordRequest>({
     mutationFn: forgotPasswordService.sendResetEmail,
     onError: (error) => {
-      toast.error("Erreur", { description: error.message })
+      toast.error("Error", { description: error.message })
     }
   })
 }
@@ -19,7 +19,7 @@ export function useResetPassword() {
   return useMutation<MessageResponse, Error, ResetPasswordRequest>({
     mutationFn: resetPasswordService.resetPassword,
     onError: (error) => {
-      toast.error("Erreur", { description: error.message })
+      toast.error("Error", { description: error.message })
     }
   })
 }

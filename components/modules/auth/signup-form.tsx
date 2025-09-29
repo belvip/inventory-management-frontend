@@ -6,7 +6,7 @@ import { z } from "zod"
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { ArrowLeft, Eye, EyeOff, CheckCircle } from "lucide-react"
+import { ArrowLeft, Eye, EyeOff, CheckCircle, Check, X } from "lucide-react"
 import Link from "next/link"
 import { Logo, SubmitButton } from "@/components/global"
 import { useSignup } from "@/hooks/useSignup"
@@ -37,6 +37,7 @@ export function SignupForm() {
 
   const form = useForm<z.infer<typeof SignupSchema>>({
     resolver: zodResolver(SignupSchema),
+    mode: "onChange",
     defaultValues: {
       firstName: "",
       lastName: "",
@@ -116,12 +117,29 @@ export function SignupForm() {
                     <FormItem>
                       <FormLabel>Prénom</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="Patrick"
-                          {...field}
-                          disabled={signupMutation.isPending}
-                          className="h-11"
-                        />
+                        <div className="relative">
+                          <Input
+                            placeholder="Patrick"
+                            {...field}
+                            disabled={signupMutation.isPending}
+                            className={`h-11 transition-colors ${
+                              form.formState.errors.firstName 
+                                ? "border-red-500 focus:border-red-500" 
+                                : field.value && !form.formState.errors.firstName 
+                                ? "border-green-500 focus:border-green-500" 
+                                : ""
+                            }`}
+                          />
+                          {field.value && (
+                            <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                              {form.formState.errors.firstName ? (
+                                <X className="h-4 w-4 text-red-500" />
+                              ) : (
+                                <Check className="h-4 w-4 text-green-500" />
+                              )}
+                            </div>
+                          )}
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -134,12 +152,29 @@ export function SignupForm() {
                     <FormItem>
                       <FormLabel>Nom</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="Djoumessi"
-                          {...field}
-                          disabled={signupMutation.isPending}
-                          className="h-11"
-                        />
+                        <div className="relative">
+                          <Input
+                            placeholder="Djoumessi"
+                            {...field}
+                            disabled={signupMutation.isPending}
+                            className={`h-11 transition-colors ${
+                              form.formState.errors.lastName 
+                                ? "border-red-500 focus:border-red-500" 
+                                : field.value && !form.formState.errors.lastName 
+                                ? "border-green-500 focus:border-green-500" 
+                                : ""
+                            }`}
+                          />
+                          {field.value && (
+                            <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                              {form.formState.errors.lastName ? (
+                                <X className="h-4 w-4 text-red-500" />
+                              ) : (
+                                <Check className="h-4 w-4 text-green-500" />
+                              )}
+                            </div>
+                          )}
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -153,12 +188,29 @@ export function SignupForm() {
                   <FormItem>
                     <FormLabel>Nom d'utilisateur</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="pdjoumessi"
-                        {...field}
-                        disabled={signupMutation.isPending}
-                        className="h-11"
-                      />
+                      <div className="relative">
+                        <Input
+                          placeholder="pdjoumessi"
+                          {...field}
+                          disabled={signupMutation.isPending}
+                          className={`h-11 transition-colors ${
+                            form.formState.errors.username 
+                              ? "border-red-500 focus:border-red-500" 
+                              : field.value && !form.formState.errors.username 
+                              ? "border-green-500 focus:border-green-500" 
+                              : ""
+                          }`}
+                        />
+                        {field.value && (
+                          <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                            {form.formState.errors.username ? (
+                              <X className="h-4 w-4 text-red-500" />
+                            ) : (
+                              <Check className="h-4 w-4 text-green-500" />
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -171,13 +223,30 @@ export function SignupForm() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input
-                        type="email"
-                        placeholder="patrick.djoumessi@gmail.com"
-                        {...field}
-                        disabled={signupMutation.isPending}
-                        className="h-11"
-                      />
+                      <div className="relative">
+                        <Input
+                          type="email"
+                          placeholder="patrick.djoumessi@gmail.com"
+                          {...field}
+                          disabled={signupMutation.isPending}
+                          className={`h-11 pr-10 transition-colors ${
+                            form.formState.errors.email 
+                              ? "border-red-500 focus:border-red-500" 
+                              : field.value && !form.formState.errors.email 
+                              ? "border-green-500 focus:border-green-500" 
+                              : ""
+                          }`}
+                        />
+                        {field.value && (
+                          <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                            {form.formState.errors.email ? (
+                              <X className="h-4 w-4 text-red-500" />
+                            ) : (
+                              <Check className="h-4 w-4 text-green-500" />
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>

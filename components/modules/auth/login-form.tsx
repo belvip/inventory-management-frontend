@@ -218,17 +218,25 @@ export function LoginForm() {
                                 variant="outline"
                                 onClick={handleGithubLogin}
                                 disabled={loading}
-                                className="w-full h-11"
+                                className="w-full h-11 group relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-[1.02] border-2 hover:border-gray-400 bg-gradient-to-r from-white to-gray-50 hover:from-gray-100 hover:to-white"
                             >
-                                <FaGithub className="mr-2 h-4 w-4" />
-                                GitHub
+                                <div className="absolute inset-0 bg-gradient-to-r from-gray-900/5 to-gray-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                <FaGithub className="mr-3 h-5 w-5 text-gray-800 group-hover:scale-110 transition-transform duration-300 relative z-10" />
+                                <span className="font-medium text-gray-700 group-hover:text-gray-900 transition-colors duration-300 relative z-10">
+                                    Continuer avec GitHub
+                                </span>
                             </Button>
                         </div>
                         
                         <div className="text-center space-y-3">
                             <p className="text-sm text-muted-foreground">Pas de compte ?</p>
-                            <Button asChild variant="outline" className="w-full">
-                                <Link href="/register">S'inscrire</Link>
+                            <Button asChild variant="outline" className="w-full h-11 group relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-[1.02] border-2 hover:border-primary bg-gradient-to-r from-white to-gray-50 hover:from-primary/5 hover:to-primary/10">
+                                <Link href="/register">
+                                    <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                    <span className="font-medium text-gray-700 group-hover:text-primary transition-colors duration-300 relative z-10">
+                                        Créer un compte
+                                    </span>
+                                </Link>
                             </Button>
                         </div>
                         
