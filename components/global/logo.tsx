@@ -2,7 +2,7 @@ import { Package } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface LogoProps {
-  size?: "sm" | "md" | "lg"
+  size?: "sm" | "md" | "lg" | "xl"
   showText?: boolean
   className?: string
 }
@@ -10,7 +10,8 @@ interface LogoProps {
 const sizeClasses = {
   sm: { icon: "h-6 w-6", text: "text-lg" },
   md: { icon: "h-8 w-8", text: "text-xl" },
-  lg: { icon: "h-10 w-10", text: "text-2xl" }
+  lg: { icon: "h-10 w-10", text: "text-2xl" },
+  xl: { icon: "h-12 w-12", text: "text-3xl" }
 }
 
 export function Logo({ size = "md", showText = true, className }: LogoProps) {
