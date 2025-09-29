@@ -21,6 +21,7 @@ export function useAuth() {
     queryFn: () => apiClient.get<UserProfile>('/auth/user'),
     retry: false,
     staleTime: 5 * 60 * 1000, // 5 minutes
+    enabled: false, // Désactiver la query automatique
   })
 
   const loginMutation = useMutation({
