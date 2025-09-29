@@ -14,7 +14,7 @@ import { FcGoogle } from "react-icons/fc"
 import { FaGithub } from "react-icons/fa"
 import { SubmitButton, Logo } from "@/components/global"
 import { useUserStore } from "@/stores/userStore"
-import { LoginRequest } from "@/types/user"
+import { LoginRequest, User } from "@/types/user"
 import { TEST_ACCOUNTS } from "@/lib/testAccounts"
 
 const LoginSchema = z.object({
@@ -72,45 +72,50 @@ export function LoginForm() {
     }
 
     async function onSubmit(data: LoginRequest) {
-        setLoading(true)
-        try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/signin`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data),
-            })
+  setLoading(true)
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/signin`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    })
 
-            if (!response.ok) {
-                throw new Error("Identifiants incorrects")
-            }
+    const result = await response.json().catch(() => ({}))
 
-            const result = await response.json()
-            
-            // Le backend renvoie { username, roles, jwtToken, refreshToken }
-            // On doit créer un objet user compatible
-            const user = {
-                userId: 0, // Sera récupéré via /auth/user
-                username: result.username,
-                roles: result.roles,
-                // Autres champs seront récupérés plus tard
-            }
-            
-            setUser(user as any) // Temporaire
-            setTokens(result.jwtToken, result.refreshToken)
-            
-            toast.success("🎉 Connexion réussie!", {
-                description: "Bienvenue sur Inventory Management!",
-            })
-            router.push("/dashboard")
-        } catch (error: unknown) {
-            const errorMessage = error instanceof Error ? error.message : "Une erreur est survenue"
-            toast.error("Échec de l'authentification", {
-                description: errorMessage,
-            })
-        } finally {
-            setLoading(false)
-        }
+    if (!response.ok) {
+      throw new Error(result.message || "Identifiants incorrects")
     }
+
+    const user: User = {
+      userId: 0,
+      firstName: "",
+      lastName: "",
+      username: result.username,
+      email: "",
+      accountNonLocked: true,
+      accountNonExpired: true,
+      credentialsNonExpired: true,
+      enabled: true,
+      isTwoFactorEnabled: false,
+      roles: result.roles,
+    }
+
+    setUser(user)
+    setTokens(result.jwtToken, result.refreshToken)
+
+    toast.success("🎉 Connexion réussie!", {
+      description: "Bienvenue sur Inventory Management!",
+    })
+    router.push("/dashboard")
+  } catch (error: unknown) {
+    toast.error("Échec de l'authentification", {
+      description: error instanceof Error ? error.message : "Une erreur est survenue",
+    })
+  } finally {
+    setLoading(false)
+  }
+}
+
 
     return (
         <div className="min-h-screen flex">
