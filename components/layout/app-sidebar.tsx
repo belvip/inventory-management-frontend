@@ -29,7 +29,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 // Navigation principale
 const mainNavItems = [
   {
-    title: "Dashboard",
+    title: "Accueil",
     url: "/dashboard/admin",
     icon: Home,
   },
@@ -87,7 +87,7 @@ const adminItems = [
 // Analytics et rapports
 const analyticsItems = [
   {
-    title: "Tableau de Bord",
+    title: "Statistiques",
     url: "/dashboard/analytics",
     icon: BarChart3,
   },
