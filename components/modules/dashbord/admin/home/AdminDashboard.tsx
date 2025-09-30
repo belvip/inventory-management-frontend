@@ -23,7 +23,7 @@ export function AdminDashboard() {
     const activeManagers = 8;
 
     return (
-        <div className="space-y-6 mt-0 sm:mt-0 md:mt-0">
+        <div className="space-y-6 mt-0 sm:mt-0 md:mt-12">
             <div>
                 <h1 className="text-3xl font-bold">Tableau de bord Administrateur</h1>
                 <p className="text-muted-foreground">Contrôle total du système : gestion des utilisateurs, inventaire, commandes, et configuration système.</p>
