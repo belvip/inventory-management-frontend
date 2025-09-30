@@ -18,7 +18,7 @@ export function Home() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="min-h-screen bg-gradient-to-br from-background to-muted/20"
+            className="min-h-screen bg-gradient-to-br from-background to-muted/20 pt-16"
         >
             <HomeNav />
             <motion.div
