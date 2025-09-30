@@ -58,7 +58,7 @@ export function HomeOffers() {
                     ))}
                 </div>
                 <div className="text-center mt-8">
-                    <Link href="/dashboard">
+                    <Link href="/login">
                         <Button className="btn-animate">
                             Découvrir Inventory
                             <ArrowRight className="ml-2 h-4 w-4" />

@@ -144,31 +144,52 @@ export function HomeTestimonials() {
               {visibleTestimonials.map((testimonial, index) => (
                 <Card 
                   key={currentSlide + index} 
-                  className="flex-shrink-0 w-full md:w-1/2 lg:w-1/3 relative overflow-hidden border border-border/20 dark:border-white/10 shadow-2xl hover:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] dark:hover:shadow-[0_25px_50px_-12px_rgba(255,255,255,0.1)] transition-all duration-500 bg-background/70 backdrop-blur-md rounded-2xl hover:scale-105 hover:-translate-y-2"
+                  className="group flex-shrink-0 w-full md:w-1/2 lg:w-1/3 relative overflow-hidden border-2 border-border/30 hover:border-primary/40 shadow-lg hover:shadow-2xl transition-all duration-300 bg-card/90 backdrop-blur-sm rounded-xl hover:scale-[1.02] cursor-pointer"
                 >
-                  <CardContent className="p-8">
-                    <div className="absolute top-4 right-4 text-primary/15">
-                      <Quote className="h-10 w-10" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  
+                  <CardContent className="relative p-6 h-full flex flex-col">
+                    <div className="absolute top-3 right-3 text-primary/20 group-hover:text-primary/30 transition-colors">
+                      <Quote className="h-8 w-8" />
                     </div>
                     
-                    <div className="flex items-center gap-1 mb-6">
+                    <div className="flex items-center gap-1 mb-4">
                       {[...Array(testimonial.rating)].map((_, i) => (
-                        <Star key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400 drop-shadow-sm" />
+                        <Star 
+                          key={i} 
+                          className="h-4 w-4 fill-amber-400 text-amber-400 group-hover:scale-110 transition-transform duration-200" 
+                          style={{ transitionDelay: `${i * 50}ms` }}
+                        />
                       ))}
+                      <span className="ml-2 text-xs font-medium text-muted-foreground bg-muted/50 px-2 py-1 rounded-full">
+                        {testimonial.rating}/5
+                      </span>
                     </div>
 
-                    <p className="text-muted-foreground mb-8 leading-relaxed italic text-lg">
-                      "{testimonial.content}"
-                    </p>
+                    <blockquote className="flex-1 text-foreground/90 mb-6 leading-relaxed text-base font-medium relative">
+                      <span className="text-primary/60 text-2xl absolute -top-2 -left-1">"</span>
+                      <span className="pl-4">{testimonial.content}</span>
+                      <span className="text-primary/60 text-2xl">"</span>
+                    </blockquote>
 
-                    <div className="flex items-center gap-4">
-                      <Avatar
-                        fallback={testimonial.avatar}
-                        size="lg"
-                      />
-                      <div>
-                        <h4 className="font-bold text-foreground text-lg">{testimonial.name}</h4>
-                        <p className="text-sm text-muted-foreground font-medium">{testimonial.role}</p>
+                    <div className="flex items-center gap-3 pt-4 border-t border-border/20">
+                      <div className="relative">
+                        <Avatar
+                          fallback={testimonial.avatar}
+                          size="md"
+                          className="ring-2 ring-primary/20 group-hover:ring-primary/40 transition-all duration-300"
+                        />
+                        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-background flex items-center justify-center">
+                          <div className="w-2 h-2 bg-white rounded-full" />
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                          {testimonial.name}
+                        </h4>
+                        <p className="text-sm text-muted-foreground font-medium">
+                          {testimonial.role}
+                        </p>
                       </div>
                     </div>
                   </CardContent>
@@ -221,26 +242,30 @@ export function HomeTestimonials() {
           ))}
         </div>
 
-        <div className="text-center mt-16">
-          <div className="inline-flex items-center gap-2 sm:gap-3 px-4 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 rounded-full backdrop-blur-sm border border-primary/20 shadow-lg">
-            <div className="flex -space-x-2 sm:-space-x-3">
-              {["MD", "JN", "FB", "SK"].map((avatar, i) => (
+        <div className="text-center mt-12">
+          <div className="inline-flex items-center gap-3 px-6 py-4 bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 rounded-2xl backdrop-blur-sm border border-primary/20 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+            <div className="flex -space-x-3">
+              {["MD", "JN", "FB", "SK", "AD"].map((avatar, i) => (
                 <Avatar
                   key={i}
                   fallback={avatar}
                   size="sm"
-                  className="border-2 border-background sm:border-3"
+                  className="border-3 border-background ring-2 ring-primary/20 hover:ring-primary/40 transition-all duration-300 hover:scale-110 hover:z-10 relative"
+                  style={{ transitionDelay: `${i * 100}ms` }}
                 />
               ))}
-              <Avatar
-                fallback="AD"
-                size="sm"
-                className="hidden sm:flex border-2 border-background sm:border-3"
-              />
+              <div className="flex items-center justify-center w-8 h-8 bg-primary/20 border-3 border-background rounded-full text-xs font-bold text-primary">
+                +
+              </div>
             </div>
-            <span className="text-sm sm:text-base font-semibold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent ml-1 sm:ml-2">
-              +121 entreprises nous font confiance
-            </span>
+            <div className="flex flex-col items-start">
+              <span className="text-base font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+                121+ entreprises
+              </span>
+              <span className="text-xs text-muted-foreground font-medium">
+                nous font confiance
+              </span>
+            </div>
           </div>
         </div>
       </div>
