@@ -13,11 +13,11 @@ export function GoogleLogin() {
         <Button
             onClick={handleGoogleLogin}
             variant="outline"
-            className="w-full h-11 group relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-[1.02] border-2 hover:border-blue-300 bg-gradient-to-r from-white to-gray-50 hover:from-blue-50 hover:to-white"
+            className="w-full h-12 group relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-[1.02] border-2 hover:border-blue-400 bg-gradient-to-r from-background to-muted/20 hover:from-blue-50/50 hover:to-background rounded-xl"
         >
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-red-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <FcGoogle className="h-5 w-5 mr-3 group-hover:scale-110 transition-transform duration-300 relative z-10" />
-            <span className="font-medium text-gray-700 group-hover:text-gray-900 transition-colors duration-300 relative z-10">
+            <span className="font-medium text-foreground/80 group-hover:text-foreground transition-colors duration-300 relative z-10">
                 Continuer avec Google
             </span>
         </Button>

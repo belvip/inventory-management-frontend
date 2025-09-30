@@ -95,43 +95,45 @@ export function SignupForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-8 bg-background">
-      <div className="w-full max-w-md space-y-8">
-        <div className="text-center">
+    <div className="min-h-screen flex items-center justify-center p-4 sm:p-8 bg-gradient-to-br from-background via-background to-muted/10">
+      <div className="w-full max-w-lg space-y-6">
+        <div className="text-center animate-in fade-in-0 slide-in-from-top-4 duration-700">
           <Logo size="lg" />
         </div>
-        <div className="p-6 bg-card rounded-xl border-2 border-border/40 shadow-sm space-y-6">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold">Créer un compte</h2>
-            <p className="text-muted-foreground mt-2">
+        <div className="animate-in fade-in-0 slide-in-from-bottom-4 duration-700 delay-200 p-8 bg-card/80 backdrop-blur-sm rounded-2xl border border-border/30 shadow-xl hover:shadow-2xl transition-all duration-300 space-y-6">
+          <div className="text-center space-y-3">
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">Créer un compte</h2>
+            <p className="text-muted-foreground">
               Rejoignez-nous pour gérer votre inventaire
             </p>
+            <div className="w-16 h-1 bg-gradient-to-r from-primary to-primary/60 rounded-full mx-auto" />
           </div>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="firstName"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Prénom</FormLabel>
+                    <FormItem className="group">
+                      <FormLabel className="text-sm font-medium text-foreground/80 group-focus-within:text-primary transition-colors">Prénom</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <Input
                             placeholder="Patrick"
                             {...field}
                             disabled={signupMutation.isPending}
-                            className={`h-11 transition-colors ${
+                            className={`h-12 pl-4 pr-10 bg-background/50 border-2 transition-all duration-300 rounded-xl hover:border-border/60 ${
                               form.formState.errors.firstName 
-                                ? "border-red-500 focus:border-red-500" 
+                                ? "border-red-400 focus:border-red-500 bg-red-50/50" 
                                 : field.value && !form.formState.errors.firstName 
-                                ? "border-green-500 focus:border-green-500" 
-                                : ""
+                                ? "border-green-400 focus:border-green-500 bg-green-50/50" 
+                                : "border-border/40 focus:border-primary/60 focus:bg-background"
                             }`}
                           />
+                          <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" />
                           {field.value && (
-                            <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                            <div className="absolute right-3 top-1/2 -translate-y-1/2 animate-in fade-in-0 scale-in-0 duration-200">
                               {form.formState.errors.firstName ? (
                                 <X className="h-4 w-4 text-red-500" />
                               ) : (
@@ -149,24 +151,25 @@ export function SignupForm() {
                   control={form.control}
                   name="lastName"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nom</FormLabel>
+                    <FormItem className="group">
+                      <FormLabel className="text-sm font-medium text-foreground/80 group-focus-within:text-primary transition-colors">Nom</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <Input
                             placeholder="Djoumessi"
                             {...field}
                             disabled={signupMutation.isPending}
-                            className={`h-11 transition-colors ${
+                            className={`h-12 pl-4 pr-10 bg-background/50 border-2 transition-all duration-300 rounded-xl hover:border-border/60 ${
                               form.formState.errors.lastName 
-                                ? "border-red-500 focus:border-red-500" 
+                                ? "border-red-400 focus:border-red-500 bg-red-50/50" 
                                 : field.value && !form.formState.errors.lastName 
-                                ? "border-green-500 focus:border-green-500" 
-                                : ""
+                                ? "border-green-400 focus:border-green-500 bg-green-50/50" 
+                                : "border-border/40 focus:border-primary/60 focus:bg-background"
                             }`}
                           />
+                          <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" />
                           {field.value && (
-                            <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                            <div className="absolute right-3 top-1/2 -translate-y-1/2 animate-in fade-in-0 scale-in-0 duration-200">
                               {form.formState.errors.lastName ? (
                                 <X className="h-4 w-4 text-red-500" />
                               ) : (
@@ -185,24 +188,25 @@ export function SignupForm() {
                 control={form.control}
                 name="username"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nom d'utilisateur</FormLabel>
+                  <FormItem className="group">
+                    <FormLabel className="text-sm font-medium text-foreground/80 group-focus-within:text-primary transition-colors">Nom d'utilisateur</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
                           placeholder="pdjoumessi"
                           {...field}
                           disabled={signupMutation.isPending}
-                          className={`h-11 transition-colors ${
+                          className={`h-12 pl-4 pr-10 bg-background/50 border-2 transition-all duration-300 rounded-xl hover:border-border/60 ${
                             form.formState.errors.username 
-                              ? "border-red-500 focus:border-red-500" 
+                              ? "border-red-400 focus:border-red-500 bg-red-50/50" 
                               : field.value && !form.formState.errors.username 
-                              ? "border-green-500 focus:border-green-500" 
-                              : ""
+                              ? "border-green-400 focus:border-green-500 bg-green-50/50" 
+                              : "border-border/40 focus:border-primary/60 focus:bg-background"
                           }`}
                         />
+                        <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" />
                         {field.value && (
-                          <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                          <div className="absolute right-3 top-1/2 -translate-y-1/2 animate-in fade-in-0 scale-in-0 duration-200">
                             {form.formState.errors.username ? (
                               <X className="h-4 w-4 text-red-500" />
                             ) : (
@@ -220,8 +224,8 @@ export function SignupForm() {
                 control={form.control}
                 name="email"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
+                  <FormItem className="group">
+                    <FormLabel className="text-sm font-medium text-foreground/80 group-focus-within:text-primary transition-colors">Email</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
@@ -229,16 +233,17 @@ export function SignupForm() {
                           placeholder="patrick.djoumessi@gmail.com"
                           {...field}
                           disabled={signupMutation.isPending}
-                          className={`h-11 pr-10 transition-colors ${
+                          className={`h-12 pl-4 pr-10 bg-background/50 border-2 transition-all duration-300 rounded-xl hover:border-border/60 ${
                             form.formState.errors.email 
-                              ? "border-red-500 focus:border-red-500" 
+                              ? "border-red-400 focus:border-red-500 bg-red-50/50" 
                               : field.value && !form.formState.errors.email 
-                              ? "border-green-500 focus:border-green-500" 
-                              : ""
+                              ? "border-green-400 focus:border-green-500 bg-green-50/50" 
+                              : "border-border/40 focus:border-primary/60 focus:bg-background"
                           }`}
                         />
+                        <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" />
                         {field.value && (
-                          <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                          <div className="absolute right-3 top-1/2 -translate-y-1/2 animate-in fade-in-0 scale-in-0 duration-200">
                             {form.formState.errors.email ? (
                               <X className="h-4 w-4 text-red-500" />
                             ) : (
@@ -256,8 +261,8 @@ export function SignupForm() {
                 control={form.control}
                 name="password"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Mot de passe</FormLabel>
+                  <FormItem className="group">
+                    <FormLabel className="text-sm font-medium text-foreground/80 group-focus-within:text-primary transition-colors">Mot de passe</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
@@ -265,16 +270,17 @@ export function SignupForm() {
                           placeholder="••••••••"
                           {...field}
                           disabled={signupMutation.isPending}
-                          className={`h-11 pr-20 transition-colors ${
+                          className={`h-12 pl-4 pr-20 bg-background/50 border-2 transition-all duration-300 rounded-xl hover:border-border/60 ${
                             form.formState.errors.password 
-                              ? "border-red-500 focus:border-red-500" 
+                              ? "border-red-400 focus:border-red-500 bg-red-50/50" 
                               : field.value && !form.formState.errors.password 
-                              ? "border-green-500 focus:border-green-500" 
-                              : ""
+                              ? "border-green-400 focus:border-green-500 bg-green-50/50" 
+                              : "border-border/40 focus:border-primary/60 focus:bg-background"
                           }`}
                         />
+                        <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" />
                         {field.value && (
-                          <div className="absolute right-12 top-1/2 -translate-y-1/2">
+                          <div className="absolute right-12 top-1/2 -translate-y-1/2 animate-in fade-in-0 scale-in-0 duration-200">
                             {form.formState.errors.password ? (
                               <X className="h-4 w-4 text-red-500" />
                             ) : (
@@ -286,14 +292,14 @@ export function SignupForm() {
                           type="button"
                           variant="ghost"
                           size="sm"
-                          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                          className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-lg hover:bg-muted/50 transition-colors"
                           onClick={() => setShowPassword(!showPassword)}
                           disabled={signupMutation.isPending}
                         >
                           {showPassword ? (
-                            <EyeOff className="h-4 w-4 text-muted-foreground" />
+                            <EyeOff className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
                           ) : (
-                            <Eye className="h-4 w-4 text-muted-foreground" />
+                            <Eye className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
                           )}
                         </Button>
                       </div>
@@ -306,8 +312,8 @@ export function SignupForm() {
                 control={form.control}
                 name="confirmPassword"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Confirmer le mot de passe</FormLabel>
+                  <FormItem className="group">
+                    <FormLabel className="text-sm font-medium text-foreground/80 group-focus-within:text-primary transition-colors">Confirmer le mot de passe</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
@@ -315,16 +321,17 @@ export function SignupForm() {
                           placeholder="••••••••"
                           {...field}
                           disabled={signupMutation.isPending}
-                          className={`h-11 pr-20 transition-colors ${
+                          className={`h-12 pl-4 pr-20 bg-background/50 border-2 transition-all duration-300 rounded-xl hover:border-border/60 ${
                             form.formState.errors.confirmPassword 
-                              ? "border-red-500 focus:border-red-500" 
+                              ? "border-red-400 focus:border-red-500 bg-red-50/50" 
                               : field.value && !form.formState.errors.confirmPassword 
-                              ? "border-green-500 focus:border-green-500" 
-                              : ""
+                              ? "border-green-400 focus:border-green-500 bg-green-50/50" 
+                              : "border-border/40 focus:border-primary/60 focus:bg-background"
                           }`}
                         />
+                        <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" />
                         {field.value && (
-                          <div className="absolute right-12 top-1/2 -translate-y-1/2">
+                          <div className="absolute right-12 top-1/2 -translate-y-1/2 animate-in fade-in-0 scale-in-0 duration-200">
                             {form.formState.errors.confirmPassword ? (
                               <X className="h-4 w-4 text-red-500" />
                             ) : (
@@ -336,14 +343,14 @@ export function SignupForm() {
                           type="button"
                           variant="ghost"
                           size="sm"
-                          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                          className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-lg hover:bg-muted/50 transition-colors"
                           onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                           disabled={signupMutation.isPending}
                         >
                           {showConfirmPassword ? (
-                            <EyeOff className="h-4 w-4 text-muted-foreground" />
+                            <EyeOff className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
                           ) : (
-                            <Eye className="h-4 w-4 text-muted-foreground" />
+                            <Eye className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
                           )}
                         </Button>
                       </div>
@@ -356,36 +363,45 @@ export function SignupForm() {
                 control={form.control}
                 name="image"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Photo de profil (optionnel)</FormLabel>
+                  <FormItem className="group">
+                    <FormLabel className="text-sm font-medium text-foreground/80 group-focus-within:text-primary transition-colors">Photo de profil (optionnel)</FormLabel>
                     <FormControl>
-                      <Input
-                        type="url"
-                        placeholder="https://placehold.co/150x150/9b59b6/ffffff?text=PD.jpg"
-                        {...field}
-                        disabled={signupMutation.isPending}
-                        className="h-11"
-                      />
+                      <div className="relative">
+                        <Input
+                          type="url"
+                          placeholder="ex. img.png"
+                          {...field}
+                          disabled={signupMutation.isPending}
+                          className="h-12 pl-4 pr-4 bg-background/50 border-2 border-border/40 focus:border-primary/60 focus:bg-background transition-all duration-300 rounded-xl hover:border-border/60"
+                        />
+                        <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <div className="space-y-4">
-                <h3 className="text-sm font-medium text-foreground">Adresse (optionnel)</h3>
+              <div className="space-y-4 pt-4 border-t border-border/30">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-primary/60 rounded-full" />
+                  <h3 className="text-sm font-medium text-foreground/80">Adresse (optionnel)</h3>
+                </div>
                 <FormField
                   control={form.control}
                   name="address1"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Adresse 1</FormLabel>
+                    <FormItem className="group">
+                      <FormLabel className="text-sm font-medium text-foreground/80 group-focus-within:text-primary transition-colors">Adresse 1</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="Avenue Charles Atangana"
-                          {...field}
-                          disabled={signupMutation.isPending}
-                          className="h-11"
-                        />
+                        <div className="relative">
+                          <Input
+                            placeholder="Avenue Charles Atangana"
+                            {...field}
+                            disabled={signupMutation.isPending}
+                            className="h-12 pl-4 pr-4 bg-background/50 border-2 border-border/40 focus:border-primary/60 focus:bg-background transition-all duration-300 rounded-xl hover:border-border/60"
+                          />
+                          <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -395,15 +411,18 @@ export function SignupForm() {
                   control={form.control}
                   name="address2"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Adresse 2</FormLabel>
+                    <FormItem className="group">
+                      <FormLabel className="text-sm font-medium text-foreground/80 group-focus-within:text-primary transition-colors">Adresse 2</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="Quartier Mvog-Ada"
-                          {...field}
-                          disabled={signupMutation.isPending}
-                          className="h-11"
-                        />
+                        <div className="relative">
+                          <Input
+                            placeholder="Quartier Mvog-Ada"
+                            {...field}
+                            disabled={signupMutation.isPending}
+                            className="h-12 pl-4 pr-4 bg-background/50 border-2 border-border/40 focus:border-primary/60 focus:bg-background transition-all duration-300 rounded-xl hover:border-border/60"
+                          />
+                          <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -414,15 +433,18 @@ export function SignupForm() {
                     control={form.control}
                     name="city"
                     render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Ville</FormLabel>
+                      <FormItem className="group">
+                        <FormLabel className="text-sm font-medium text-foreground/80 group-focus-within:text-primary transition-colors">Ville</FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="Yaoundé"
-                            {...field}
-                            disabled={signupMutation.isPending}
-                            className="h-11"
-                          />
+                          <div className="relative">
+                            <Input
+                              placeholder="Yaoundé"
+                              {...field}
+                              disabled={signupMutation.isPending}
+                              className="h-12 pl-4 pr-4 bg-background/50 border-2 border-border/40 focus:border-primary/60 focus:bg-background transition-all duration-300 rounded-xl hover:border-border/60"
+                            />
+                            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -432,15 +454,18 @@ export function SignupForm() {
                     control={form.control}
                     name="postalCode"
                     render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Code postal</FormLabel>
+                      <FormItem className="group">
+                        <FormLabel className="text-sm font-medium text-foreground/80 group-focus-within:text-primary transition-colors">Code postal</FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="23703"
-                            {...field}
-                            disabled={signupMutation.isPending}
-                            className="h-11"
-                          />
+                          <div className="relative">
+                            <Input
+                              placeholder="23703"
+                              {...field}
+                              disabled={signupMutation.isPending}
+                              className="h-12 pl-4 pr-4 bg-background/50 border-2 border-border/40 focus:border-primary/60 focus:bg-background transition-all duration-300 rounded-xl hover:border-border/60"
+                            />
+                            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -451,15 +476,18 @@ export function SignupForm() {
                   control={form.control}
                   name="country"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Pays</FormLabel>
+                    <FormItem className="group">
+                      <FormLabel className="text-sm font-medium text-foreground/80 group-focus-within:text-primary transition-colors">Pays</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="Cameroon"
-                          {...field}
-                          disabled={signupMutation.isPending}
-                          className="h-11"
-                        />
+                        <div className="relative">
+                          <Input
+                            placeholder="Cameroon"
+                            {...field}
+                            disabled={signupMutation.isPending}
+                            className="h-12 pl-4 pr-4 bg-background/50 border-2 border-border/40 focus:border-primary/60 focus:bg-background transition-all duration-300 rounded-xl hover:border-border/60"
+                          />
+                          <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -468,7 +496,7 @@ export function SignupForm() {
               </div>
               <SubmitButton 
                 isLoading={signupMutation.isPending} 
-                className="w-full h-11"
+                className="w-full h-12 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl font-medium mt-6"
               >
                 Créer le compte
               </SubmitButton>
@@ -482,7 +510,7 @@ export function SignupForm() {
               </Link>
             </p>
           </div>
-          <Button variant="ghost" asChild className="w-full">
+          <Button variant="ghost" asChild className="w-full hover:bg-muted/50 hover:text-primary transition-colors">
             <Link href="/" className="flex items-center justify-center gap-2">
               <ArrowLeft className="h-4 w-4" />
               Retour à l'accueil

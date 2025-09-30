@@ -68,8 +68,11 @@ export function ResetPasswordForm() {
             <p className="text-muted-foreground">
               Le lien de réinitialisation est invalide ou a expiré.
             </p>
-            <Button asChild className="w-full">
-              <Link href="/forgot-password">Demander un nouveau lien</Link>
+            <Button asChild className="w-full hover:bg-muted/50 hover:text-primary transition-colors">
+              <Link href="/forgot-password" className="flex items-center justify-center gap-2">
+                <ArrowLeft className="h-4 w-4" />
+                Demander un nouveau lien
+              </Link>
             </Button>
           </div>
         </div>
@@ -99,17 +102,18 @@ export function ResetPasswordForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-8 bg-background">
-      <div className="w-full max-w-md space-y-8">
-        <div className="text-center">
+    <div className="min-h-screen flex items-center justify-center p-4 sm:p-8 bg-gradient-to-br from-background via-background to-muted/10">
+      <div className="w-full max-w-md space-y-6">
+        <div className="text-center animate-in fade-in-0 slide-in-from-top-4 duration-700">
           <Logo size="lg" />
         </div>
-        <div className="p-6 bg-card rounded-xl border-2 border-border/40 shadow-sm space-y-6">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold">Nouveau mot de passe</h2>
-            <p className="text-muted-foreground mt-2">
+        <div className="animate-in fade-in-0 slide-in-from-bottom-4 duration-700 delay-200 p-8 bg-card/80 backdrop-blur-sm rounded-2xl border border-border/30 shadow-xl hover:shadow-2xl transition-all duration-300 space-y-6">
+          <div className="text-center space-y-3">
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">Nouveau mot de passe</h2>
+            <p className="text-muted-foreground">
               Choisissez un nouveau mot de passe sécurisé
             </p>
+            <div className="w-16 h-1 bg-gradient-to-r from-primary to-primary/60 rounded-full mx-auto" />
           </div>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -117,8 +121,8 @@ export function ResetPasswordForm() {
                 control={form.control}
                 name="newPassword"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nouveau mot de passe</FormLabel>
+                  <FormItem className="group">
+                    <FormLabel className="text-sm font-medium text-foreground/80 group-focus-within:text-primary transition-colors">Nouveau mot de passe</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
@@ -126,20 +130,21 @@ export function ResetPasswordForm() {
                           placeholder="••••••••"
                           {...field}
                           disabled={resetPasswordMutation.isPending}
-                          className="h-11 pr-10"
+                          className="h-12 pl-4 pr-12 bg-background/50 border-2 border-border/40 focus:border-primary/60 focus:bg-background transition-all duration-300 rounded-xl hover:border-border/60"
                         />
+                        <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" />
                         <Button
                           type="button"
                           variant="ghost"
                           size="sm"
-                          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                          className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-lg hover:bg-muted/50 transition-colors"
                           onClick={() => setShowPassword(!showPassword)}
                           disabled={resetPasswordMutation.isPending}
                         >
                           {showPassword ? (
-                            <EyeOff className="h-4 w-4 text-muted-foreground" />
+                            <EyeOff className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
                           ) : (
-                            <Eye className="h-4 w-4 text-muted-foreground" />
+                            <Eye className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
                           )}
                         </Button>
                       </div>
@@ -152,8 +157,8 @@ export function ResetPasswordForm() {
                 control={form.control}
                 name="confirmPassword"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Confirmer le mot de passe</FormLabel>
+                  <FormItem className="group">
+                    <FormLabel className="text-sm font-medium text-foreground/80 group-focus-within:text-primary transition-colors">Confirmer le mot de passe</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
@@ -161,20 +166,21 @@ export function ResetPasswordForm() {
                           placeholder="••••••••"
                           {...field}
                           disabled={resetPasswordMutation.isPending}
-                          className="h-11 pr-10"
+                          className="h-12 pl-4 pr-12 bg-background/50 border-2 border-border/40 focus:border-primary/60 focus:bg-background transition-all duration-300 rounded-xl hover:border-border/60"
                         />
+                        <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" />
                         <Button
                           type="button"
                           variant="ghost"
                           size="sm"
-                          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                          className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-lg hover:bg-muted/50 transition-colors"
                           onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                           disabled={resetPasswordMutation.isPending}
                         >
                           {showConfirmPassword ? (
-                            <EyeOff className="h-4 w-4 text-muted-foreground" />
+                            <EyeOff className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
                           ) : (
-                            <Eye className="h-4 w-4 text-muted-foreground" />
+                            <Eye className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
                           )}
                         </Button>
                       </div>
@@ -185,13 +191,13 @@ export function ResetPasswordForm() {
               />
               <SubmitButton 
                 isLoading={resetPasswordMutation.isPending} 
-                className="w-full h-11"
+                className="w-full h-12 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl font-medium mt-6"
               >
                 Réinitialiser le mot de passe
               </SubmitButton>
             </form>
           </Form>
-          <Button variant="ghost" asChild className="w-full">
+          <Button variant="ghost" asChild className="w-full hover:bg-muted/50 hover:text-primary transition-colors">
             <Link href="/login" className="flex items-center justify-center gap-2">
               <ArrowLeft className="h-4 w-4" />
               Retour à la connexion

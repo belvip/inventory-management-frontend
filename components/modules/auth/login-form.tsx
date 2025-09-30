@@ -116,18 +116,21 @@ export function LoginForm() {
             </div>
 
             {/* Right Panel - Login Form */}
-            <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-background">
-                <div className="w-full max-w-md space-y-8">
+            <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-8 bg-gradient-to-br from-background via-background to-muted/10">
+                <div className="w-full max-w-md space-y-6">
                     {/* Mobile Logo */}
-                    <div className="lg:hidden text-center mb-8">
-                        <Logo size="lg" />
+                    <div className="lg:hidden text-center mb-6">
+                        <div className="animate-in fade-in-0 slide-in-from-top-4 duration-700">
+                            <Logo size="lg" />
+                        </div>
                     </div>
 
                     {/* Login Form */}
-                    <div className="p-6 bg-card rounded-xl border-2 border-border/40 shadow-sm space-y-6">
-                        <div className="text-center lg:text-left">
-                            <h2 className="text-3xl font-bold text-foreground">Bon retour !</h2>
-                            <p className="text-muted-foreground mt-2">Connectez-vous pour accéder à votre tableau de bord</p>
+                    <div className="animate-in fade-in-0 slide-in-from-bottom-4 duration-700 delay-200 p-8 bg-card/80 backdrop-blur-sm rounded-2xl border border-border/30 shadow-xl hover:shadow-2xl transition-all duration-300 space-y-6">
+                        <div className="text-center lg:text-left space-y-2">
+                            <h2 className="text-3xl font-bold text-foreground bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">Bon retour !</h2>
+                            <p className="text-muted-foreground">Connectez-vous pour accéder à votre tableau de bord</p>
+                            <div className="w-12 h-1 bg-gradient-to-r from-primary to-primary/60 rounded-full mx-auto lg:mx-0" />
                         </div>
                         <Form {...form}>
                             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -135,16 +138,19 @@ export function LoginForm() {
                                     control={form.control}
                                     name="username"
                                     render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Nom d'utilisateur</FormLabel>
+                                        <FormItem className="group">
+                                            <FormLabel className="text-sm font-medium text-foreground/80 group-focus-within:text-primary transition-colors">Nom d'utilisateur</FormLabel>
                                             <FormControl>
-                                                <Input
-                                                    type="text"
-                                                    placeholder="admin"
-                                                    {...field}
-                                                    disabled={loading}
-                                                    className="h-11"
-                                                />
+                                                <div className="relative">
+                                                    <Input
+                                                        type="text"
+                                                        placeholder="admin"
+                                                        {...field}
+                                                        disabled={loading}
+                                                        className="h-12 pl-4 pr-4 bg-background/50 border-2 border-border/40 focus:border-primary/60 focus:bg-background transition-all duration-300 rounded-xl hover:border-border/60"
+                                                    />
+                                                    <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                                                </div>
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -154,8 +160,8 @@ export function LoginForm() {
                                     control={form.control}
                                     name="password"
                                     render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Mot de passe</FormLabel>
+                                        <FormItem className="group">
+                                            <FormLabel className="text-sm font-medium text-foreground/80 group-focus-within:text-primary transition-colors">Mot de passe</FormLabel>
                                             <FormControl>
                                                 <div className="relative">
                                                     <Input
@@ -163,20 +169,21 @@ export function LoginForm() {
                                                         placeholder="••••••••"
                                                         {...field}
                                                         disabled={loading}
-                                                        className="h-11 pr-10"
+                                                        className="h-12 pl-4 pr-12 bg-background/50 border-2 border-border/40 focus:border-primary/60 focus:bg-background transition-all duration-300 rounded-xl hover:border-border/60"
                                                     />
+                                                    <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" />
                                                     <Button
                                                         type="button"
                                                         variant="ghost"
                                                         size="sm"
-                                                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                                                        className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-lg hover:bg-muted/50 transition-colors"
                                                         onClick={() => setShowPassword(!showPassword)}
                                                         disabled={loading}
                                                     >
                                                         {showPassword ? (
-                                                            <EyeOff className="h-4 w-4 text-muted-foreground" />
+                                                            <EyeOff className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
                                                         ) : (
-                                                            <Eye className="h-4 w-4 text-muted-foreground" />
+                                                            <Eye className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
                                                         )}
                                                     </Button>
                                                 </div>
@@ -197,7 +204,7 @@ export function LoginForm() {
                                     </Button>
                                 </div>
                                 
-                                <SubmitButton isLoading={loading} className="h-11 mt-6">
+                                <SubmitButton isLoading={loading} className="h-12 mt-6 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl font-medium">
                                     Se connecter
                                 </SubmitButton>
                             </form>
@@ -240,7 +247,7 @@ export function LoginForm() {
                             </Button>
                         </div>
                         
-                        <Button variant="ghost" asChild className="w-full">
+                        <Button variant="ghost" asChild className="w-full hover:bg-muted/50 hover:text-primary transition-colors">
                             <Link href="/" className="flex items-center justify-center gap-2">
                                 <ArrowLeft className="h-4 w-4" />
                                 Retour à l'accueil
