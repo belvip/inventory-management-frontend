@@ -12,7 +12,7 @@ export default function DashboardLayout({children}: Readonly<{
             <AppSidebar />
             <SidebarInset>
                 <Navbar />
-                <main className="flex-1 space-y-4 p-4 md:p-8">{children}</main>
+                <main className="flex-1 space-y-4 p-4 md:p-8 pt-32">{children}</main>
             </SidebarInset>
         </SidebarProvider>
     )

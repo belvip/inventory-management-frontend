@@ -14,10 +14,21 @@ class ApiClient {
 
   constructor() {
     this.baseURL = process.env.NEXT_PUBLIC_API_URL || ""
+    // Load token from localStorage on initialization
+    if (typeof window !== 'undefined') {
+      this.token = localStorage.getItem('accessToken')
+    }
   }
 
   setToken(token: string | null) {
     this.token = token
+    if (typeof window !== 'undefined') {
+      if (token) {
+        localStorage.setItem('accessToken', token)
+      } else {
+        localStorage.removeItem('accessToken')
+      }
+    }
   }
 
   setUnauthorizedHandler(handler: () => void) {

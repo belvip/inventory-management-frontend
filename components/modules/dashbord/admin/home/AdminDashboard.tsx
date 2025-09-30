@@ -8,11 +8,8 @@ import { useAuthGuard } from "@/hooks/useAuthGuard"
 import { LoadingContent } from "@/components/global"
 
 export function AdminDashboard() {
-    const { user, isLoading } = useAuthGuard(['ADMIN'])
-    
-    if (isLoading) return <LoadingContent />
-    
     // Mock data - replace with actual hooks when available
+    const isLoading = false;
     const isError = false;
     
     // Admin-specific metrics
@@ -26,7 +23,7 @@ export function AdminDashboard() {
     const activeManagers = 8;
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 mt-0 sm:mt-0 md:mt-0">
             <div>
                 <h1 className="text-3xl font-bold">Tableau de bord Administrateur</h1>
                 <p className="text-muted-foreground">Contrôle total du système : gestion des utilisateurs, inventaire, commandes, et configuration système.</p>
@@ -96,7 +93,7 @@ export function AdminDashboard() {
                         ) : isError ? (
                             <div className="text-2xl font-bold text-red-500">Erreur</div>
                         ) : (
-                            <div className="text-2xl font-bold">{monthlyRevenue.toLocaleString()} €</div>
+                            <div className="text-2xl font-bold">{monthlyRevenue.toLocaleString()} fcfa</div>
                         )}
                         <p className="text-xs text-muted-foreground">Revenus {new Date().toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}</p>
                     </CardContent>
