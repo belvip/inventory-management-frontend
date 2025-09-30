@@ -1,6 +1,15 @@
 import { type UserRole } from "@/types"
 import {
   LayoutDashboard,
+  Package,
+  Users,
+  ShoppingCart,
+  Truck,
+  Receipt,
+  Building,
+  Tags,
+  BarChart3,
+  UserCheck,
 } from "lucide-react"
 
 export interface NavigationItem {
@@ -16,8 +25,62 @@ export const navigationConfig: NavigationItem[] = [
     title: "Tableau de bord",
     href: "/dashboard",
     icon: LayoutDashboard,
+    roles: ["ROLE_ADMIN", "ROLE_MANAGER", "ROLE_SALES", "ROLE_USER"],
+  },
+  {
+    title: "Articles",
+    href: "/dashboard/articles",
+    icon: Package,
+    roles: ["ROLE_ADMIN", "ROLE_MANAGER", "ROLE_SALES", "ROLE_USER"],
+  },
+  {
+    title: "Catégories",
+    href: "/dashboard/categories",
+    icon: Tags,
+    roles: ["ROLE_ADMIN", "ROLE_MANAGER", "ROLE_SALES", "ROLE_USER"],
+  },
+  {
+    title: "Clients",
+    href: "/dashboard/clients",
+    icon: Users,
+    roles: ["ROLE_ADMIN", "ROLE_MANAGER", "ROLE_SALES", "ROLE_USER"],
+  },
+  {
+    title: "Commandes",
+    href: "/dashboard/orders",
+    icon: ShoppingCart,
+    roles: ["ROLE_ADMIN", "ROLE_MANAGER", "ROLE_SALES", "ROLE_USER"],
+  },
+  {
+    title: "Fournisseurs",
+    href: "/dashboard/suppliers",
+    icon: Truck,
     roles: ["ROLE_ADMIN", "ROLE_MANAGER", "ROLE_SALES"],
-  }
+  },
+  {
+    title: "Ventes",
+    href: "/dashboard/sales",
+    icon: Receipt,
+    roles: ["ROLE_ADMIN", "ROLE_MANAGER", "ROLE_SALES"],
+  },
+  {
+    title: "Entreprises",
+    href: "/dashboard/companies",
+    icon: Building,
+    roles: ["ROLE_ADMIN", "ROLE_MANAGER"],
+  },
+  {
+    title: "Rapports",
+    href: "/dashboard/reports",
+    icon: BarChart3,
+    roles: ["ROLE_ADMIN", "ROLE_MANAGER"],
+  },
+  {
+    title: "Utilisateurs",
+    href: "/dashboard/users",
+    icon: UserCheck,
+    roles: ["ROLE_ADMIN"],
+  },
 ];
 
 export function getNavigationForRole(userRoles: string[]): NavigationItem[] {

@@ -280,3 +280,7 @@ interface AuthResponse {
 - **Performance** optimisée
 - **Sécurité** robuste
 - **Code maintenable** et scalable
+
+
+
+https://teledeclaration-dgi.cm/modules/Common/Account/Login.aspx
