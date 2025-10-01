@@ -38,7 +38,7 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon" className="z-[60] border-r overflow-x-hidden max-w-none" style={{ '--sidebar-background': 'hsl(var(--muted))' } as React.CSSProperties}>
       <SidebarHeader>
-        <div className="hidden md:flex items-center justify-between p-2">
+        <div className="flex items-center justify-end p-2">
           <SidebarTrigger />
         </div>
         <SidebarMenu>
