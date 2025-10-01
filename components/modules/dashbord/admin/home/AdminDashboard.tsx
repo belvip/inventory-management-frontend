@@ -4,9 +4,8 @@ import { Users, Package, ShoppingCart, TrendingUp, AlertTriangle, RefreshCw } fr
 import { useState, useMemo, useCallback, useEffect } from "react"
 import { useAuthGuard } from "@/hooks/useAuthGuard"
 import { LoadingContent } from "@/components/global"
-import { MetricCard } from "@/components/modules/dashbord/admin/components/MetricCard"
-import { DashboardHeader } from "@/components/modules/dashbord/admin/components/DashboardHeader"
-import { AdminControlsSection } from "@/components/modules/dashbord/admin/components/AdminControlsSection"
+import { MetricCard, DashboardHeader, ControlsSection, DashboardLayout } from "@/components/shared/dashboard"
+import { UserCheck, Archive, Lock, Settings, Plus, Eye } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
@@ -173,6 +172,7 @@ export function AdminDashboard() {
                     title="Administration"
                     subtitle="Erreur de chargement des données"
                     badgeText="Erreur"
+                    badgeVariant="destructive"
                 />
                 
                 <Alert variant="destructive">
@@ -289,18 +289,57 @@ export function AdminDashboard() {
                 />
             </div>
 
-            <AdminControlsSection
-                activeManagers={activeManagers}
-                archivedItems={archivedItems}
-                lockedAccounts={lockedAccounts}
-                systemUptime={systemUptime}
+            <ControlsSection
+                title="Contrôles Administrateur"
+                titleIcon={AlertTriangle}
+                titleIconColor="text-orange-500"
                 isLoading={isLoading}
                 isError={!!error}
-                onManagersClick={handleManagersClick}
-                onArchivedClick={handleArchivedClick}
-                onLockedClick={handleLockedClick}
-                onSystemClick={handleSystemClick}
                 onRetry={handleManualRetry}
+                metrics={[
+                    {
+                        title: "Managers Actifs",
+                        value: activeManagers,
+                        description: "Équipe de gestion",
+                        icon: UserCheck,
+                        iconColor: "text-muted-foreground",
+                        onClick: handleManagersClick,
+                        isEmpty: !isLoading && !error && activeManagers === 0,
+                        emptyMessage: "Aucun manager actif dans le système"
+                    },
+                    {
+                        title: "Articles Archivés",
+                        value: archivedItems,
+                        description: "Produits archivés",
+                        icon: Archive,
+                        iconColor: "text-muted-foreground",
+                        onClick: handleArchivedClick,
+                        isEmpty: !isLoading && !error && archivedItems === 0,
+                        emptyMessage: "Aucun élément archivé. Tout est actif !"
+                    },
+                    {
+                        title: "Comptes Verrouillés",
+                        value: lockedAccounts,
+                        description: "Nécessitent attention",
+                        icon: Lock,
+                        iconColor: "text-orange-500",
+                        onClick: handleLockedClick,
+                        badge: lockedAccounts > 0 ? "Action requise" : undefined,
+                        className: "border-orange-200",
+                        isEmpty: !isLoading && !error && lockedAccounts === 0,
+                        emptyMessage: "Aucun compte verrouillé. Sécurité optimale !"
+                    },
+                    {
+                        title: "Système",
+                        value: `${systemUptime}%`,
+                        description: "Temps de fonctionnement",
+                        icon: Settings,
+                        iconColor: "text-muted-foreground",
+                        onClick: handleSystemClick,
+                        isEmpty: !isLoading && !error && systemUptime === 0,
+                        emptyMessage: "Système hors ligne. Maintenance en cours."
+                    }
+                ]}
             />
         </div>
     )
