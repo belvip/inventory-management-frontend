@@ -43,13 +43,13 @@ export const navigationConfig: NavigationItem[] = [
     title: "Clients",
     href: "/dashboard/clients",
     icon: Users,
-    roles: ["ROLE_ADMIN", "ROLE_MANAGER", "ROLE_SALES", "ROLE_USER"],
+    roles: ["ROLE_ADMIN", "ROLE_MANAGER", "ROLE_SALES"],
   },
   {
     title: "Commandes",
     href: "/dashboard/orders",
     icon: ShoppingCart,
-    roles: ["ROLE_ADMIN", "ROLE_MANAGER", "ROLE_SALES", "ROLE_USER"],
+    roles: ["ROLE_ADMIN", "ROLE_MANAGER", "ROLE_SALES"],
   },
   {
     title: "Fournisseurs",
@@ -61,7 +61,7 @@ export const navigationConfig: NavigationItem[] = [
     title: "Ventes",
     href: "/dashboard/sales",
     icon: Receipt,
-    roles: ["ROLE_ADMIN", "ROLE_MANAGER"],
+    roles: ["ROLE_ADMIN", "ROLE_MANAGER", "ROLE_SALES"],
   },
   {
     title: "Entreprises",

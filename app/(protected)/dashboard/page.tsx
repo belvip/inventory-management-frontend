@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 import { useAuth } from "@/hooks/useAuth"
-import { LoadingContent } from "@/components/global"
+import { FormLoadingState } from "@/components/global"
 import { Loader2, ArrowRight } from "lucide-react"
 
 export default function DashboardPage() {
@@ -19,12 +19,14 @@ export default function DashboardPage() {
                 router.push('/dashboard/manager')
             } else if (role === 'ROLE_SALES') {
                 router.push('/dashboard/sales')
+            } else if (role === 'ROLE_USER') {
+                router.push('/dashboard/user')
             }
         }
     }, [user, isLoading, isAuthenticated, router])
     
     if (isLoading) {
-        return <LoadingContent />
+        return <FormLoadingState isLoading={true}><div /></FormLoadingState>
     }
     
     return (
