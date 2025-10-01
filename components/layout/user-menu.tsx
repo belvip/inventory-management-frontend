@@ -11,9 +11,11 @@ import {
 } from "@/components/ui/sidebar"
 import { useAuth } from "@/hooks/useAuth"
 import { UserProfileModal } from "@/components/modules/profile/UserProfileModal"
+import { useUserStore } from "@/stores/userStore"
 
 export function UserMenu() {
-  const { user, logout } = useAuth()
+  const { logout } = useAuth()
+  const { user } = useUserStore()
   const [profileModalOpen, setProfileModalOpen] = useState(false)
   const [logoutModalOpen, setLogoutModalOpen] = useState(false)
   
@@ -35,8 +37,10 @@ export function UserMenu() {
     return `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase()
   }
   
-  // Nom complet pour l'affichage
-  const fullName = user ? `${user.firstName} ${user.lastName}`.trim() : ""
+  // Utiliser les données du store
+  const fullName = user?.firstName && user?.lastName 
+    ? `${user.firstName} ${user.lastName}`.trim() 
+    : ""
   const userEmail = user?.email || ""
   const username = user?.username || ""
   const initials = getInitials(user?.firstName, user?.lastName)
@@ -68,12 +72,8 @@ export function UserMenu() {
               <AvatarImage src="" alt={fullName} />
               <AvatarFallback className="rounded-full">{initials}</AvatarFallback>
             </Avatar>
-            <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
-              <span className="truncate font-semibold">{fullName || username || user?.firstName || 'Utilisateur'}</span>
-              <span className="truncate text-xs text-muted-foreground">{userEmail}</span>
-            </div>
-            <div className="hidden group-data-[collapsible=icon]:flex flex-1 items-center justify-center">
-              <span className="text-sm font-semibold truncate max-w-[120px]">{fullName || username || user?.firstName || 'User'}</span>
+            <div className="flex-1 min-w-0 px-2">
+              <span className="text-sm font-semibold truncate block">{fullName || username || 'Utilisateur'}</span>
             </div>
             <div className="flex items-center justify-center w-6 h-6">
               <div className="w-1 h-1 bg-current rounded-full mx-0.5"></div>
