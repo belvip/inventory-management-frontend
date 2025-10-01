@@ -1,33 +1,127 @@
 "use client"
 
-import { Users, Package, ShoppingCart, TrendingUp } from "lucide-react"
-import { useState, useMemo, useCallback } from "react"
+import { Users, Package, ShoppingCart, TrendingUp, AlertTriangle, RefreshCw } from "lucide-react"
+import { useState, useMemo, useCallback, useEffect } from "react"
 import { useAuthGuard } from "@/hooks/useAuthGuard"
 import { LoadingContent } from "@/components/global"
 import { MetricCard } from "@/components/modules/dashbord/admin/components/MetricCard"
 import { DashboardHeader } from "@/components/modules/dashbord/admin/components/DashboardHeader"
 import { AdminControlsSection } from "@/components/modules/dashbord/admin/components/AdminControlsSection"
+import { Button } from "@/components/ui/button"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
 export function AdminDashboard() {
     // Vérification des permissions admin
     const { user, isLoading: authLoading, hasRequiredRole } = useAuthGuard(['ROLE_ADMIN'])
     
-    // Mock data - replace with actual hooks when available
-    const [isLoading, setIsLoading] = useState(false)
-    const [isError, setIsError] = useState(false)
+    // État de gestion des données
+    const [isLoading, setIsLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
     const [retryCount, setRetryCount] = useState(0)
+    const [lastFetch, setLastFetch] = useState<Date | null>(null)
     
-    const handleRetry = useCallback(() => {
-        setIsLoading(true)
-        setIsError(false)
-        setRetryCount(prev => prev + 1)
-        // Simulate API call
-        setTimeout(() => {
+    // Simulation de données - remplacer par de vrais appels API
+    const [dashboardData, setDashboardData] = useState({
+        totalUsers: 0,
+        totalProducts: 0,
+        totalOrders: 0,
+        monthlyRevenue: 0,
+        activeManagers: 0,
+        archivedItems: 0,
+        lockedAccounts: 0,
+        systemUptime: 0
+    })
+    
+    const fetchDashboardData = useCallback(async () => {
+        try {
+            setIsLoading(true)
+            setError(null)
+            
+            // Simulation d'appel API avec délai
+            await new Promise(resolve => setTimeout(resolve, 1000))
+            
+            // Simulation d'erreur occasionnelle
+            if (Math.random() > 0.8 && retryCount < 2) {
+                throw new Error('Erreur de connexion au serveur')
+            }
+            
+            // Données simulées
+            setDashboardData({
+                totalUsers: 156,
+                totalProducts: 1247,
+                totalOrders: 89,
+                monthlyRevenue: 125000,
+                activeManagers: 8,
+                archivedItems: 23,
+                lockedAccounts: 3,
+                systemUptime: 99.9
+            })
+            
+            setLastFetch(new Date())
+            setRetryCount(0)
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : 'Erreur inconnue'
+            setError(`Échec du chargement des données: ${errorMessage}`)
+            
+            // Retry automatique après 3 secondes (max 3 tentatives)
+            if (retryCount < 3) {
+                setTimeout(() => {
+                    setRetryCount(prev => prev + 1)
+                    fetchDashboardData()
+                }, 3000)
+            }
+        } finally {
             setIsLoading(false)
-            // Simulate occasional error for demo
-            setIsError(Math.random() > 0.7)
-        }, 1000)
-    }, [])
+        }
+    }, [retryCount])
+    
+    const handleManualRetry = useCallback(() => {
+        setRetryCount(0)
+        fetchDashboardData()
+    }, [fetchDashboardData])
+    
+    // Extraction des données du state
+    const {
+        totalUsers,
+        totalProducts,
+        totalOrders,
+        monthlyRevenue,
+        activeManagers,
+        archivedItems,
+        lockedAccounts,
+        systemUptime
+    } = dashboardData
+    
+    // Optimiser les calculs avec useMemo
+    const formattedRevenue = useMemo(() => 
+        `${monthlyRevenue.toLocaleString()} fcfa`, [monthlyRevenue]
+    )
+    
+    const currentMonthYear = useMemo(() => 
+        new Date().toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }), []
+    )
+    
+    const revenueDescription = useMemo(() => 
+        `Revenus ${currentMonthYear}`, [currentMonthYear]
+    )
+    
+    // Vérifier les états vides et la fraîcheur des données
+    const hasData = useMemo(() => ({
+        users: totalUsers > 0,
+        products: totalProducts > 0,
+        orders: totalOrders > 0,
+        revenue: monthlyRevenue > 0
+    }), [totalUsers, totalProducts, totalOrders, monthlyRevenue])
+    
+    const isDataStale = useMemo(() => {
+        if (!lastFetch) return false
+        return Date.now() - lastFetch.getTime() > 5 * 60 * 1000 // 5 minutes
+    }, [lastFetch])
+    
+    // Chargement initial des données
+    useEffect(() => {
+        fetchDashboardData()
+    }, [fetchDashboardData])
     
     const handleUserClick = useCallback(() => {
         console.log('Navigate to users')
@@ -71,44 +165,59 @@ export function AdminDashboard() {
         return <LoadingContent />
     }
     
-    // Admin-specific metrics - in real app, these would come from API
-    const [totalUsers] = useState(156)
-    const totalProducts = 1247;
-    const totalOrders = 89;
-    const monthlyRevenue = 125000;
-    const systemUptime = 99.9;
-    const archivedItems = 23;
-    const lockedAccounts = 3;
-    const activeManagers = 8;
-    
-    // Optimiser les calculs avec useMemo
-    const formattedRevenue = useMemo(() => 
-        `${monthlyRevenue.toLocaleString()} fcfa`, [monthlyRevenue]
-    )
-    
-    const currentMonthYear = useMemo(() => 
-        new Date().toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }), []
-    )
-    
-    const revenueDescription = useMemo(() => 
-        `Revenus ${currentMonthYear}`, [currentMonthYear]
-    )
-    
-    // Vérifier les états vides
-    const hasData = useMemo(() => ({
-        users: totalUsers > 0,
-        products: totalProducts > 0,
-        orders: totalOrders > 0,
-        revenue: monthlyRevenue > 0
-    }), [totalUsers, totalProducts, totalOrders, monthlyRevenue])
+    // Affichage d'erreur critique
+    if (error && retryCount >= 3) {
+        return (
+            <div className="space-y-6 mt-0 sm:mt-0 md:mt-12">
+                <DashboardHeader
+                    title="Administration"
+                    subtitle="Erreur de chargement des données"
+                    badgeText="Erreur"
+                />
+                
+                <Alert variant="destructive">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertDescription className="flex items-center justify-between">
+                        <span>{error}</span>
+                        <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={handleManualRetry}
+                            className="ml-4"
+                        >
+                            <RefreshCw className="h-4 w-4 mr-2" />
+                            Réessayer
+                        </Button>
+                    </AlertDescription>
+                </Alert>
+            </div>
+        )
+    }
 
     return (
         <div className="space-y-6 mt-0 sm:mt-0 md:mt-12">
             <DashboardHeader
                 title="Administration"
-                subtitle="Bienvenue ! Voici un aperçu de votre système d'inventaire."
-                badgeText="Admin"
+                subtitle={isDataStale ? "Données obsolètes - Actualisation recommandée" : "Bienvenue ! Voici un aperçu de votre système d'inventaire."}
+                badgeText={isDataStale ? "Données anciennes" : "Admin"}
             />
+            
+            {error && retryCount < 3 && (
+                <Alert>
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertDescription className="flex items-center justify-between">
+                        <span>Tentative de reconnexion... ({retryCount + 1}/3)</span>
+                        <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={handleManualRetry}
+                        >
+                            <RefreshCw className="h-4 w-4 mr-2" />
+                            Forcer
+                        </Button>
+                    </AlertDescription>
+                </Alert>
+            )}
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <MetricCard
@@ -118,14 +227,14 @@ export function AdminDashboard() {
                     icon={Users}
                     iconColor="text-blue-500"
                     isLoading={isLoading}
-                    isError={isError}
-                    errorMessage="Impossible de charger les données utilisateurs"
+                    isError={!!error}
+                    errorMessage="Échec du chargement des utilisateurs. Vérifiez votre connexion."
                     progress={75}
                     change="+12%"
-                    onRetry={handleRetry}
+                    onRetry={handleManualRetry}
                     onClick={handleUserClick}
-                    isEmpty={totalUsers === 0}
-                    emptyMessage="Aucun utilisateur enregistré"
+                    isEmpty={!isLoading && !error && totalUsers === 0}
+                    emptyMessage="Aucun utilisateur enregistré dans le système"
                 />
                 
                 <MetricCard
@@ -135,12 +244,14 @@ export function AdminDashboard() {
                     icon={Package}
                     iconColor="text-green-500"
                     isLoading={isLoading}
-                    isError={isError}
+                    isError={!!error}
+                    errorMessage="Impossible d'accéder aux données produits. Réessayez plus tard."
                     progress={85}
                     change="+8%"
+                    onRetry={handleManualRetry}
                     onClick={handleProductsClick}
-                    isEmpty={!hasData.products}
-                    emptyMessage="Aucun produit en inventaire"
+                    isEmpty={!isLoading && !error && !hasData.products}
+                    emptyMessage="Aucun produit en inventaire. Commencez par ajouter des articles."
                 />
                 
                 <MetricCard
@@ -150,12 +261,14 @@ export function AdminDashboard() {
                     icon={ShoppingCart}
                     iconColor="text-purple-500"
                     isLoading={isLoading}
-                    isError={isError}
+                    isError={!!error}
+                    errorMessage="Données de commandes indisponibles. Problème de synchronisation."
                     progress={60}
                     change="+15%"
+                    onRetry={handleManualRetry}
                     onClick={handleOrdersClick}
-                    isEmpty={!hasData.orders}
-                    emptyMessage="Aucune commande ce mois"
+                    isEmpty={!isLoading && !error && !hasData.orders}
+                    emptyMessage="Aucune commande ce mois. Les ventes vont bientôt démarrer !"
                 />
                 
                 <MetricCard
@@ -165,12 +278,14 @@ export function AdminDashboard() {
                     icon={TrendingUp}
                     iconColor="text-emerald-500"
                     isLoading={isLoading}
-                    isError={isError}
+                    isError={!!error}
+                    errorMessage="Données financières temporairement inaccessibles. Contactez le support."
                     progress={90}
                     change="+22%"
+                    onRetry={handleManualRetry}
                     onClick={handleRevenueClick}
-                    isEmpty={!hasData.revenue}
-                    emptyMessage="Aucun revenu enregistré"
+                    isEmpty={!isLoading && !error && !hasData.revenue}
+                    emptyMessage="Aucun revenu enregistré ce mois. Première vente en attente."
                 />
             </div>
 
@@ -180,11 +295,12 @@ export function AdminDashboard() {
                 lockedAccounts={lockedAccounts}
                 systemUptime={systemUptime}
                 isLoading={isLoading}
-                isError={isError}
+                isError={!!error}
                 onManagersClick={handleManagersClick}
                 onArchivedClick={handleArchivedClick}
                 onLockedClick={handleLockedClick}
                 onSystemClick={handleSystemClick}
+                onRetry={handleManualRetry}
             />
         </div>
     )

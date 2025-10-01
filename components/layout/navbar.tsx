@@ -7,13 +7,24 @@ import { Logo } from "@/components/global/logo"
 import { User } from "lucide-react"
 import { SimpleProfileModal } from "@/components/modules/profile/SimpleProfileModal"
 import { useState } from "react"
+import { useAuth } from "@/hooks/useAuth"
 
 export function Navbar() {
+  const { logout } = useAuth()
   const [profileModalOpen, setProfileModalOpen] = useState(false)
   
   const handleProfileClick = () => {
     console.log('Profile button clicked')
     setProfileModalOpen(true)
+  }
+  
+  const handleLogout = async () => {
+    console.log('Logout button clicked in navbar')
+    try {
+      await logout()
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion:', error)
+    }
   }
   
   return (
@@ -42,7 +53,11 @@ export function Navbar() {
                 Profil
               </span>
             </Button>
-            <Button size="sm" className="group relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-105 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary px-2 sm:px-4">
+            <Button 
+              size="sm" 
+              onClick={handleLogout}
+              className="group relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-105 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary px-2 sm:px-4"
+            >
               <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               <span className="relative z-10 font-medium text-xs sm:text-sm">
                 Déconnexion
