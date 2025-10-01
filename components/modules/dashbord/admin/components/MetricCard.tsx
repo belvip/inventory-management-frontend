@@ -55,18 +55,18 @@ export function MetricCard({
 
   return (
     <Card 
-      className={`hover:shadow-md transition-shadow ${onClick ? 'cursor-pointer' : ''} ${className}`}
+      className={`transition-all duration-200 ${onClick ? 'cursor-pointer hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]' : 'hover:shadow-md'} ${className}`}
       role={onClick ? "button" : "status"}
       tabIndex={onClick ? 0 : undefined}
       onClick={onClick}
       onKeyDown={handleKeyDown}
       aria-label={onClick ? `Voir détails pour ${title}` : `${title}: ${value}`}
     >
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        <Icon className={`h-4 w-4 ${iconColor}`} aria-hidden="true" />
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-4 sm:px-6">
+        <CardTitle className="text-sm font-medium truncate pr-2">{title}</CardTitle>
+        <Icon className={`h-4 w-4 sm:h-5 sm:w-5 ${iconColor} flex-shrink-0`} aria-hidden="true" />
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-4 sm:px-6">
         {isLoading ? (
           <div role="status" aria-label="Chargement en cours">
             <Skeleton className="h-8 w-16" />
@@ -91,19 +91,19 @@ export function MetricCard({
           <div className="text-sm text-muted-foreground">{emptyMessage}</div>
         ) : (
           <>
-            <div className="flex items-center gap-2">
-              <div className="text-2xl font-bold" aria-live="polite">{value}</div>
-              {badge && <Badge variant={badgeVariant} className="text-xs">{badge}</Badge>}
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className="text-xl sm:text-2xl font-bold" aria-live="polite">{value}</div>
+              {badge && <Badge variant={badgeVariant} className="text-xs flex-shrink-0">{badge}</Badge>}
             </div>
             {progress !== undefined && change && (
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center gap-2 mt-2">
                 <Progress value={progress} className="flex-1 h-2" aria-label={`Progression: ${progress}%`} />
-                <span className={`text-xs ${changeColor}`} aria-label={`Changement: ${change}`}>{change}</span>
+                <span className={`text-xs sm:text-sm ${changeColor} flex-shrink-0`} aria-label={`Changement: ${change}`}>{change}</span>
               </div>
             )}
           </>
         )}
-        <p className="text-xs text-muted-foreground mt-1">{description}</p>
+        <p className="text-xs sm:text-sm text-muted-foreground mt-2">{description}</p>
       </CardContent>
     </Card>
   )

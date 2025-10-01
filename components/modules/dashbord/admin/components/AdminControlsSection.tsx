@@ -1,4 +1,4 @@
-import { AlertTriangle } from "lucide-react"
+import { AlertTriangle, UserCheck, Archive, Lock, Settings } from "lucide-react"
 import { MetricCard } from "./MetricCard"
 
 interface AdminControlsSectionProps {
@@ -8,6 +8,10 @@ interface AdminControlsSectionProps {
   systemUptime: number
   isLoading?: boolean
   isError?: boolean
+  onManagersClick?: () => void
+  onArchivedClick?: () => void
+  onLockedClick?: () => void
+  onSystemClick?: () => void
 }
 
 export function AdminControlsSection({
@@ -16,7 +20,11 @@ export function AdminControlsSection({
   lockedAccounts,
   systemUptime,
   isLoading = false,
-  isError = false
+  isError = false,
+  onManagersClick,
+  onArchivedClick,
+  onLockedClick,
+  onSystemClick
 }: AdminControlsSectionProps) {
   return (
     <div>
@@ -29,42 +37,52 @@ export function AdminControlsSection({
           title="Managers Actifs"
           value={activeManagers}
           description="Équipe de gestion"
-          icon={() => <div />}
+          icon={UserCheck}
           iconColor="text-muted-foreground"
           isLoading={isLoading}
           isError={isError}
+          onClick={onManagersClick}
+          isEmpty={activeManagers === 0}
+          emptyMessage="Aucun manager actif"
         />
         
         <MetricCard
           title="Articles Archivés"
           value={archivedItems}
           description="Produits archivés"
-          icon={() => <div />}
+          icon={Archive}
           iconColor="text-muted-foreground"
           isLoading={isLoading}
           isError={isError}
+          onClick={onArchivedClick}
+          isEmpty={archivedItems === 0}
+          emptyMessage="Aucun article archivé"
         />
         
         <MetricCard
           title="Comptes Verrouillés"
           value={lockedAccounts}
           description="Nécessitent attention"
-          icon={() => <div />}
+          icon={Lock}
           iconColor="text-orange-500"
           isLoading={isLoading}
           isError={isError}
+          onClick={onLockedClick}
           badge={lockedAccounts > 0 ? "Action requise" : undefined}
           className="border-orange-200"
+          isEmpty={false}
         />
         
         <MetricCard
           title="Système"
           value={`${systemUptime}%`}
           description="Temps de fonctionnement"
-          icon={() => <div />}
+          icon={Settings}
           iconColor="text-muted-foreground"
           isLoading={isLoading}
           isError={isError}
+          onClick={onSystemClick}
+          isEmpty={false}
         />
       </div>
     </div>

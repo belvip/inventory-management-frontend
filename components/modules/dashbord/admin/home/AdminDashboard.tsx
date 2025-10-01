@@ -1,7 +1,7 @@
 "use client"
 
 import { Users, Package, ShoppingCart, TrendingUp } from "lucide-react"
-import { useState } from "react"
+import { useState, useMemo, useCallback } from "react"
 import { useAuthGuard } from "@/hooks/useAuthGuard"
 import { LoadingContent } from "@/components/global"
 import { MetricCard } from "@/components/modules/dashbord/admin/components/MetricCard"
@@ -17,7 +17,7 @@ export function AdminDashboard() {
     const [isError, setIsError] = useState(false)
     const [retryCount, setRetryCount] = useState(0)
     
-    const handleRetry = () => {
+    const handleRetry = useCallback(() => {
         setIsLoading(true)
         setIsError(false)
         setRetryCount(prev => prev + 1)
@@ -27,7 +27,39 @@ export function AdminDashboard() {
             // Simulate occasional error for demo
             setIsError(Math.random() > 0.7)
         }, 1000)
-    }
+    }, [])
+    
+    const handleUserClick = useCallback(() => {
+        console.log('Navigate to users')
+    }, [])
+    
+    const handleProductsClick = useCallback(() => {
+        console.log('Navigate to products')
+    }, [])
+    
+    const handleOrdersClick = useCallback(() => {
+        console.log('Navigate to orders')
+    }, [])
+    
+    const handleRevenueClick = useCallback(() => {
+        console.log('Navigate to revenue')
+    }, [])
+    
+    const handleManagersClick = useCallback(() => {
+        console.log('Navigate to managers')
+    }, [])
+    
+    const handleArchivedClick = useCallback(() => {
+        console.log('Navigate to archived items')
+    }, [])
+    
+    const handleLockedClick = useCallback(() => {
+        console.log('Navigate to locked accounts')
+    }, [])
+    
+    const handleSystemClick = useCallback(() => {
+        console.log('Navigate to system settings')
+    }, [])
     
     // Gérer les états de chargement d'authentification
     if (authLoading) {
@@ -48,6 +80,27 @@ export function AdminDashboard() {
     const archivedItems = 23;
     const lockedAccounts = 3;
     const activeManagers = 8;
+    
+    // Optimiser les calculs avec useMemo
+    const formattedRevenue = useMemo(() => 
+        `${monthlyRevenue.toLocaleString()} fcfa`, [monthlyRevenue]
+    )
+    
+    const currentMonthYear = useMemo(() => 
+        new Date().toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }), []
+    )
+    
+    const revenueDescription = useMemo(() => 
+        `Revenus ${currentMonthYear}`, [currentMonthYear]
+    )
+    
+    // Vérifier les états vides
+    const hasData = useMemo(() => ({
+        users: totalUsers > 0,
+        products: totalProducts > 0,
+        orders: totalOrders > 0,
+        revenue: monthlyRevenue > 0
+    }), [totalUsers, totalProducts, totalOrders, monthlyRevenue])
 
     return (
         <div className="space-y-6 mt-0 sm:mt-0 md:mt-12">
@@ -70,7 +123,7 @@ export function AdminDashboard() {
                     progress={75}
                     change="+12%"
                     onRetry={handleRetry}
-                    onClick={() => console.log('Navigate to users')}
+                    onClick={handleUserClick}
                     isEmpty={totalUsers === 0}
                     emptyMessage="Aucun utilisateur enregistré"
                 />
@@ -85,6 +138,9 @@ export function AdminDashboard() {
                     isError={isError}
                     progress={85}
                     change="+8%"
+                    onClick={handleProductsClick}
+                    isEmpty={!hasData.products}
+                    emptyMessage="Aucun produit en inventaire"
                 />
                 
                 <MetricCard
@@ -97,18 +153,24 @@ export function AdminDashboard() {
                     isError={isError}
                     progress={60}
                     change="+15%"
+                    onClick={handleOrdersClick}
+                    isEmpty={!hasData.orders}
+                    emptyMessage="Aucune commande ce mois"
                 />
                 
                 <MetricCard
                     title="Revenus du mois"
-                    value={`${monthlyRevenue.toLocaleString()} fcfa`}
-                    description={`Revenus ${new Date().toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}`}
+                    value={formattedRevenue}
+                    description={revenueDescription}
                     icon={TrendingUp}
                     iconColor="text-emerald-500"
                     isLoading={isLoading}
                     isError={isError}
                     progress={90}
                     change="+22%"
+                    onClick={handleRevenueClick}
+                    isEmpty={!hasData.revenue}
+                    emptyMessage="Aucun revenu enregistré"
                 />
             </div>
 
@@ -119,6 +181,10 @@ export function AdminDashboard() {
                 systemUptime={systemUptime}
                 isLoading={isLoading}
                 isError={isError}
+                onManagersClick={handleManagersClick}
+                onArchivedClick={handleArchivedClick}
+                onLockedClick={handleLockedClick}
+                onSystemClick={handleSystemClick}
             />
         </div>
     )
