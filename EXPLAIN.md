@@ -281,6 +281,6 @@ interface AuthResponse {
 - **Sécurité** robuste
 - **Code maintenable** et scalable
 
-
+Dieu est grant
 
 https://teledeclaration-dgi.cm/modules/Common/Account/Login.aspx
