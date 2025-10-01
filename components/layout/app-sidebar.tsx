@@ -25,6 +25,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useAuth } from "@/hooks/useAuth"
+import { UserProfileModal } from "@/components/modules/profile/UserProfileModal"
+import { useState } from "react"
 
 // Navigation principale
 const mainNavItems = [
@@ -99,6 +102,20 @@ const analyticsItems = [
 ]
 
 export function AppSidebar() {
+  const { user } = useAuth()
+  const [profileModalOpen, setProfileModalOpen] = useState(false)
+  
+  // Générer les initiales à partir du prénom et nom
+  const getInitials = (firstName?: string, lastName?: string) => {
+    if (!firstName && !lastName) return "AD"
+    return `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase()
+  }
+  
+  // Nom complet pour l'affichage
+  const fullName = user ? `${user.firstName} ${user.lastName}`.trim() : ""
+  const userEmail = user?.email || ""
+  const initials = getInitials(user?.firstName, user?.lastName)
+
   return (
     <Sidebar collapsible="icon" className="z-[60] border-r" style={{ '--sidebar-background': 'hsl(var(--muted))' } as React.CSSProperties}>
       <SidebarHeader>
@@ -195,12 +212,12 @@ export function AppSidebar() {
                   className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                 >
                   <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarImage src="" alt="Admin" />
-                    <AvatarFallback className="rounded-lg">AD</AvatarFallback>
+                    <AvatarImage src="" alt={fullName} />
+                    <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">Admin User</span>
-                    <span className="truncate text-xs">admin@admin.com</span>
+                    <span className="truncate font-semibold">{fullName}</span>
+                    <span className="truncate text-xs">{userEmail}</span>
                   </div>
                   <ChevronUp className="ml-auto size-4" />
                 </SidebarMenuButton>
@@ -211,7 +228,7 @@ export function AppSidebar() {
                 align="end"
                 sideOffset={4}
               >
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setProfileModalOpen(true)}>
                   <User2 className="mr-2 h-4 w-4" />
                   <span>Profil</span>
                 </DropdownMenuItem>
@@ -228,6 +245,11 @@ export function AppSidebar() {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
+      
+      <UserProfileModal 
+        open={profileModalOpen} 
+        onOpenChange={setProfileModalOpen} 
+      />
     </Sidebar>
   )
 }

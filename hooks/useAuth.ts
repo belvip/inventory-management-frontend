@@ -1,79 +1,49 @@
-import { useState, useEffect } from "react"
-import { apiClient } from "@/lib/apiClient"
+import { useUserStore } from "@/stores/userStore"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import { useQuery } from "@tanstack/react-query"
+import { apiClient } from "@/lib/apiClient"
 
 interface UserProfile {
   userId: number
   firstName: string
   lastName: string
-  userName: string
+  username: string
   email: string
   roles: string[]
+  image?: string
 }
 
 export function useAuth() {
-  const [user, setUser] = useState<UserProfile | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
+  const { user, accessToken, clearUser, isAuthenticated } = useUserStore()
 
-  useEffect(() => {
-    const loadUser = async () => {
-      const token = localStorage.getItem('accessToken')
-      if (!token) {
-        setIsLoading(false)
-        return
-      }
-
-      try {
-        apiClient.setToken(token)
-        const userData = await apiClient.get<UserProfile>('/auth/user')
-        setUser(userData)
-      } catch (error) {
-        localStorage.removeItem('accessToken')
-        apiClient.setToken(null)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    loadUser()
-  }, [])
-
-  const login = async (token: string) => {
-    try {
-      apiClient.setToken(token)
-      const userData = await apiClient.get<UserProfile>('/auth/user')
-      setUser(userData)
-      
-      // Redirection selon le rôle
-      const role = userData.roles[0]
-      if (role === 'ROLE_ADMIN') router.push('/dashboard/admin')
-      else if (role === 'ROLE_MANAGER') router.push('/dashboard/manager')
-      else if (role === 'ROLE_SALES') router.push('/dashboard/sales')
-      else router.push('/dashboard')
-      
-      toast.success("Connexion réussie")
-    } catch (error) {
-      apiClient.setToken(null)
-      toast.error("Erreur d'authentification")
-      router.push('/')
-    }
-  }
+  // Récupérer les données complètes de l'utilisateur depuis l'API
+  const { data: fullUserData, isLoading } = useQuery({
+    queryKey: ['user', 'profile'],
+    queryFn: async () => {
+      if (!accessToken) return null
+      apiClient.setToken(accessToken)
+      return await apiClient.get<UserProfile>('/auth/user')
+    },
+    enabled: !!accessToken && isAuthenticated(),
+    staleTime: 5 * 60 * 1000,
+  })
 
   const logout = () => {
-    setUser(null)
-    apiClient.setToken(null)
+    clearUser()
     router.push('/')
     toast.success("Déconnexion réussie")
   }
 
+  // Utiliser les données complètes si disponibles, sinon les données du store
+  const userData = fullUserData || user
+
   return {
-    user,
+    user: userData,
     isLoading,
-    isAuthenticated: !!user,
-    login,
+    isAuthenticated: isAuthenticated(),
     logout,
-    isLoginLoading: false,
+    accessToken,
   }
 }
