@@ -21,7 +21,7 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center gap-4 min-w-0">
-            <SidebarTrigger />
+            <SidebarTrigger className="md:hidden" />
             <div className="flex items-center min-w-0">
               <Logo size="sm" className="sm:hidden" showText={false} />
               <Logo className="hidden sm:flex" />

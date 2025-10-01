@@ -27,6 +27,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useAuth } from "@/hooks/useAuth"
 import { UserProfileModal } from "@/components/modules/profile/UserProfileModal"
+import { SidebarTrigger } from "@/components/ui/sidebar"
 import { useState } from "react"
 
 // Navigation principale
@@ -119,6 +120,9 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon" className="z-[60] border-r" style={{ '--sidebar-background': 'hsl(var(--muted))' } as React.CSSProperties}>
       <SidebarHeader>
+        <div className="hidden md:flex items-center justify-between p-2">
+          <SidebarTrigger />
+        </div>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
