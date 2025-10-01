@@ -31,13 +31,14 @@ export function UserMenu() {
   
   // Générer les initiales à partir du prénom et nom
   const getInitials = (firstName?: string, lastName?: string) => {
-    if (!firstName && !lastName) return "AD"
+    if (!firstName && !lastName) return "U"
     return `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase()
   }
   
   // Nom complet pour l'affichage
   const fullName = user ? `${user.firstName} ${user.lastName}`.trim() : ""
   const userEmail = user?.email || ""
+  const username = user?.username || ""
   const initials = getInitials(user?.firstName, user?.lastName)
 
   const handleLogout = async () => {
@@ -67,9 +68,12 @@ export function UserMenu() {
               <AvatarImage src="" alt={fullName} />
               <AvatarFallback className="rounded-full">{initials}</AvatarFallback>
             </Avatar>
-            <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-semibold">{fullName || 'Utilisateur'}</span>
+            <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
+              <span className="truncate font-semibold">{fullName || username || user?.firstName || 'Utilisateur'}</span>
               <span className="truncate text-xs text-muted-foreground">{userEmail}</span>
+            </div>
+            <div className="hidden group-data-[collapsible=icon]:flex flex-1 items-center justify-center">
+              <span className="text-sm font-semibold truncate max-w-[120px]">{fullName || username || user?.firstName || 'User'}</span>
             </div>
             <div className="flex items-center justify-center w-6 h-6">
               <div className="w-1 h-1 bg-current rounded-full mx-0.5"></div>
