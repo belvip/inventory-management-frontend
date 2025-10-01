@@ -61,7 +61,7 @@ export const navigationConfig: NavigationItem[] = [
     title: "Ventes",
     href: "/dashboard/sales",
     icon: Receipt,
-    roles: ["ROLE_ADMIN", "ROLE_MANAGER", "ROLE_SALES"],
+    roles: ["ROLE_ADMIN", "ROLE_MANAGER"],
   },
   {
     title: "Entreprises",
