@@ -17,7 +17,14 @@ export const useUserStore = create<UserStore>()(persist(
 		user: null,
 		accessToken: null,
 		refreshToken: null,
-		setUser: (user) => set({ user }),
+		setUser: (user) => {
+			// S'assurer que roles est toujours un tableau
+			const normalizedUser = {
+				...user,
+				roles: Array.isArray(user.roles) ? user.roles : [user.roles || 'ROLE_USER']
+			}
+			set({ user: normalizedUser })
+		},
 		setTokens: (accessToken, refreshToken) => set({ accessToken, refreshToken }),
 		clearUser: () => set({ user: null, accessToken: null, refreshToken: null }),
 		isAuthenticated: () => !!get().accessToken && !!get().user,

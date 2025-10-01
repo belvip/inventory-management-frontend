@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
-import { LoadingContent } from "@/components/global"
+import { FormLoadingState } from "@/components/global"
 import { useAuth } from "@/hooks/useAuth"
 import { toast } from "sonner"
 
@@ -29,7 +29,13 @@ export default function AuthCallback() {
 
     return (
         <div className="min-h-screen flex items-center justify-center">
-            <LoadingContent message={isLoginLoading ? "Finalisation de la connexion..." : "Traitement..."} />
+            <FormLoadingState isLoading={true}>
+                <div className="text-center space-y-4">
+                    <div className="text-lg font-medium">
+                        {isLoginLoading ? "Finalisation de la connexion..." : "Traitement..."}
+                    </div>
+                </div>
+            </FormLoadingState>
         </div>
     )
 }
