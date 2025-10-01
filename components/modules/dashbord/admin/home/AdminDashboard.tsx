@@ -3,7 +3,7 @@
 import { Users, Package, ShoppingCart, TrendingUp, AlertTriangle, RefreshCw } from "lucide-react"
 import { useState, useMemo, useCallback, useEffect } from "react"
 import { useAuthGuard } from "@/hooks/useAuthGuard"
-import { LoadingContent } from "@/components/global"
+import { FormLoadingState } from "@/components/global"
 import { MetricCard, DashboardHeader, ControlsSection, DashboardLayout } from "@/components/shared/dashboard"
 import { UserCheck, Archive, Lock, Settings, Plus, Eye } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -156,12 +156,12 @@ export function AdminDashboard() {
     
     // Gérer les états de chargement d'authentification
     if (authLoading) {
-        return <LoadingContent />
+        return <FormLoadingState isLoading={true}><div /></FormLoadingState>
     }
     
     // Vérifier les permissions avant d'afficher le dashboard
     if (!hasRequiredRole) {
-        return <LoadingContent />
+        return <FormLoadingState isLoading={true}><div /></FormLoadingState>
     }
     
     // Affichage d'erreur critique
