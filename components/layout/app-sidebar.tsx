@@ -26,10 +26,10 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useAuth } from "@/hooks/useAuth"
-import { UserProfileModal } from "@/components/modules/profile/UserProfileModal"
+import { UserMenu } from "@/components/layout/user-menu"
 import { SidebarTrigger } from "@/components/ui/sidebar"
-import { useState, useCallback } from "react"
-import { usePathname, useRouter } from "next/navigation"
+import { useState } from "react"
+import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 interface NavItem {
@@ -187,37 +187,11 @@ function NavigationSection({ title, items, pathname, userRole, icon: Icon }: Nav
 }
 
 export function AppSidebar() {
-  const { user, logout } = useAuth()
-  const [profileModalOpen, setProfileModalOpen] = useState(false)
+  const { user } = useAuth()
   const pathname = usePathname()
-  const router = useRouter()
   
   // Vérification des permissions
   const hasAdminAccess = user?.roles?.includes("ROLE_ADMIN")
-  
-  // Générer les initiales à partir du prénom et nom
-  const getInitials = (firstName?: string, lastName?: string) => {
-    if (!firstName && !lastName) return "AD"
-    return `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase()
-  }
-  
-  // Nom complet pour l'affichage
-  const fullName = user ? `${user.firstName} ${user.lastName}`.trim() : ""
-  const userEmail = user?.email || ""
-  const initials = getInitials(user?.firstName, user?.lastName)
-  
-  // Déconnexion réelle
-  const handleLogout = useCallback(async (e: React.MouseEvent) => {
-    e.preventDefault()
-    console.log('handleLogout called in sidebar')
-    try {
-      console.log('About to call logout function')
-      await logout()
-      console.log('Logout completed, redirecting...')
-    } catch (error) {
-      console.error("Erreur lors de la déconnexion:", error)
-    }
-  }, [logout])
 
   return (
     <Sidebar collapsible="icon" className="z-[60] border-r overflow-x-hidden max-w-none" style={{ '--sidebar-background': 'hsl(var(--muted))' } as React.CSSProperties}>
@@ -269,60 +243,10 @@ export function AppSidebar() {
       </SidebarContent>
       
       <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuButton
-                  size="lg"
-                  className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                  aria-label={`Menu utilisateur pour ${fullName}`}
-                >
-                  <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarImage src="" alt={fullName} />
-                    <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
-                  </Avatar>
-                  <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">{fullName}</span>
-                    <span className="truncate text-xs">{userEmail}</span>
-                  </div>
-                  <ChevronUp className="ml-auto size-4" />
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-                side="bottom"
-                align="end"
-                sideOffset={4}
-              >
-                <DropdownMenuItem 
-                  onClick={() => setProfileModalOpen(true)}
-                  className="cursor-pointer"
-                >
-                  <User2 className="mr-2 h-4 w-4" aria-hidden="true" />
-                  <span>Profil</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer">
-                  <Settings className="mr-2 h-4 w-4" aria-hidden="true" />
-                  <span>Paramètres</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={handleLogout}
-                  className="cursor-pointer text-destructive focus:text-destructive"
-                >
-                  <LogOut className="mr-2 h-4 w-4" aria-hidden="true" />
-                  <span>Déconnexion</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SidebarMenuItem>
-        </SidebarMenu>
+        <UserMenu />
       </SidebarFooter>
       
-      <UserProfileModal 
-        open={profileModalOpen} 
-        onOpenChange={setProfileModalOpen} 
-      />
+
     </Sidebar>
   )
 }
