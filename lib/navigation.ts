@@ -73,7 +73,7 @@ export const navigationConfig: NavigationItem[] = [
     title: "Rapports",
     href: "/dashboard/reports",
     icon: BarChart3,
-    roles: ["ROLE_ADMIN", "ROLE_MANAGER"],
+    roles: ["ROLE_ADMIN"],
   },
   {
     title: "Utilisateurs",

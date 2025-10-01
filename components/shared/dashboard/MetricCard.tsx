@@ -58,7 +58,7 @@ function MetricMainContent({ title, value, badge, badgeVariant, progress, change
   return (
     <>
       <div className="flex items-center gap-2 flex-wrap">
-        <div className="text-lg font-bold sm:text-xl md:text-2xl" aria-live="polite">{value}</div>
+        <div className="text-lg font-bold sm:text-xl md:text-2xl group-hover:scale-105 transition-transform duration-300" aria-live="polite">{value}</div>
         {badge && <Badge variant={badgeVariant} className="text-xs flex-shrink-0">{badge}</Badge>}
       </div>
       {progress !== undefined && change && (
@@ -161,9 +161,11 @@ export function MetricCard({
   return (
     <Card 
       className={cn(
-        "transition-all duration-200",
-        onClick && "cursor-pointer hover:shadow-md focus:shadow-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
-        !onClick && "hover:shadow-md",
+        "group relative overflow-hidden transition-all duration-300 ease-out",
+        "hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1",
+        "before:absolute before:inset-0 before:bg-gradient-to-r before:from-primary/5 before:to-transparent before:opacity-0 before:transition-opacity before:duration-300",
+        "hover:before:opacity-100",
+        onClick && "cursor-pointer focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 active:scale-[0.98]",
         className
       )}
       role={onClick ? "button" : "status"}
@@ -175,8 +177,8 @@ export function MetricCard({
       data-state={getDataState()}
     >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-4 sm:px-6">
-        <CardTitle className="text-sm font-medium truncate pr-2">{title}</CardTitle>
-        <Icon className={`h-4 w-4 sm:h-5 sm:w-5 ${iconColor} flex-shrink-0`} aria-hidden="true" />
+        <CardTitle className="text-sm font-medium truncate pr-2 group-hover:text-primary transition-colors duration-300">{title}</CardTitle>
+        <Icon className={`h-4 w-4 sm:h-5 sm:w-5 ${iconColor} flex-shrink-0 group-hover:scale-110 group-hover:text-primary transition-all duration-300`} aria-hidden="true" />
       </CardHeader>
       <CardContent className="px-4 sm:px-6">
         {renderContent()}
