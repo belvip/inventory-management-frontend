@@ -11,8 +11,9 @@ export function useAuth() {
     console.log('Logout function called')
     // Déconnexion locale uniquement (l'API a un problème serveur)
     clearUser()
-    router.push('/auth/login')
     toast.success("Déconnexion réussie")
+    // Forcer la redirection vers login
+    window.location.href = '/login'
   }
 
   return {
