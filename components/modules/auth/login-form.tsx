@@ -10,9 +10,9 @@ import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { Info, Eye, EyeOff, ArrowLeft } from "lucide-react"
-import { FaGithub } from "react-icons/fa"
 import { GoogleLogin } from "@/components/modules/auth/google-login"
-import { SubmitButton, Logo } from "@/components/global"
+import { GithubLogin } from "@/components/modules/auth/github-login"
+import { SubmitButton, Logo, FormErrorState, FormLoadingState } from "@/components/global"
 import Link from "next/link"
 import { useUserStore } from "@/stores/userStore"
 import { LoginRequest, User } from "@/types/user"
@@ -28,6 +28,7 @@ export function LoginForm() {
     const [showPassword, setShowPassword] = useState(false)
     const [loading, setLoading] = useState(false)
     const [forgotPasswordLoading, setForgotPasswordLoading] = useState(false)
+    const [error, setError] = useState<string | null>(null)
 
     const form = useForm<z.infer<typeof LoginSchema>>({
         resolver: zodResolver(LoginSchema),
@@ -42,17 +43,13 @@ export function LoginForm() {
         form.setValue("password", password)
     }
 
-    const handleGithubLogin = () => {
-        const baseUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api/v1', '') || 'http://localhost:8282'
-        window.location.href = `${baseUrl}/oauth2/authorization/github`
-    }
-
     const handleForgotPassword = () => {
         router.push('/forgot-password')
     }
 
     async function onSubmit(data: LoginRequest) {
         setLoading(true)
+        setError(null)
         try {
             const result = await authService.signIn(data)
 
@@ -73,8 +70,8 @@ export function LoginForm() {
             setUser(user)
             setTokens(result.jwtToken, result.refreshToken)
             router.push("/dashboard")
-        } catch {
-            // Error already handled by apiClient
+        } catch (err: any) {
+            setError(err.message || "Erreur de connexion")
         } finally {
             setLoading(false)
         }
@@ -132,6 +129,7 @@ export function LoginForm() {
                             <p className="text-muted-foreground">Connectez-vous pour accéder à votre tableau de bord</p>
                             <div className="w-12 h-1 bg-gradient-to-r from-primary to-primary/60 rounded-full mx-auto lg:mx-0" />
                         </div>
+                        <FormErrorState error={error} />
                         <Form {...form}>
                             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                                 <FormField
@@ -221,18 +219,7 @@ export function LoginForm() {
                         
                         <div className="space-y-3">
                             <GoogleLogin />
-                            <Button
-                                variant="outline"
-                                onClick={handleGithubLogin}
-                                disabled={loading}
-                                className="w-full h-11 group relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-[1.02] border-2 hover:border-gray-400 bg-gradient-to-r from-white to-gray-50 hover:from-gray-100 hover:to-white"
-                            >
-                                <div className="absolute inset-0 bg-gradient-to-r from-gray-900/5 to-gray-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                <FaGithub className="mr-3 h-5 w-5 text-gray-800 group-hover:scale-110 transition-transform duration-300 relative z-10" />
-                                <span className="font-medium text-gray-700 group-hover:text-gray-900 transition-colors duration-300 relative z-10">
-                                    Continuer avec GitHub
-                                </span>
-                            </Button>
+                            <GithubLogin />
                         </div>
                         
                         <div className="text-center space-y-3">

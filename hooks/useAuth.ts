@@ -1,75 +1,95 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { apiClient } from "@/lib/apiClient"
+import { useUserStore } from "@/stores/userStore"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
-
-interface UserProfile {
-  userId: number
-  firstName: string
-  lastName: string
-  userName: string
-  email: string
-  roles: string[]
-}
+import { apiClient } from "@/lib/apiClient"
+import { useState } from "react"
 
 export function useAuth() {
-  const queryClient = useQueryClient()
   const router = useRouter()
+  const { user, accessToken, clearUser, isAuthenticated, setUser, setTokens } = useUserStore()
+  const [isLoginLoading, setIsLoginLoading] = useState(false)
 
-  const { data: user, isLoading } = useQuery<UserProfile | null>({
-    queryKey: ['auth', 'user'],
-    queryFn: () => apiClient.get<UserProfile>('/auth/user'),
-    retry: false,
-    staleTime: 5 * 60 * 1000, 
-    enabled: false, 
-  })
-
-  const loginMutation = useMutation({
-    mutationFn: async (token: string) => {
-      apiClient.setToken(token)
-      return apiClient.get<UserProfile>('/auth/user')
-    },
-    onSuccess: (userData) => {
-      queryClient.setQueryData(['auth', 'user'], userData)
+  const login = async (token: string) => {
+    try {
+      setIsLoginLoading(true)
       
-      // Redirection selon le rôle
-      const role = userData.roles[0]
-      if (role === 'ROLE_ADMIN') router.push('/admin/dashboard')
-      else if (role === 'ROLE_MANAGER') router.push('/manager/dashboard')
-      else if (role === 'ROLE_SALES') router.push('/sales/dashboard')
-      else router.push('/user/dashboard')
+      // Décoder le token pour extraire les informations utilisateur
+      const payload = JSON.parse(atob(token.split('.')[1]))
+      console.log('JWT Payload:', payload) // Debug temporaire
       
-      toast.success("Connexion réussie")
-    },
-    onError: () => {
-      apiClient.setToken(null)
-      toast.error("Erreur d'authentification")
-      router.push('/')
+      // Créer l'objet utilisateur à partir du payload
+      let roles = ['ROLE_USER'] // Valeur par défaut
+      
+      if (payload.roles) {
+        roles = Array.isArray(payload.roles) ? payload.roles : [payload.roles]
+      } else if (payload.role) {
+        roles = Array.isArray(payload.role) ? payload.role : [payload.role]
+      } else if (payload.authorities) {
+        roles = Array.isArray(payload.authorities) ? payload.authorities : [payload.authorities]
+      }
+      
+      const firstName = payload.firstName || payload.given_name || ''
+      const lastName = payload.lastName || payload.family_name || ''
+      const fullName = `${firstName} ${lastName}`.trim()
+      
+      // Utiliser le nom complet si disponible, sinon extraire le nom de l'email
+      let displayUsername = fullName
+      if (!displayUsername && payload.email) {
+        // Extraire la partie avant @ de l'email comme fallback
+        displayUsername = payload.email.split('@')[0]
+      }
+      if (!displayUsername) {
+        displayUsername = payload.username || payload.sub
+      }
+      
+      const userData = {
+        userId: payload.sub || payload.userId || 0,
+        username: displayUsername,
+        email: payload.email,
+        firstName: firstName,
+        lastName: lastName,
+        roles: roles,
+        accountNonLocked: true,
+        accountNonExpired: true,
+        credentialsNonExpired: true,
+        enabled: true,
+        isTwoFactorEnabled: false
+      }
+      
+      // Stocker l'utilisateur et les tokens
+      setUser(userData)
+      setTokens(token, token) // Utiliser le même token pour refresh temporairement
+      
+      toast.success("Connexion réussie !")
+      
+      // Rediriger vers le dashboard
+      router.push('/dashboard')
+      
+    } catch (error) {
+      console.error('Erreur lors de la connexion OAuth:', error)
+      toast.error("Erreur lors de la connexion")
+      router.push('/login')
+    } finally {
+      setIsLoginLoading(false)
     }
-  })
+  }
 
-  const logoutMutation = useMutation({
-    mutationFn: async () => {
-      apiClient.setToken(null)
-      queryClient.clear()
-    },
-    onSuccess: () => {
-      router.push('/')
-      toast.success("Déconnexion réussie")
-    }
-  })
-
-  // Configuration du handler d'erreur 401/403
-  apiClient.setUnauthorizedHandler(() => {
-    logoutMutation.mutate()
-  })
+  const logout = async () => {
+    console.log('Logout function called')
+    // Déconnexion locale uniquement (l'API a un problème serveur)
+    clearUser()
+    toast.success("Déconnexion réussie")
+    // Forcer la redirection vers login
+    window.location.href = '/login'
+  }
 
   return {
     user,
-    isLoading,
-    isAuthenticated: !!user,
-    login: loginMutation.mutate,
-    logout: logoutMutation.mutate,
-    isLoginLoading: loginMutation.isPending,
+    isLoading: false,
+    isAuthenticated: isAuthenticated(),
+    login,
+    isLoginLoading,
+    logout,
+    accessToken,
   }
 }
