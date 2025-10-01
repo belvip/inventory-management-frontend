@@ -29,6 +29,8 @@ import { useAuth } from "@/hooks/useAuth"
 import { UserProfileModal } from "@/components/modules/profile/UserProfileModal"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { useState } from "react"
+import { usePathname } from "next/navigation"
+import { cn } from "@/lib/utils"
 
 // Navigation principale
 const mainNavItems = [
@@ -105,6 +107,7 @@ const analyticsItems = [
 export function AppSidebar() {
   const { user } = useAuth()
   const [profileModalOpen, setProfileModalOpen] = useState(false)
+  const pathname = usePathname()
   
   // Générer les initiales à partir du prénom et nom
   const getInitials = (firstName?: string, lastName?: string) => {
@@ -146,16 +149,26 @@ export function AppSidebar() {
           <SidebarGroupLabel>Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {mainNavItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {mainNavItems.map((item) => {
+                const isActive = pathname === item.url
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <a 
+                        href={item.url}
+                        className={cn(
+                          "flex items-center gap-2 w-full p-2 rounded-md transition-colors duration-200",
+                          "hover:!bg-primary/15 hover:!text-primary",
+                          isActive ? "!bg-primary/15 !text-primary font-medium" : "text-sidebar-foreground"
+                        )}
+                      >
+                        <item.icon className={cn(isActive && "!text-primary")} />
+                        <span>{item.title}</span>
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -170,16 +183,26 @@ export function AppSidebar() {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {adminItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {adminItems.map((item) => {
+                const isActive = pathname === item.url
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <a 
+                        href={item.url}
+                        className={cn(
+                          "flex items-center gap-2 w-full p-2 rounded-md transition-colors duration-200",
+                          "hover:!bg-primary/15 hover:!text-primary",
+                          isActive ? "!bg-primary/15 !text-primary font-medium" : "text-sidebar-foreground"
+                        )}
+                      >
+                        <item.icon className={cn(isActive && "!text-primary")} />
+                        <span>{item.title}</span>
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -191,16 +214,26 @@ export function AppSidebar() {
           <SidebarGroupLabel>Analytics</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {analyticsItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {analyticsItems.map((item) => {
+                const isActive = pathname === item.url
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <a 
+                        href={item.url}
+                        className={cn(
+                          "flex items-center gap-2 w-full p-2 rounded-md transition-colors duration-200",
+                          "hover:!bg-primary/15 hover:!text-primary",
+                          isActive ? "!bg-primary/15 !text-primary font-medium" : "text-sidebar-foreground"
+                        )}
+                      >
+                        <item.icon className={cn(isActive && "!text-primary")} />
+                        <span>{item.title}</span>
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
