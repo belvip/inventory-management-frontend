@@ -121,7 +121,7 @@ export function AppSidebar() {
   const initials = getInitials(user?.firstName, user?.lastName)
 
   return (
-    <Sidebar collapsible="icon" className="z-[60] border-r" style={{ '--sidebar-background': 'hsl(var(--muted))' } as React.CSSProperties}>
+    <Sidebar collapsible="icon" className="z-[60] border-r overflow-x-hidden max-w-none" style={{ '--sidebar-background': 'hsl(var(--muted))' } as React.CSSProperties}>
       <SidebarHeader>
         <div className="hidden md:flex items-center justify-between p-2">
           <SidebarTrigger />
@@ -143,7 +143,7 @@ export function AppSidebar() {
         </SidebarMenu>
       </SidebarHeader>
       
-      <SidebarContent>
+      <SidebarContent className="overflow-x-hidden">
         {/* Navigation principale */}
         <SidebarGroup>
           <SidebarGroupLabel>Navigation</SidebarGroupLabel>
