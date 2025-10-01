@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react"
 import { LogOut, User2, ChevronUp } from "lucide-react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar } from "@/components/global/avatar"
 import {
   SidebarMenu,
   SidebarMenuItem,
@@ -60,10 +60,13 @@ export function UserMenu() {
                 size="lg"
                 className="hover:bg-sidebar-accent cursor-pointer data-[state=open]:bg-sidebar-accent"
               >
-                <Avatar className="h-8 w-8 rounded-full">
-                  <AvatarImage src={user?.image || ""} alt={fullName} />
-                  <AvatarFallback className="rounded-full">{initials}</AvatarFallback>
-                </Avatar>
+                <Avatar 
+                  src={user?.image} 
+                  alt={fullName} 
+                  fallback={initials}
+                  size="sm"
+                  className="h-8 w-8"
+                />
                 <div className="flex-1 min-w-0 px-2">
                   <span className="text-sm font-semibold truncate block">
                     {fullName || username || 'Utilisateur'}

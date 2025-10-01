@@ -12,7 +12,7 @@ import { useState } from "react"
 import { Info, Eye, EyeOff, ArrowLeft } from "lucide-react"
 import { GoogleLogin } from "@/components/modules/auth/google-login"
 import { GithubLogin } from "@/components/modules/auth/github-login"
-import { SubmitButton, Logo } from "@/components/global"
+import { SubmitButton, Logo, FormErrorState, FormLoadingState } from "@/components/global"
 import Link from "next/link"
 import { useUserStore } from "@/stores/userStore"
 import { LoginRequest, User } from "@/types/user"
@@ -28,6 +28,7 @@ export function LoginForm() {
     const [showPassword, setShowPassword] = useState(false)
     const [loading, setLoading] = useState(false)
     const [forgotPasswordLoading, setForgotPasswordLoading] = useState(false)
+    const [error, setError] = useState<string | null>(null)
 
     const form = useForm<z.infer<typeof LoginSchema>>({
         resolver: zodResolver(LoginSchema),
@@ -48,6 +49,7 @@ export function LoginForm() {
 
     async function onSubmit(data: LoginRequest) {
         setLoading(true)
+        setError(null)
         try {
             const result = await authService.signIn(data)
 
@@ -68,8 +70,8 @@ export function LoginForm() {
             setUser(user)
             setTokens(result.jwtToken, result.refreshToken)
             router.push("/dashboard")
-        } catch {
-            // Error already handled by apiClient
+        } catch (err: any) {
+            setError(err.message || "Erreur de connexion")
         } finally {
             setLoading(false)
         }
@@ -127,6 +129,7 @@ export function LoginForm() {
                             <p className="text-muted-foreground">Connectez-vous pour accéder à votre tableau de bord</p>
                             <div className="w-12 h-1 bg-gradient-to-r from-primary to-primary/60 rounded-full mx-auto lg:mx-0" />
                         </div>
+                        <FormErrorState error={error} />
                         <Form {...form}>
                             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                                 <FormField

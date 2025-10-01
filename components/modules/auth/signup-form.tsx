@@ -8,7 +8,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input"
 import { ArrowLeft, Eye, EyeOff, CheckCircle, Check, X } from "lucide-react"
 import Link from "next/link"
-import { Logo, SubmitButton } from "@/components/global"
+import { Logo, SubmitButton, FormErrorState, FormLoadingState } from "@/components/global"
 import { useSignup } from "@/hooks/useSignup"
 import { useState } from "react"
 
@@ -108,6 +108,7 @@ export function SignupForm() {
             </p>
             <div className="w-16 h-1 bg-gradient-to-r from-primary to-primary/60 rounded-full mx-auto" />
           </div>
+          <FormErrorState error={signupMutation.error?.message || null} />
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
