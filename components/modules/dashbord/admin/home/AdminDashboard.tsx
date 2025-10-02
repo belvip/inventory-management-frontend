@@ -4,14 +4,14 @@ import { Users, Package, ShoppingCart, TrendingUp, AlertTriangle, RefreshCw } fr
 import { useState, useMemo, useCallback, useEffect } from "react"
 import { useAuthGuard } from "@/hooks/useAuthGuard"
 import { FormLoadingState } from "@/components/global"
-import { MetricCard, DashboardHeader, ControlsSection, DashboardLayout } from "@/components/shared/dashboard"
-import { UserCheck, Archive, Lock, Settings, Plus, Eye } from "lucide-react"
+import { MetricCard, DashboardHeader, ControlsSection } from "@/components/shared/dashboard"
+import { UserCheck, Archive, Lock, Settings } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
 export function AdminDashboard() {
     // Vérification des permissions admin
-    const { user, isLoading: authLoading, hasRequiredRole } = useAuthGuard(['ROLE_ADMIN'])
+    const { isLoading: authLoading, hasRequiredRole } = useAuthGuard(['ROLE_ADMIN'])
     
     // État de gestion des données
     const [isLoading, setIsLoading] = useState(true)
@@ -276,7 +276,7 @@ export function AdminDashboard() {
                     value={formattedRevenue}
                     description={revenueDescription}
                     icon={TrendingUp}
-                    iconColor="text-emerald-500"
+                    iconColor="text-green-500"
                     isLoading={isLoading}
                     isError={!!error}
                     errorMessage="Données financières temporairement inaccessibles. Contactez le support."

@@ -1,12 +1,12 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { FormLoadingState } from "@/components/global"
 import { useAuth } from "@/hooks/useAuth"
 import { toast } from "sonner"
 
-export default function AuthCallback() {
+function AuthCallbackContent() {
     const searchParams = useSearchParams()
     const router = useRouter()
     const { login, isLoginLoading } = useAuth()
@@ -37,5 +37,13 @@ export default function AuthCallback() {
                 </div>
             </FormLoadingState>
         </div>
+    )
+}
+
+export default function AuthCallback() {
+    return (
+        <Suspense fallback={<FormLoadingState isLoading={true}><div /></FormLoadingState>}>
+            <AuthCallbackContent />
+        </Suspense>
     )
 }

@@ -8,7 +8,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input"
 import { ArrowLeft, Eye, EyeOff, CheckCircle, Check, X } from "lucide-react"
 import Link from "next/link"
-import { Logo, SubmitButton, FormErrorState, FormLoadingState } from "@/components/global"
+import { Logo, SubmitButton, FormErrorState } from "@/components/global"
 import { useSignup } from "@/hooks/useSignup"
 import { useState } from "react"
 
@@ -55,7 +55,7 @@ export function SignupForm() {
   })
 
   async function onSubmit(data: z.infer<typeof SignupSchema>) {
-    const { confirmPassword, address1, address2, city, postalCode, country, ...baseData } = data
+    const { address1, address2, city, postalCode, country, ...baseData } = data
     
     const address = (address1 || address2 || city || postalCode || country) ? {
       address1: address1 || undefined,
@@ -190,7 +190,7 @@ export function SignupForm() {
                 name="username"
                 render={({ field }) => (
                   <FormItem className="group">
-                    <FormLabel className="text-sm font-medium text-foreground/80 group-focus-within:text-primary transition-colors">Nom d'utilisateur</FormLabel>
+                    <FormLabel className="text-sm font-medium text-foreground/80 group-focus-within:text-primary transition-colors">Nom d&apos;utilisateur</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
@@ -514,7 +514,7 @@ export function SignupForm() {
           <Button variant="ghost" asChild className="w-full hover:bg-muted/50 hover:text-primary transition-colors">
             <Link href="/" className="flex items-center justify-center gap-2">
               <ArrowLeft className="h-4 w-4" />
-              Retour à l'accueil
+              Retour à l&apos;accueil
             </Link>
           </Button>
         </div>

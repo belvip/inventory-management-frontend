@@ -6,7 +6,7 @@ import { useState, useEffect } from "react"
 
 export function SaleDashboard() {
   const [isLoading, setIsLoading] = useState(true)
-  const [dashboardData, setDashboardData] = useState({
+  const [dashboardData] = useState({
     totalArticles: 1247,
     totalOrders: 89,
     totalClients: 156,

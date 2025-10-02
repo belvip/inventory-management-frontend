@@ -89,7 +89,7 @@ export async function verifyToken(token: string) {
 }
 
 // Create JWT token (for client-side if needed)
-export async function createToken(payload: any) {
+export async function createToken(payload: Record<string, unknown>) {
   return await new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()

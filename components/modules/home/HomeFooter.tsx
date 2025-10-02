@@ -12,7 +12,7 @@ export function HomeFooter() {
                             <Logo />
                         </div>
                         <p className="text-muted-foreground mb-4">
-                            Inventory, la solution de référence pour la gestion d'inventaire. Optimisez vos stocks et boostez votre productivité.
+                            Inventory, la solution de référence pour la gestion d&apos;inventaire. Optimisez vos stocks et boostez votre productivité.
                         </p>
                         <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                             <MapPin className="h-4 w-4" />

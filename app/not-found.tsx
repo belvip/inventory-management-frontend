@@ -17,7 +17,7 @@ export default function NotFound() {
             Page non trouvée
           </h1>
           <p className="text-blue-600 dark:text-blue-400 text-sm">
-            La page que vous recherchez n'existe pas ou a été déplacée.
+            La page que vous recherchez n&apos;existe pas ou a été déplacée.
           </p>
         </div>
 

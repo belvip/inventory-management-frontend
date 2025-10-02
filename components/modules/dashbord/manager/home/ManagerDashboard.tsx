@@ -1,12 +1,12 @@
 "use client"
 
-import { Building2, Package, ShoppingCart, Users, Truck, FileText, Plus, Eye } from "lucide-react"
+import { Building2, Package, ShoppingCart, Users, Truck, FileText, Plus } from "lucide-react"
 import { MetricCard, DashboardHeader, ControlsSection, DashboardLayout } from "@/components/shared/dashboard"
 import { useState, useEffect } from "react"
 
 export function ManagerDashboard() {
   const [isLoading, setIsLoading] = useState(true)
-  const [dashboardData, setDashboardData] = useState({
+  const [dashboardData] = useState({
     totalCompanies: 8,
     totalArticles: 1247,
     totalOrders: 156,

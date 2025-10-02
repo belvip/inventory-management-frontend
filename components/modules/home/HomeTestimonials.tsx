@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Avatar } from "@/components/global/avatar"
@@ -67,13 +67,25 @@ export function HomeTestimonials() {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
+  const nextSlide = useCallback(() => {
+    setCurrentSlide((prev) => 
+      prev + slidesToShow >= testimonials.length ? 0 : prev + 1
+    )
+  }, [slidesToShow, testimonials.length])
+
+  const prevSlide = useCallback(() => {
+    setCurrentSlide((prev) => 
+      prev === 0 ? Math.max(0, testimonials.length - slidesToShow) : prev - 1
+    )
+  }, [slidesToShow, testimonials.length])
+
   // Auto-play avec pause au hover
   useEffect(() => {
     if (!isHovered) {
       const interval = setInterval(nextSlide, 4000)
       return () => clearInterval(interval)
     }
-  }, [isHovered, currentSlide])
+  }, [isHovered, nextSlide])
 
   // Touch handlers
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -96,18 +108,6 @@ export function HomeTestimonials() {
 
   const goToSlide = (slideIndex: number) => {
     setCurrentSlide(slideIndex * slidesToShow)
-  }
-
-  const nextSlide = () => {
-    setCurrentSlide((prev) => 
-      prev + slidesToShow >= testimonials.length ? 0 : prev + 1
-    )
-  }
-
-  const prevSlide = () => {
-    setCurrentSlide((prev) => 
-      prev === 0 ? Math.max(0, testimonials.length - slidesToShow) : prev - 1
-    )
   }
 
   const visibleTestimonials = testimonials.slice(currentSlide, currentSlide + slidesToShow)
@@ -167,9 +167,9 @@ export function HomeTestimonials() {
                     </div>
 
                     <blockquote className="flex-1 text-foreground/90 mb-6 leading-relaxed text-base font-medium relative">
-                      <span className="text-primary/60 text-2xl absolute -top-2 -left-1">"</span>
+                      <span className="text-primary/60 text-2xl absolute -top-2 -left-1">&ldquo;</span>
                       <span className="pl-4">{testimonial.content}</span>
-                      <span className="text-primary/60 text-2xl">"</span>
+                      <span className="text-primary/60 text-2xl">&rdquo;</span>
                     </blockquote>
 
                     <div className="flex items-center gap-3 pt-4 border-t border-border/20">
@@ -251,7 +251,6 @@ export function HomeTestimonials() {
                   fallback={avatar}
                   size="sm"
                   className="border-3 border-background ring-2 ring-primary/20 hover:ring-primary/40 transition-all duration-300 hover:scale-110 hover:z-10 relative"
-                  style={{ transitionDelay: `${i * 100}ms` }}
                 />
               ))}
               <div className="flex items-center justify-center w-8 h-8 bg-primary/20 border-3 border-background rounded-full text-xs font-bold text-primary">

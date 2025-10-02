@@ -1,12 +1,12 @@
 "use client"
 
 import { useAuthGuard } from "@/hooks/useAuthGuard"
-import { LoadingContent } from "@/components/global"
+import { FormLoadingState } from "@/components/global"
 
 export default function UserDashboard() {
     const { user, isLoading } = useAuthGuard(['ROLE_USER'])
 
-    if (isLoading) return <LoadingContent />
+    if (isLoading) return <FormLoadingState isLoading={true}><div /></FormLoadingState>
 
     return (
         <div className="p-8">

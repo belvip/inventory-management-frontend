@@ -1,7 +1,7 @@
 import { useUserStore } from "@/stores/userStore"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
-import { apiClient } from "@/lib/apiClient"
+
 import { useState } from "react"
 
 export function useAuth() {

@@ -53,7 +53,7 @@ export function HomeHowItWorks() {
             <div className="max-w-7xl mx-auto">
                 <div className="text-center mb-12 animate-fade-in">
                     <h2 className="text-3xl font-bold text-foreground mb-4">Comment ça marche</h2>
-                    <p className="text-muted-foreground">Optimisez votre gestion d'inventaire avec nos 7 fonctionnalités clés</p>
+                    <p className="text-muted-foreground">Optimisez votre gestion d&apos;inventaire avec nos 7 fonctionnalités clés</p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                     {howItWorks.map((step, index) => (

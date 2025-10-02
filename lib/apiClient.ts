@@ -1,5 +1,4 @@
 import { toast } from "sonner"
-import { ApiError } from "@/types"
 
 interface ApiClientOptions {
   showErrorToast?: boolean
@@ -85,7 +84,7 @@ class ApiClient {
     return this.request<T>(endpoint, { method: "GET" }, options)
   }
 
-  async post<T>(endpoint: string, data?: any, options?: ApiClientOptions): Promise<T> {
+  async post<T>(endpoint: string, data?: unknown, options?: ApiClientOptions): Promise<T> {
     return this.request<T>(
       endpoint,
       {
@@ -96,7 +95,7 @@ class ApiClient {
     )
   }
 
-  async put<T>(endpoint: string, data?: any, options?: ApiClientOptions): Promise<T> {
+  async put<T>(endpoint: string, data?: unknown, options?: ApiClientOptions): Promise<T> {
     return this.request<T>(
       endpoint,
       {
@@ -107,7 +106,7 @@ class ApiClient {
     )
   }
 
-  async patch<T>(endpoint: string, data?: any, options?: ApiClientOptions): Promise<T> {
+  async patch<T>(endpoint: string, data?: unknown, options?: ApiClientOptions): Promise<T> {
     return this.request<T>(
       endpoint,
       {

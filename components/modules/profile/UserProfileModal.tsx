@@ -45,7 +45,7 @@ export function UserProfileModal({ open, onOpenChange }: UserProfileModalProps) 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      {console.log('Dialog rendering with open:', open)}
+
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -62,7 +62,7 @@ export function UserProfileModal({ open, onOpenChange }: UserProfileModalProps) 
             </Avatar>
             <div>
               <h3 className="text-xl font-semibold">{fullName}</h3>
-              <p className="text-sm text-muted-foreground">@{user.userName}</p>
+              <p className="text-sm text-muted-foreground">@{user.username}</p>
             </div>
           </div>
 

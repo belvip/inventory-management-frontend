@@ -28,7 +28,7 @@ export function HomeNav() {
                                 <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                 <span className="relative z-10 font-medium text-xs sm:text-sm">
                                     <span className="hidden sm:inline">S&apos;inscrire</span>
-                                    <span className="sm:hidden">S'inscrire</span>
+                                    <span className="sm:hidden">S&apos;inscrire</span>
                                 </span>
                             </Button>
                         </Link>

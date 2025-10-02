@@ -1,5 +1,5 @@
 import "next-auth";
-import { Session } from "next-auth";
+
 
 interface Address {
     address1?: string;

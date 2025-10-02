@@ -8,10 +8,10 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input"
 import { ArrowLeft, Eye, EyeOff, CheckCircle } from "lucide-react"
 import Link from "next/link"
-import { Logo, SubmitButton } from "@/components/global"
+import { Logo, SubmitButton, FormLoadingState } from "@/components/global"
 import { useResetPassword } from "@/hooks/usePasswordReset"
 import { useSearchParams, useRouter } from "next/navigation"
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 
 const ResetPasswordSchema = z.object({
   newPassword: z.string().min(6, "Le mot de passe doit contenir au moins 6 caractères"),
@@ -21,7 +21,7 @@ const ResetPasswordSchema = z.object({
   path: ["confirmPassword"],
 })
 
-export function ResetPasswordForm() {
+function ResetPasswordContent() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const searchParams = useSearchParams()
@@ -206,5 +206,13 @@ export function ResetPasswordForm() {
         </div>
       </div>
     </div>
+  )
+}
+
+export function ResetPasswordForm() {
+  return (
+    <Suspense fallback={<FormLoadingState isLoading={true}><div /></FormLoadingState>}>
+      <ResetPasswordContent />
+    </Suspense>
   )
 }

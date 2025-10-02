@@ -21,7 +21,7 @@ export function useUserProfile() {
         setIsLoading(true)
         setError(null)
         const response = await apiClient.get('/auth/user')
-        setUser(response.data)
+        setUser(response as UserProfile)
       } catch (err) {
         console.error('Error fetching user profile:', err)
         setError('Failed to load user profile')

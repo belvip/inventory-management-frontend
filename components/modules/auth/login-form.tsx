@@ -6,13 +6,12 @@ import { z } from "zod"
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { Info, Eye, EyeOff, ArrowLeft } from "lucide-react"
 import { GoogleLogin } from "@/components/modules/auth/google-login"
 import { GithubLogin } from "@/components/modules/auth/github-login"
-import { SubmitButton, Logo, FormErrorState, FormLoadingState } from "@/components/global"
+import { SubmitButton, Logo, FormErrorState } from "@/components/global"
 import Link from "next/link"
 import { useUserStore } from "@/stores/userStore"
 import { LoginRequest, User } from "@/types/user"
@@ -27,7 +26,7 @@ const LoginSchema = z.object({
 export function LoginForm() {
     const [showPassword, setShowPassword] = useState(false)
     const [loading, setLoading] = useState(false)
-    const [forgotPasswordLoading, setForgotPasswordLoading] = useState(false)
+    const [forgotPasswordLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
 
     const form = useForm<z.infer<typeof LoginSchema>>({
@@ -70,8 +69,8 @@ export function LoginForm() {
             setUser(user)
             setTokens(result.jwtToken, result.refreshToken)
             router.push("/dashboard")
-        } catch (err: any) {
-            setError(err.message || "Erreur de connexion")
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : "Erreur de connexion")
         } finally {
             setLoading(false)
         }
@@ -137,7 +136,7 @@ export function LoginForm() {
                                     name="username"
                                     render={({ field }) => (
                                         <FormItem className="group">
-                                            <FormLabel className="text-sm font-medium text-foreground/80 group-focus-within:text-primary transition-colors">Nom d'utilisateur</FormLabel>
+                                            <FormLabel className="text-sm font-medium text-foreground/80 group-focus-within:text-primary transition-colors">Nom d&apos;utilisateur</FormLabel>
                                             <FormControl>
                                                 <div className="relative">
                                                     <Input
@@ -237,7 +236,7 @@ export function LoginForm() {
                         <Button variant="ghost" asChild className="w-full hover:bg-muted/50 hover:text-primary transition-colors">
                             <Link href="/" className="flex items-center justify-center gap-2">
                                 <ArrowLeft className="h-4 w-4" />
-                                Retour à l'accueil
+                                Retour à l&apos;accueil
                             </Link>
                         </Button>
                     </div>
