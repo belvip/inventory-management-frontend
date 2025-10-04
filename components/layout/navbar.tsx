@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { ModeToggle } from "@/components/global"
-import { SidebarTrigger } from "@/components/ui/sidebar"
+import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar"
 import { Logo } from "@/components/global/logo"
 import { User } from "lucide-react"
 import { SimpleProfileModal } from "@/components/modules/profile/SimpleProfileModal"
@@ -12,6 +12,7 @@ import { useAuth } from "@/hooks/useAuth"
 export function Navbar() {
   const { logout } = useAuth()
   const [profileModalOpen, setProfileModalOpen] = useState(false)
+  const { state } = useSidebar()
   
   const handleProfileClick = () => {
     console.log('Profile button clicked')
@@ -28,7 +29,7 @@ export function Navbar() {
   }
   
   return (
-    <nav className="border-b bg-background/80 backdrop-blur-md fixed top-0 left-0 right-0 z-50 shadow-sm transition-all duration-300 lg:left-0 lg:group-data-[state=expanded]:left-64 lg:group-data-[state=collapsed]:left-16">
+    <nav className={`border-b bg-background/80 backdrop-blur-md fixed top-0 left-0 right-0 z-50 shadow-sm transition-all duration-300 ${state === 'expanded' ? 'lg:left-64' : 'lg:left-16'}`}>
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center gap-3 min-w-0 flex-1">
