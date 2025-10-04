@@ -1,120 +1,101 @@
-import { SignJWT, jwtVerify } from 'jose'
-import { cookies } from 'next/headers'
-import { getEnv } from '@/lib/env'
-import { User, LoginRequest, SigninResponse } from '@/types/user'
+// hooks/useAuth.ts
+import { useUserStore } from "@/stores/userStore"
+import { toast } from "sonner"
+import { useRouter } from "next/navigation"
+import { useState, useCallback } from "react"
 
-const secret = new TextEncoder().encode(getEnv().authSecret || 'fallback-secret')
+export function useAuth() {
+  const router = useRouter()
+  
+  // 🔥 CHANGEMENT : Prendre seulement ce dont on a besoin
+  const user = useUserStore(state => state.user)
+  const accessToken = useUserStore(state => state.accessToken)
+  const isAuthenticated = useUserStore(state => state.isAuthenticated)
+  const setUser = useUserStore(state => state.setUser)
+  const setTokens = useUserStore(state => state.setTokens)
+  const clearUser = useUserStore(state => state.clearUser)
+  
+  const [isLoginLoading, setIsLoginLoading] = useState(false)
 
-// Server-side API client (without localStorage)
-class ServerApiClient {
-  private readonly baseURL: string
-
-  constructor() {
-    this.baseURL = getEnv().apiUrl || ""
-  }
-
-  async post<T>(endpoint: string, data?: unknown): Promise<T> {
-    const response = await fetch(`${this.baseURL}${endpoint}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: data ? JSON.stringify(data) : undefined,
-    })
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`)
+  const login = useCallback(async (token: string) => {
+    try {
+      setIsLoginLoading(true)
+      
+      // Décoder le token
+      const payload = JSON.parse(atob(token.split('.')[1]))
+      console.log('JWT Payload:', payload)
+      
+      // Préparer les données utilisateur
+      let roles = ['ROLE_USER']
+      if (payload.roles) {
+        roles = Array.isArray(payload.roles) ? payload.roles : [payload.roles]
+      } else if (payload.role) {
+        roles = Array.isArray(payload.role) ? payload.role : [payload.role]
+      } else if (payload.authorities) {
+        roles = Array.isArray(payload.authorities) ? payload.authorities : [payload.authorities]
+      }
+      
+      const firstName = payload.firstName || payload.given_name || ''
+      const lastName = payload.lastName || payload.family_name || ''
+      const fullName = `${firstName} ${lastName}`.trim()
+      
+      let displayUsername = fullName
+      if (!displayUsername && payload.email) {
+        displayUsername = payload.email.split('@')[0]
+      }
+      if (!displayUsername) {
+        displayUsername = payload.username || payload.sub
+      }
+      
+      const userData = {
+        userId: payload.sub || payload.userId || 0,
+        username: displayUsername,
+        email: payload.email,
+        firstName: firstName,
+        lastName: lastName,
+        roles: roles,
+        accountNonLocked: true,
+        accountNonExpired: true,
+        credentialsNonExpired: true,
+        enabled: true,
+        isTwoFactorEnabled: false
+      }
+      
+      // 🔥 CHANGEMENT : Appel simple et direct
+      setUser(userData)
+      setTokens(token, token)
+      
+      toast.success("Connexion réussie !")
+      
+      // 🔥 CHANGEMENT : Redirection avec timeout pour éviter les conflits
+      setTimeout(() => {
+        router.push('/dashboard')
+      }, 100)
+      
+    } catch (error) {
+      console.error('Erreur lors de la connexion OAuth:', error)
+      toast.error("Erreur lors de la connexion")
+      router.push('/login')
+    } finally {
+      setIsLoginLoading(false)
     }
+  }, [setUser, setTokens, router])
 
-    return response.json()
+  const logout = useCallback(async () => {
+    console.log('Logout function called')
+    clearUser()
+    toast.success("Déconnexion réussie")
+    // 🔥 CHANGEMENT : Utiliser window.location pour éviter les problèmes de routing
+    window.location.href = '/login'
+  }, [clearUser])
+
+  return {
+    user,
+    isLoading: false,
+    isAuthenticated, // 🔥 CHANGEMENT : Utiliser la variable directement
+    login,
+    isLoginLoading,
+    logout,
+    accessToken,
   }
-
-  async get<T>(endpoint: string, token?: string): Promise<T> {
-    const headers: Record<string, string> = { 'Content-Type': 'application/json' }
-    if (token) {
-      headers.Authorization = `Bearer ${token}`
-    }
-
-    const response = await fetch(`${this.baseURL}${endpoint}`, {
-      method: 'GET',
-      headers,
-    })
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`)
-    }
-
-    return response.json()
-  }
-}
-
-const serverApiClient = new ServerApiClient()
-
-// Login function
-export async function signIn(credentials: LoginRequest): Promise<SigninResponse | null> {
-  try {
-    const result = await serverApiClient.post<SigninResponse>('/auth/signin', credentials)
-    
-    // Set cookies
-    const cookieStore = await cookies()
-    cookieStore.set('authToken', result.jwtToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 24 * 60 * 60, // 24 hours
-    })
-    cookieStore.set('refreshToken', result.refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60, // 7 days
-    })
-
-    return result
-  } catch (error) {
-    console.error('Sign in error:', error)
-    return null
-  }
-}
-
-// Logout function
-export async function signOut() {
-  const cookieStore = await cookies()
-  cookieStore.delete('authToken')
-  cookieStore.delete('refreshToken')
-}
-
-// Get current user
-export async function getCurrentUser(): Promise<User | null> {
-  const cookieStore = await cookies()
-  const accessToken = cookieStore.get('authToken')?.value
-
-  if (!accessToken) {
-    return null
-  }
-
-  try {
-    return await serverApiClient.get<User>('/auth/user', accessToken)
-  } catch (error) {
-    console.error('Get user error:', error)
-    return null
-  }
-}
-
-// Verify JWT token
-export async function verifyToken(token: string) {
-  try {
-    const { payload } = await jwtVerify(token, secret)
-    return payload
-  } catch (error) {
-    console.error('Token verification failed:', error)
-    return null
-  }
-}
-
-// Create JWT token (for client-side if needed)
-export async function createToken(payload: Record<string, unknown>) {
-  return await new SignJWT(payload)
-    .setProtectedHeader({ alg: 'HS256' })
-    .setIssuedAt()
-    .setExpirationTime('24h')
-    .sign(secret)
 }

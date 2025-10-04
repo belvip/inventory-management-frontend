@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import { Info, Eye, EyeOff, ArrowLeft } from "lucide-react"
 import { GoogleLogin } from "@/components/modules/auth/google-login"
 import { GithubLogin } from "@/components/modules/auth/github-login"
@@ -17,6 +17,7 @@ import { useUserStore } from "@/stores/userStore"
 import { LoginRequest, User } from "@/types/user"
 import { TEST_ACCOUNTS } from "@/lib/testAccounts"
 import { authService } from "@/lib/authService"
+import { toast } from "sonner"
 
 const LoginSchema = z.object({
     username: z.string().min(1, "Nom d'utilisateur requis"),
@@ -26,7 +27,6 @@ const LoginSchema = z.object({
 export function LoginForm() {
     const [showPassword, setShowPassword] = useState(false)
     const [loading, setLoading] = useState(false)
-    const [forgotPasswordLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
 
     const form = useForm<z.infer<typeof LoginSchema>>({
@@ -35,47 +35,69 @@ export function LoginForm() {
     })
 
     const router = useRouter()
-    const { setUser, setTokens } = useUserStore()
+    
+    // 🔥 CHANGEMENT : Sélectionner précisément ce dont on a besoin
+    const setUser = useUserStore(state => state.setUser)
+    const setTokens = useUserStore(state => state.setTokens)
 
-    const fillTestAccount = (username: string, password: string) => {
+    const fillTestAccount = useCallback((username: string, password: string) => {
         form.setValue("username", username)
         form.setValue("password", password)
-    }
+    }, [form])
 
-    const handleForgotPassword = () => {
+    const handleForgotPassword = useCallback(() => {
         router.push('/forgot-password')
-    }
+    }, [router])
 
-    async function onSubmit(data: LoginRequest) {
+    const onSubmit = useCallback(async (data: LoginRequest) => {
         setLoading(true)
         setError(null)
         try {
+            console.log('Tentative de connexion avec:', data.username)
             const result = await authService.signIn(data)
+            console.log('Réponse authService:', result)
+
+            if (!result || !result.jwtToken) {
+                throw new Error("Réponse invalide du serveur")
+            }
 
             const user: User = {
                 userId: 0,
                 firstName: "",
                 lastName: "",
-                username: result.username,
+                username: result.username || data.username,
                 email: "",
                 accountNonLocked: true,
                 accountNonExpired: true,
                 credentialsNonExpired: true,
                 enabled: true,
                 isTwoFactorEnabled: false,
-                roles: result.roles,
+                roles: result.roles || ['ROLE_USER'],
             }
 
+            console.log('Mise à jour du store avec:', user)
+            
+            // 🔥 CHANGEMENT : Appels séparés et simples
             setUser(user)
-            setTokens(result.jwtToken, result.refreshToken)
-            router.push("/dashboard")
+            setTokens(result.jwtToken, result.refreshToken || result.jwtToken)
+            
+            toast.success("Connexion réussie !")
+            
+            // 🔥 CHANGEMENT : Redirection différée
+            setTimeout(() => {
+                console.log('Redirection vers /dashboard')
+                router.push("/dashboard")
+            }, 500)
+            
         } catch (err: unknown) {
-            setError(err instanceof Error ? err.message : "Erreur de connexion")
+            console.error('Erreur de connexion:', err)
+            const errorMessage = err instanceof Error ? err.message : "Erreur de connexion"
+            setError(errorMessage)
+            toast.error(errorMessage)
         } finally {
             setLoading(false)
         }
-    }
-
+    }, [setUser, setTokens, router])
 
     return (
         <div className="min-h-screen flex">
@@ -195,13 +217,16 @@ export function LoginForm() {
                                         variant="link"
                                         className="px-0 font-normal text-sm"
                                         onClick={handleForgotPassword}
-                                        disabled={forgotPasswordLoading}
+                                        disabled={loading}
                                     >
-                                        {forgotPasswordLoading ? "Envoi..." : "Mot de passe oublié ?"}
+                                        Mot de passe oublié ?
                                     </Button>
                                 </div>
                                 
-                                <SubmitButton isLoading={loading} className="h-12 mt-6 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl font-medium">
+                                <SubmitButton 
+                                    isLoading={loading} 
+                                    className="h-12 mt-6 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl font-medium"
+                                >
                                     Se connecter
                                 </SubmitButton>
                             </form>
@@ -243,37 +268,37 @@ export function LoginForm() {
 
                     {/* Demo Accounts */}
                     <div className="mt-8 p-5 bg-card rounded-xl border-2 border-border/40 shadow-sm">
-                            <div className="flex items-center gap-2 mb-4">
-                                <div className="p-1 bg-primary/10 rounded-full">
-                                    <Info className="h-3 w-3 text-primary" />
-                                </div>
-                                <span className="text-sm font-semibold text-foreground">Comptes de démonstration</span>
+                        <div className="flex items-center gap-2 mb-4">
+                            <div className="p-1 bg-primary/10 rounded-full">
+                                <Info className="h-3 w-3 text-primary" />
                             </div>
-                            <div className="grid gap-3">
-                                {TEST_ACCOUNTS.map((account) => {
-                                    const IconComponent = account.icon
-                                    return (
-                                        <button
-                                            key={account.username}
-                                            onClick={() => fillTestAccount(account.username, account.password)}
-                                            disabled={loading}
-                                            className="group flex items-center gap-3 p-3 rounded-lg border border-border/60 bg-card hover:bg-muted/40 hover:border-primary/30 hover:shadow-sm transition-all duration-200 text-left w-full disabled:opacity-50 disabled:cursor-not-allowed"
-                                        >
-                                            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 group-hover:bg-primary/15 transition-colors">
-                                                <IconComponent className="h-3.5 w-3.5 text-primary" />
-                                            </div>
-                                            <div className="flex-1">
-                                                <p className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">{account.role}</p>
-                                                <p className="text-xs text-muted-foreground">{account.name}</p>
-                                            </div>
-                                            <div className="text-xs text-muted-foreground group-hover:text-primary transition-colors">
-                                                Cliquer pour utiliser
-                                            </div>
-                                        </button>
-                                    )
-                                })}
-                            </div>
+                            <span className="text-sm font-semibold text-foreground">Comptes de démonstration</span>
                         </div>
+                        <div className="grid gap-3">
+                            {TEST_ACCOUNTS.map((account) => {
+                                const IconComponent = account.icon
+                                return (
+                                    <button
+                                        key={account.username}
+                                        onClick={() => fillTestAccount(account.username, account.password)}
+                                        disabled={loading}
+                                        className="group flex items-center gap-3 p-3 rounded-lg border border-border/60 bg-card hover:bg-muted/40 hover:border-primary/30 hover:shadow-sm transition-all duration-200 text-left w-full disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 group-hover:bg-primary/15 transition-colors">
+                                            <IconComponent className="h-3.5 w-3.5 text-primary" />
+                                        </div>
+                                        <div className="flex-1">
+                                            <p className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">{account.role}</p>
+                                            <p className="text-xs text-muted-foreground">{account.name}</p>
+                                        </div>
+                                        <div className="text-xs text-muted-foreground group-hover:text-primary transition-colors">
+                                            Cliquer pour utiliser
+                                        </div>
+                                    </button>
+                                )
+                            })}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
