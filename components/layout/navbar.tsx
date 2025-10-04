@@ -28,14 +28,13 @@ export function Navbar() {
   }
   
   return (
-    <nav className="border-b bg-background/80 backdrop-blur-md fixed top-0 left-0 right-0 z-50 shadow-sm">
+    <nav className="border-b bg-background/80 backdrop-blur-md fixed top-0 left-0 right-0 z-50 shadow-sm transition-all duration-300 lg:left-0 lg:group-data-[state=expanded]:left-64 lg:group-data-[state=collapsed]:left-16">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <div className="flex items-center gap-4 min-w-0">
-            <SidebarTrigger className="md:hidden" />
-            <div className="flex items-center min-w-0">
-              <Logo size="sm" className="sm:hidden" showText={false} />
-              <Logo className="hidden sm:flex" />
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            <SidebarTrigger className="lg:hidden flex-shrink-0 z-10" />
+            <div className="flex items-center min-w-0 flex-1 relative z-20">
+              <Logo size="sm" showText={true} className="flex-shrink-0" />
             </div>
           </div>
           

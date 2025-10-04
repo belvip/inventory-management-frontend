@@ -19,7 +19,7 @@ export function Logo({ size = "md", showText = true, className }: LogoProps) {
     <div className={cn("flex items-center gap-2", className)}>
       <Package className={cn("text-primary", sizeClasses[size].icon)} />
       {showText && (
-        <span className={cn("font-bold text-foreground", sizeClasses[size].text)}>
+        <span className={cn("font-bold text-foreground dark:text-white", sizeClasses[size].text)}>
           Inventory
         </span>
       )}
