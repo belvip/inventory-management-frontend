@@ -6,10 +6,8 @@ import { FcGoogle } from "react-icons/fc"
 export function GoogleLogin() {
     const handleGoogleLogin = () => {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8282/api/v1'
-        const baseUrl = apiUrl.replace('/api/v1', '')
-        const frontendUrl = window.location.origin
-        const redirectUri = encodeURIComponent(`${frontendUrl}/auth/callback`)
-        window.location.href = `${baseUrl}/oauth2/authorization/google?redirect_uri=${redirectUri}`
+        const baseUrl = new URL(apiUrl).origin
+        window.location.href = `${baseUrl}/oauth2/authorization/google`
     }
 
     return (
