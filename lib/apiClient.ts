@@ -140,7 +140,7 @@ export function useAuth() {
   return {
     user,
     token: accessToken,
-    isAuthenticated: isAuthenticated(),
+    isAuthenticated,
     logout: clearUser,
   }
 }
