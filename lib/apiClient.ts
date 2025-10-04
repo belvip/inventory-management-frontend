@@ -50,11 +50,32 @@ class ApiClient {
     }
 
     const url = `${this.baseURL}${endpoint}`.replace(/([^:])\/{2,}/g, '$1/')
-    const response = await fetch(url, {
-      ...options,
-      headers,
-    })
+    
+    try {
+      const response = await fetch(url, {
+        ...options,
+        headers,
+      })
+      
+      return await this.handleResponse<T>(response, showErrorToast, showSuccessToast, successMessage)
+    } catch (error) {
+      if (error instanceof TypeError && error.message === 'Failed to fetch') {
+        const corsError = 'Erreur de connexion au serveur. Le backend doit autoriser votre domaine Vercel.'
+        if (showErrorToast) {
+          toast.error('Problème CORS', { description: corsError })
+        }
+        throw new Error(corsError)
+      }
+      throw error
+    }
+  }
 
+  private async handleResponse<T>(
+    response: Response,
+    showErrorToast: boolean,
+    showSuccessToast: boolean,
+    successMessage?: string
+  ): Promise<T> {
     // Gestion des erreurs d'authentification
     if (response.status === 401 || response.status === 403) {
       const { clearUser } = useUserStore.getState()
