@@ -49,7 +49,8 @@ class ApiClient {
       headers.Authorization = `Bearer ${token}`
     }
 
-    const response = await fetch(`${this.baseURL}${endpoint}`, {
+    const url = `${this.baseURL}${endpoint}`.replace(/([^:])\/{2,}/g, '$1/')
+    const response = await fetch(url, {
       ...options,
       headers,
     })
