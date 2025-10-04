@@ -5,8 +5,11 @@ import { FaGithub } from "react-icons/fa"
 
 export function GithubLogin() {
     const handleGithubLogin = () => {
-        const baseUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api/v1', '') || 'http://localhost:8282'
-        window.location.href = `${baseUrl}/oauth2/authorization/github`
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8282/api/v1'
+        const baseUrl = apiUrl.replace('/api/v1', '')
+        const frontendUrl = window.location.origin
+        const redirectUri = encodeURIComponent(`${frontendUrl}/auth/callback`)
+        window.location.href = `${baseUrl}/oauth2/authorization/github?redirect_uri=${redirectUri}`
     }
 
     return (
