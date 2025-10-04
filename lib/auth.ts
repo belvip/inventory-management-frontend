@@ -5,24 +5,57 @@ import { User, LoginRequest, SigninResponse } from '@/types/user'
 
 const secret = new TextEncoder().encode(getEnv().authSecret || 'fallback-secret')
 
-// Login function
-export async function signIn(credentials: LoginRequest): Promise<SigninResponse | null> {
-  try {
-    const response = await fetch(`${getEnv().apiUrl}/api/v1/auth/signin`, {
+// Server-side API client (without localStorage)
+class ServerApiClient {
+  private readonly baseURL: string
+
+  constructor() {
+    this.baseURL = getEnv().apiUrl || ""
+  }
+
+  async post<T>(endpoint: string, data?: unknown): Promise<T> {
+    const response = await fetch(`${this.baseURL}${endpoint}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(credentials),
+      body: data ? JSON.stringify(data) : undefined,
     })
 
     if (!response.ok) {
-      return null
+      throw new Error(`HTTP ${response.status}`)
     }
 
-    const result = await response.json()
+    return response.json()
+  }
+
+  async get<T>(endpoint: string, token?: string): Promise<T> {
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+    if (token) {
+      headers.Authorization = `Bearer ${token}`
+    }
+
+    const response = await fetch(`${this.baseURL}${endpoint}`, {
+      method: 'GET',
+      headers,
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`)
+    }
+
+    return response.json()
+  }
+}
+
+const serverApiClient = new ServerApiClient()
+
+// Login function
+export async function signIn(credentials: LoginRequest): Promise<SigninResponse | null> {
+  try {
+    const result = await serverApiClient.post<SigninResponse>('/auth/signin', credentials)
     
     // Set cookies
     const cookieStore = await cookies()
-    cookieStore.set('accessToken', result.jwtToken, {
+    cookieStore.set('authToken', result.jwtToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -45,32 +78,21 @@ export async function signIn(credentials: LoginRequest): Promise<SigninResponse 
 // Logout function
 export async function signOut() {
   const cookieStore = await cookies()
-  cookieStore.delete('accessToken')
+  cookieStore.delete('authToken')
   cookieStore.delete('refreshToken')
 }
 
 // Get current user
 export async function getCurrentUser(): Promise<User | null> {
   const cookieStore = await cookies()
-  const accessToken = cookieStore.get('accessToken')?.value
+  const accessToken = cookieStore.get('authToken')?.value
 
   if (!accessToken) {
     return null
   }
 
   try {
-    const response = await fetch(`${getEnv().apiUrl}/api/v1/auth/user`, {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-      },
-    })
-
-    if (!response.ok) {
-      return null
-    }
-
-    return await response.json()
+    return await serverApiClient.get<User>('/auth/user', accessToken)
   } catch (error) {
     console.error('Get user error:', error)
     return null
