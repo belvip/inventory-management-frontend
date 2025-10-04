@@ -84,9 +84,17 @@ export const navigationConfig: NavigationItem[] = [
 ];
 
 export function getNavigationForRole(userRoles: string[]): NavigationItem[] {
-  return navigationConfig.filter((item) => 
-    item.roles.some(role => userRoles.includes(role))
-  )
+  // Déterminer le rôle principal (le plus élevé)
+  const roleHierarchy = ['ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_SALES', 'ROLE_USER']
+  const primaryRole = roleHierarchy.find(role => userRoles.includes(role))
+  const roleSlug = primaryRole?.replace('ROLE_', '').toLowerCase()
+  
+  return navigationConfig
+    .filter((item) => item.roles.some(role => userRoles.includes(role)))
+    .map((item) => ({
+      ...item,
+      href: item.href === '/dashboard' ? `/dashboard/${roleSlug}` : `/dashboard/${roleSlug}${item.href.replace('/dashboard', '')}`
+    }))
 }
 
 export function getNavigationForSingleRole(role: UserRole): NavigationItem[] {
