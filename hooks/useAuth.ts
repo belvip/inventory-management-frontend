@@ -1,25 +1,32 @@
+// hooks/useAuth.ts
 import { useUserStore } from "@/stores/userStore"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
-
-import { useState } from "react"
+import { useState, useCallback } from "react"
 
 export function useAuth() {
   const router = useRouter()
-  const { user, accessToken, clearUser, isAuthenticated, setUser, setTokens } = useUserStore()
+  
+  // 🔥 CHANGEMENT : Prendre seulement ce dont on a besoin
+  const user = useUserStore(state => state.user)
+  const accessToken = useUserStore(state => state.accessToken)
+  const isAuthenticated = useUserStore(state => state.isAuthenticated)
+  const setUser = useUserStore(state => state.setUser)
+  const setTokens = useUserStore(state => state.setTokens)
+  const clearUser = useUserStore(state => state.clearUser)
+  
   const [isLoginLoading, setIsLoginLoading] = useState(false)
 
-  const login = async (token: string) => {
+  const login = useCallback(async (token: string) => {
     try {
       setIsLoginLoading(true)
       
-      // Décoder le token pour extraire les informations utilisateur
+      // Décoder le token
       const payload = JSON.parse(atob(token.split('.')[1]))
-      console.log('JWT Payload:', payload) // Debug temporaire
+      console.log('JWT Payload:', payload)
       
-      // Créer l'objet utilisateur à partir du payload
-      let roles = ['ROLE_USER'] // Valeur par défaut
-      
+      // Préparer les données utilisateur
+      let roles = ['ROLE_USER']
       if (payload.roles) {
         roles = Array.isArray(payload.roles) ? payload.roles : [payload.roles]
       } else if (payload.role) {
@@ -32,10 +39,8 @@ export function useAuth() {
       const lastName = payload.lastName || payload.family_name || ''
       const fullName = `${firstName} ${lastName}`.trim()
       
-      // Utiliser le nom complet si disponible, sinon extraire le nom de l'email
       let displayUsername = fullName
       if (!displayUsername && payload.email) {
-        // Extraire la partie avant @ de l'email comme fallback
         displayUsername = payload.email.split('@')[0]
       }
       if (!displayUsername) {
@@ -56,14 +61,16 @@ export function useAuth() {
         isTwoFactorEnabled: false
       }
       
-      // Stocker l'utilisateur et les tokens
+      // 🔥 CHANGEMENT : Appel simple et direct
       setUser(userData)
-      setTokens(token, token) // Utiliser le même token pour refresh temporairement
+      setTokens(token, token)
       
       toast.success("Connexion réussie !")
       
-      // Rediriger vers le dashboard
-      router.push('/dashboard')
+      // 🔥 CHANGEMENT : Redirection avec timeout pour éviter les conflits
+      setTimeout(() => {
+        router.push('/dashboard')
+      }, 100)
       
     } catch (error) {
       console.error('Erreur lors de la connexion OAuth:', error)
@@ -72,21 +79,20 @@ export function useAuth() {
     } finally {
       setIsLoginLoading(false)
     }
-  }
+  }, [setUser, setTokens, router])
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     console.log('Logout function called')
-    // Déconnexion locale uniquement (l'API a un problème serveur)
     clearUser()
     toast.success("Déconnexion réussie")
-    // Forcer la redirection vers login
+    // 🔥 CHANGEMENT : Utiliser window.location pour éviter les problèmes de routing
     window.location.href = '/login'
-  }
+  }, [clearUser])
 
   return {
     user,
     isLoading: false,
-    isAuthenticated: isAuthenticated(),
+    isAuthenticated, // 🔥 CHANGEMENT : Utiliser la variable directement
     login,
     isLoginLoading,
     logout,
