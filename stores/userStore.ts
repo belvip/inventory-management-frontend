@@ -37,12 +37,8 @@ export const useUserStore = create<UserStore>()(
 			isAuthenticated: false, 
 			
 			setUser: (user) => {
-				const normalizedUser = {
-					...user,
-					roles: Array.isArray(user.roles) ? user.roles : [user.roles || 'ROLE_USER']
-				};
 				set({ 
-					user: normalizedUser,
+					user,
 					isAuthenticated: true 
 				});
 			},

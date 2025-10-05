@@ -12,18 +12,42 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 
 export function AdminUser() {
-  const { user: currentUser } = useAuth()
+  const { user: currentUser, isAuthenticated, isLoading: authLoading } = useAuth()
   const { users, isLoading, roles } = useUsersAdmin()
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
 
   // Debug: Vérifier l'utilisateur actuel
   useEffect(() => {
-    console.log('Current user:', currentUser)
-    console.log('User roles:', currentUser?.roles)
-  }, [currentUser])
+    console.log('AdminUser - Current user:', currentUser)
+    console.log('AdminUser - User role:', currentUser?.roleName)
+    console.log('AdminUser - Is authenticated:', isAuthenticated)
+    console.log('AdminUser - Auth loading:', authLoading)
+  }, [currentUser, isAuthenticated, authLoading])
 
   // Vérifier si l'utilisateur a le rôle ADMIN
-  const isAdmin = currentUser?.roles?.includes('ROLE_ADMIN')
+  const isAdmin = currentUser?.roleName === 'ROLE_ADMIN' || 
+                  (currentUser as any)?.roles?.includes('ROLE_ADMIN')
+  
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
+  
+  if (!isAuthenticated || !currentUser) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <Card>
+          <CardContent className="p-6">
+            <h2 className="text-xl font-semibold mb-2">Non authentifié</h2>
+            <p className="text-muted-foreground">Vous devez être connecté pour accéder à cette page.</p>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
   
   if (!isAdmin) {
     return (

@@ -2,20 +2,32 @@
 import { useUsers } from './useUsers';
 
 export const useUsersAdmin = () => {
-  // Temporairement désactiver les appels API pour tester
+  const {
+    getAllUsers,
+    createUser,
+    updateUser,
+    updateRole,
+    deleteUser,
+    updateLockStatus,
+    updateEnabledStatus,
+    updateExpiryStatus,
+    updateCredentialsExpiryStatus,
+    getRoles
+  } = useUsers();
+  
   return {
-    users: [],
-    roles: [],
-    isLoading: false,
-    isError: false,
-    error: null,
-    createUser: { mutate: () => {} },
-    updateUser: { mutate: () => {} },
-    updateRole: { mutate: () => {} },
-    deleteUser: { mutate: () => {} },
-    updateLockStatus: { mutate: () => {} },
-    updateEnabledStatus: { mutate: () => {} },
-    updateExpiryStatus: { mutate: () => {} },
-    updateCredentialsExpiryStatus: { mutate: () => {} },
+    users: getAllUsers.data,
+    roles: getRoles.data,
+    isLoading: getAllUsers.isLoading,
+    isError: getAllUsers.isError,
+    error: getAllUsers.error,
+    createUser,
+    updateUser,
+    updateRole,
+    deleteUser,
+    updateLockStatus,
+    updateEnabledStatus,
+    updateExpiryStatus,
+    updateCredentialsExpiryStatus,
   };
 };

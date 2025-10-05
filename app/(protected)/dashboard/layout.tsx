@@ -11,14 +11,19 @@ import { useEffect } from "react"
 export default function DashboardLayout({children}: Readonly<{
     children: React.ReactNode
 }>) {
-    const { isAuthenticated, isLoading } = useAuth()
+    const { isAuthenticated, isLoading, user } = useAuth()
     const router = useRouter()
 
     useEffect(() => {
+        console.log('Dashboard Layout - isLoading:', isLoading)
+        console.log('Dashboard Layout - isAuthenticated:', isAuthenticated)
+        console.log('Dashboard Layout - user:', user)
+        
         if (!isLoading && !isAuthenticated) {
+            console.log('Dashboard Layout - Redirecting to login')
             router.push('/login')
         }
-    }, [isAuthenticated, isLoading, router])
+    }, [isAuthenticated, isLoading, router, user])
 
     if (isLoading) {
         return <FormLoadingState isLoading={true}><div /></FormLoadingState>

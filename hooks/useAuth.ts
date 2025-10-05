@@ -2,7 +2,7 @@
 import { useUserStore } from "@/stores/userStore"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 
 export function useAuth() {
   const router = useRouter()
@@ -16,6 +16,12 @@ export function useAuth() {
   const clearUser = useUserStore(state => state.clearUser)
   
   const [isLoginLoading, setIsLoginLoading] = useState(false)
+  const [isHydrated, setIsHydrated] = useState(false)
+  
+  // Attendre l'hydratation du store
+  useEffect(() => {
+    setIsHydrated(true)
+  }, [])
 
   const login = useCallback(async (token: string) => {
     try {
@@ -49,16 +55,15 @@ export function useAuth() {
       
       const userData = {
         userId: payload.sub || payload.userId || 0,
-        username: displayUsername,
+        userName: displayUsername,
         email: payload.email,
         firstName: firstName,
         lastName: lastName,
-        roles: roles,
+        roleName: roles[0] || 'ROLE_USER',
         accountNonLocked: true,
         accountNonExpired: true,
         credentialsNonExpired: true,
-        enabled: true,
-        isTwoFactorEnabled: false
+        enabled: true
       }
       
       // 🔥 CHANGEMENT : Appel simple et direct
@@ -91,8 +96,8 @@ export function useAuth() {
 
   return {
     user,
-    isLoading: false,
-    isAuthenticated, // 🔥 CHANGEMENT : Utiliser la variable directement
+    isLoading: isLoginLoading || !isHydrated,
+    isAuthenticated: isHydrated && isAuthenticated,
     login,
     isLoginLoading,
     logout,
