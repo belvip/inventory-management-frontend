@@ -6,29 +6,26 @@ export type User = {
     userId: number;
     firstName: string;
     lastName: string;
-    username: string;
+    userName: string;
     email: string;
-    image?: string;
-    address?: AddressDto;
+    enabled: boolean;
     accountNonLocked: boolean;
     accountNonExpired: boolean;
     credentialsNonExpired: boolean;
-    enabled: boolean;
-    credentialsExpiryDate?: string;
-    accountExpiryDate?: string;
-    isTwoFactorEnabled: boolean;
-    signUpMethod?: string;
-    roles: string[];
+    roleName: string;
+    image?: string;
+    address?: AddressDto;
+    createdDate?: string;
+    updatedDate?: string;
 };
 
 export interface RegisterRequest {
-    username: string;
-    email: string;
-    password: string;
     firstName: string;
     lastName: string;
+    userName: string;
+    email: string;
+    password: string;
     image?: string;
-    signUpMethod?: string;
     address?: AddressDto;
 }
 
@@ -45,13 +42,10 @@ export interface SigninResponse {
 }
 
 export interface UpdateUserRequest {
+    userName: string;
+    email: string;
     firstName: string;
     lastName: string;
-    username: string;
-    email: string;
-    password?: string;
-    image?: string;
-    address?: AddressDto;
 }
 
 // Types spécifiques pour les requêtes utilisateur
@@ -61,8 +55,7 @@ export interface UpdateRoleRequest {
 }
 
 export interface UpdatePasswordRequest {
-    currentPassword: string
-    newPassword: string
+    password: string
 }
 
 export interface UpdateLockStatusRequest {
@@ -78,6 +71,11 @@ export interface UpdateEnabledStatusRequest {
 export interface UpdateExpiryStatusRequest {
     userId: number
     expire: boolean
+}
+
+export interface RoleResponse {
+  id: number;
+  roleName: string;
 }
 
 export type CreateUserMutation = UseMutationResult<User, ApiError, { data: RegisterRequest }, unknown>;

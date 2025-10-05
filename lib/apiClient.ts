@@ -87,12 +87,18 @@ class ApiClient {
     if (response.status === 401 || response.status === 403) {
       const { clearUser } = useUserStore.getState()
       clearUser() // 👈 Nettoyage automatique du store
-      this.onUnauthorized?.()
       
       if (showErrorToast) {
         toast.error("Session expirée", { 
           description: "Veuillez vous reconnecter" 
         })
+      }
+      
+      // Redirection vers login seulement si pas déjà sur une page d'auth
+      if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
+        setTimeout(() => {
+          window.location.href = '/login'
+        }, 1000)
       }
       
       throw new Error("Non autorisé")
