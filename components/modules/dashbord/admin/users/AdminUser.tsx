@@ -53,6 +53,11 @@ export function AdminUser() {
     )
   }
 
+  // Debug: Afficher les données
+  console.log('Users data:', users)
+  console.log('Is loading:', isLoading)
+  console.log('Is admin:', isAdmin)
+
   return (
     <div className="space-y-6">
       {/* Header */}
