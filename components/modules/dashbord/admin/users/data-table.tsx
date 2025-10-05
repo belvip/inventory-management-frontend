@@ -1,4 +1,3 @@
-
 "use client"
 
 import * as React from "react"
@@ -32,16 +31,35 @@ import { DataTablePagination } from "./data-table-pagination"
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  enableRowSelection?: boolean
+  enablePagination?: boolean
+  enableToolbar?: boolean
+  onRowSelectionChange?: (selected: any) => void
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  enableRowSelection = true,
+  enablePagination = true,
+  enableToolbar = true,
+  onRowSelectionChange,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [sorting, setSorting] = React.useState<SortingState>([])
+
+  // Gérer les changements de sélection
+  const handleRowSelectionChange = React.useCallback((updater: any) => {
+    setRowSelection(updater)
+    if (onRowSelectionChange) {
+      const newSelection = typeof updater === 'function' 
+        ? updater(rowSelection) 
+        : updater
+      onRowSelectionChange(newSelection)
+    }
+  }, [onRowSelectionChange, rowSelection])
 
   const table = useReactTable({
     data,
@@ -52,8 +70,8 @@ export function DataTable<TData, TValue>({
       rowSelection,
       columnFilters,
     },
-    enableRowSelection: true,
-    onRowSelectionChange: setRowSelection,
+    enableRowSelection,
+    onRowSelectionChange: handleRowSelectionChange,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
@@ -67,7 +85,8 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      <DataTableToolbar table={table} />
+      {enableToolbar && <DataTableToolbar table={table} />}
+      
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -94,6 +113,7 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  className={row.getIsSelected() ? "bg-muted/50" : ""}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
@@ -109,16 +129,20 @@ export function DataTable<TData, TValue>({
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center"
+                  className="h-24 text-center text-muted-foreground"
                 >
-                  Aucun utilisateur trouvé.
+                  {data.length === 0 
+                    ? "Aucune donnée disponible" 
+                    : "Aucun résultat trouvé avec les filtres actuels"
+                  }
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       </div>
-      <DataTablePagination table={table} />
+      
+      {enablePagination && <DataTablePagination table={table} />}
     </div>
   )
 }

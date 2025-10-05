@@ -36,22 +36,20 @@ export const columns: ColumnDef<User>[] = [
   {
     accessorKey: "userName",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Username" />
+      <DataTableColumnHeader column={column} title="Utilisateur" />
     ),
     cell: ({ row }) => {
       const user = row.original
       return (
         <div className="flex items-center gap-3">
-          <img 
-            src={user.imageUrl || '/default-avatar.png'} 
-            alt={user.userName}
-            className="h-8 w-8 rounded-full"
-          />
-          <div className="flex flex-col">
-            <span className="font-medium">@{user.userName}</span>
-            <span className="text-sm text-muted-foreground">
-              {user.firstName} {user.lastName}
+          <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+            <span className="text-sm font-medium text-primary">
+              {user.firstName?.[0] || user.userName?.[0] || 'U'}
             </span>
+          </div>
+          <div className="flex flex-col">
+            <span className="font-medium">{user.firstName} {user.lastName}</span>
+            <span className="text-sm text-muted-foreground">@{user.userName}</span>
           </div>
         </div>
       )
@@ -118,17 +116,21 @@ export const columns: ColumnDef<User>[] = [
     },
   },
   {
-    accessorKey: "isTwoFactorEnabled",
+    accessorKey: "createdDate",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="2FA" />
+      <DataTableColumnHeader column={column} title="Date de création" />
     ),
     cell: ({ row }) => {
-      const is2FA = row.getValue("isTwoFactorEnabled") as boolean
+      const date = row.getValue("createdDate") as string
       return (
-        <Badge variant={is2FA ? "default" : "outline"}>
-          {is2FA ? "Activé" : "Désactivé"}
-        </Badge>
+        <div className="text-sm">
+          {new Date(date).toLocaleDateString('fr-FR')}
+        </div>
       )
+    },
+    filterFn: (row, id, value) => {
+      const rowDate = new Date(row.getValue(id) as string).toISOString().split('T')[0]
+      return rowDate === value
     },
   },
   {

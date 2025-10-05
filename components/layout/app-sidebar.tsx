@@ -36,7 +36,7 @@ export function AppSidebar() {
     if (href === "/dashboard") {
       return pathname === "/dashboard" || pathname === "/dashboard/admin" || pathname === "/dashboard/manager" || pathname === "/dashboard/sales"
     }
-    return pathname.startsWith(href)
+    return pathname === href
   }
 
   return (

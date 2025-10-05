@@ -41,7 +41,16 @@ export function DataTableToolbar<TData>({
           onChange={(event) =>
             table.getColumn("userName")?.setFilterValue(event.target.value)
           }
-          className="h-8 w-[150px] lg:w-[250px]"
+          className="h-8 w-[150px] lg:w-[200px]"
+        />
+        <Input
+          type="date"
+          placeholder="Date de création"
+          value={(table.getColumn("createdDate")?.getFilterValue() as string) ?? ""}
+          onChange={(event) =>
+            table.getColumn("createdDate")?.setFilterValue(event.target.value)
+          }
+          className="h-8 w-[150px]"
         />
         {table.getColumn("roleName") && (
           <DataTableFacetedFilter
