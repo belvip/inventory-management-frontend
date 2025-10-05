@@ -74,15 +74,15 @@ export const columns: ColumnDef<User>[] = [
       const roleName = row.getValue("roleName") as string
       const role = roleName.replace('ROLE_', '')
       
-      const roleVariants = {
-        ADMIN: "destructive",
-        MANAGER: "default", 
-        SALES: "secondary",
-        USER: "outline"
+      const roleStyles = {
+        ADMIN: "bg-red-100 text-red-800 hover:bg-red-200 border-red-200",
+        MANAGER: "bg-blue-100 text-blue-800 hover:bg-blue-200 border-blue-200", 
+        SALES: "bg-purple-100 text-purple-800 hover:bg-purple-200 border-purple-200",
+        USER: "bg-gray-100 text-gray-800 hover:bg-gray-200 border-gray-200"
       } as const
 
       return (
-        <Badge variant={roleVariants[role as keyof typeof roleVariants] || "outline"}>
+        <Badge className={roleStyles[role as keyof typeof roleStyles] || "bg-gray-100 text-gray-800 hover:bg-gray-200 border-gray-200"}>
           {role}
         </Badge>
       )
@@ -105,13 +105,13 @@ export const columns: ColumnDef<User>[] = [
       if (!user.accountNonLocked) {
         return <Badge variant="secondary">Verrouillé</Badge>
       }
-      return <Badge variant="default">Actif</Badge>
+      return <Badge className="bg-green-100 text-green-800 hover:bg-green-200">Actif</Badge>
     },
     filterFn: (row, id, value) => {
       const user = row.original
       return value.some((status: string) => {
         if (status === "active") return user.enabled && user.accountNonLocked
-        if (status === "locked") return !user.accountNonLocked
+        if (status === "locked") return user.enabled && !user.accountNonLocked
         if (status === "disabled") return !user.enabled
         return false
       })

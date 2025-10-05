@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/useAuth"
 import { DataTable } from "./data-table"
 import { columns } from "./columns"
 import { Button } from "@/components/ui/button"
-import { Plus, Users, UserCheck, UserX, Shield } from "lucide-react"
+import { Plus, Users, UserCheck, UserX, Shield, Lock } from "lucide-react"
 import { UserForm } from "./UserForm"
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -64,7 +64,8 @@ export function AdminUser() {
 
   const stats = {
     total: users?.length || 0,
-    active: users?.filter(u => u.enabled)?.length || 0,
+    active: users?.filter(u => u.enabled && u.accountNonLocked)?.length || 0,
+    locked: users?.filter(u => u.enabled && !u.accountNonLocked)?.length || 0,
     inactive: users?.filter(u => !u.enabled)?.length || 0,
     admins: users?.filter(u => u.roleName === 'ROLE_ADMIN')?.length || 0
   }
@@ -102,44 +103,54 @@ export function AdminUser() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+        <Card className="group relative overflow-hidden transition-all duration-300 ease-out hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1 before:absolute before:inset-0 before:bg-gradient-to-r before:from-primary/5 before:to-transparent before:opacity-0 before:transition-opacity before:duration-300 hover:before:opacity-100">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium group-hover:text-primary transition-colors duration-300">Total</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground group-hover:scale-110 group-hover:text-primary transition-all duration-300" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.total}</div>
+            <div className="text-2xl font-bold group-hover:scale-105 transition-transform duration-300">{stats.total}</div>
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="group relative overflow-hidden transition-all duration-300 ease-out hover:shadow-xl hover:shadow-green-500/10 hover:-translate-y-1 before:absolute before:inset-0 before:bg-gradient-to-r before:from-green-500/5 before:to-transparent before:opacity-0 before:transition-opacity before:duration-300 hover:before:opacity-100">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Actifs</CardTitle>
-            <UserCheck className="h-4 w-4 text-green-600" />
+            <CardTitle className="text-sm font-medium group-hover:text-green-600 transition-colors duration-300">Actifs</CardTitle>
+            <UserCheck className="h-4 w-4 text-green-600 group-hover:scale-110 transition-all duration-300" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{stats.active}</div>
+            <div className="text-2xl font-bold text-green-600 group-hover:scale-105 transition-transform duration-300">{stats.active}</div>
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="group relative overflow-hidden transition-all duration-300 ease-out hover:shadow-xl hover:shadow-orange-500/10 hover:-translate-y-1 before:absolute before:inset-0 before:bg-gradient-to-r before:from-orange-500/5 before:to-transparent before:opacity-0 before:transition-opacity before:duration-300 hover:before:opacity-100">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Inactifs</CardTitle>
-            <UserX className="h-4 w-4 text-red-600" />
+            <CardTitle className="text-sm font-medium group-hover:text-orange-600 transition-colors duration-300">Verrouillés</CardTitle>
+            <Lock className="h-4 w-4 text-orange-600 group-hover:scale-110 transition-all duration-300" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">{stats.inactive}</div>
+            <div className="text-2xl font-bold text-orange-600 group-hover:scale-105 transition-transform duration-300">{stats.locked}</div>
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="group relative overflow-hidden transition-all duration-300 ease-out hover:shadow-xl hover:shadow-red-500/10 hover:-translate-y-1 before:absolute before:inset-0 before:bg-gradient-to-r before:from-red-500/5 before:to-transparent before:opacity-0 before:transition-opacity before:duration-300 hover:before:opacity-100">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Admins</CardTitle>
-            <Shield className="h-4 w-4 text-blue-600" />
+            <CardTitle className="text-sm font-medium group-hover:text-red-600 transition-colors duration-300">Inactifs</CardTitle>
+            <UserX className="h-4 w-4 text-red-600 group-hover:scale-110 transition-all duration-300" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">{stats.admins}</div>
+            <div className="text-2xl font-bold text-red-600 group-hover:scale-105 transition-transform duration-300">{stats.inactive}</div>
+          </CardContent>
+        </Card>
+        
+        <Card className="group relative overflow-hidden transition-all duration-300 ease-out hover:shadow-xl hover:shadow-blue-500/10 hover:-translate-y-1 before:absolute before:inset-0 before:bg-gradient-to-r before:from-blue-500/5 before:to-transparent before:opacity-0 before:transition-opacity before:duration-300 hover:before:opacity-100">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium group-hover:text-blue-600 transition-colors duration-300">Admins</CardTitle>
+            <Shield className="h-4 w-4 text-blue-600 group-hover:scale-110 transition-all duration-300" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-blue-600 group-hover:scale-105 transition-transform duration-300">{stats.admins}</div>
           </CardContent>
         </Card>
       </div>
