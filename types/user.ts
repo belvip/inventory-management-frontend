@@ -27,6 +27,7 @@ export interface RegisterRequest {
     password: string;
     image?: string;
     address?: AddressDto;
+    signUpMethod?: string;
 }
 
 export interface LoginRequest {

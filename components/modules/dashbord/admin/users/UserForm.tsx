@@ -366,7 +366,7 @@ export function UserForm({ open, onOpenChange, roles }: UserFormProps) {
                   name="city"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Ville</FormLabel>
+                      <FormLabel>Ville (optionnel)</FormLabel>
                       <FormControl>
                         <Input
                           placeholder="Yaoundé"
