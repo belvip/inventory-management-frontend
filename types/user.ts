@@ -1,6 +1,6 @@
 import { UseMutationResult } from "@tanstack/react-query";
-import { AddressDto } from "./index";
-import type { ApiError } from "./index";
+import { AddressDto } from "./common";
+import type { ApiError } from "./common";
 
 export type User = {
     userId: number;
@@ -52,6 +52,32 @@ export interface UpdateUserRequest {
     password?: string;
     image?: string;
     address?: AddressDto;
+}
+
+// Types spécifiques pour les requêtes utilisateur
+export interface UpdateRoleRequest {
+    userId: number
+    roleName: string
+}
+
+export interface UpdatePasswordRequest {
+    currentPassword: string
+    newPassword: string
+}
+
+export interface UpdateLockStatusRequest {
+    userId: number
+    lock: boolean
+}
+
+export interface UpdateEnabledStatusRequest {
+    userId: number
+    enabled: boolean
+}
+
+export interface UpdateExpiryStatusRequest {
+    userId: number
+    expire: boolean
 }
 
 export type CreateUserMutation = UseMutationResult<User, ApiError, { data: RegisterRequest }, unknown>;
