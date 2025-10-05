@@ -78,9 +78,12 @@ export function AdminUser() {
   }
 
   // Debug: Afficher les données
-  console.log('Users data:', users)
-  console.log('Is loading:', isLoading)
-  console.log('Is admin:', isAdmin)
+  console.log('AdminUser - Users data:', users)
+  console.log('AdminUser - Users type:', typeof users)
+  console.log('AdminUser - Users is array:', Array.isArray(users))
+  console.log('AdminUser - Is loading:', isLoading)
+  console.log('AdminUser - Is admin:', isAdmin)
+  console.log('AdminUser - Columns:', columns)
 
   return (
     <div className="space-y-6">

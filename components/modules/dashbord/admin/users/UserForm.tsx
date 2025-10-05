@@ -1,17 +1,19 @@
 "use client"
 
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import {
   Select,
   SelectContent,
@@ -19,6 +21,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Eye, EyeOff, Check, X } from "lucide-react"
+import { useUsersAdmin } from "@/hooks/user"
+import { toast } from "sonner"
+
+const UserSchema = z.object({
+  firstName: z.string().min(3, "Le prénom doit contenir au moins 3 caractères").max(20, "Le prénom ne peut pas dépasser 20 caractères"),
+  lastName: z.string().min(3, "Le nom doit contenir au moins 3 caractères").max(20, "Le nom ne peut pas dépasser 20 caractères"),
+  userName: z.string().min(4, "Le nom d'utilisateur doit contenir au moins 4 caractères").max(10, "Le nom d'utilisateur ne peut pas dépasser 10 caractères"),
+  email: z.string().email("Email invalide").max(50, "L'email ne peut pas dépasser 50 caractères"),
+  password: z.string().min(6, "Le mot de passe doit contenir au moins 6 caractères").max(40, "Le mot de passe ne peut pas dépasser 40 caractères"),
+  image: z.string().url("URL invalide").optional().or(z.literal("")),
+  address1: z.string().optional(),
+  address2: z.string().optional(),
+  city: z.string().optional(),
+  postalCode: z.string().optional(),
+  country: z.string().optional(),
+})
 
 interface UserFormProps {
   open: boolean
@@ -27,109 +46,389 @@ interface UserFormProps {
 }
 
 export function UserForm({ open, onOpenChange, roles }: UserFormProps) {
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    userName: "",
-    email: "",
-    password: "",
-    roleName: "ROLE_USER"
+  const [showPassword, setShowPassword] = useState(false)
+  const { createUser, isCreating } = useUsersAdmin()
+  
+  const form = useForm<z.infer<typeof UserSchema>>({
+    resolver: zodResolver(UserSchema),
+    mode: "onChange",
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      userName: "",
+      email: "",
+      password: "",
+      image: "",
+      address1: "",
+      address2: "",
+      city: "",
+      postalCode: "",
+      country: "",
+    },
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log("Form data:", formData)
-    // TODO: Implement user creation
+  async function onSubmit(data: z.infer<typeof UserSchema>) {
+    const { address1, address2, city, postalCode, country, ...baseData } = data
+    
+    const address = (address1 || address2 || city || postalCode || country) ? {
+      address1: address1 || undefined,
+      address2: address2 || undefined,
+      city: city || undefined,
+      postalCode: postalCode || undefined,
+      country: country || undefined,
+    } : undefined
+    
+    createUser({
+      ...baseData,
+      image: baseData.image || undefined,
+      address,
+      signUpMethod: "email"
+    })
+    form.reset()
     onOpenChange(false)
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Créer un utilisateur</DialogTitle>
           <DialogDescription>
             Ajoutez un nouvel utilisateur au système.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="firstName">Prénom</Label>
-              <Input
-                id="firstName"
-                value={formData.firstName}
-                onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
-                required
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="firstName"
+                render={({ field }) => (
+                  <FormItem className="group">
+                    <FormLabel className="text-sm font-medium text-foreground/80 group-focus-within:text-primary transition-colors">Prénom</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Input
+                          placeholder="Patrick"
+                          {...field}
+                          disabled={isCreating}
+                          className={`h-10 pl-4 pr-10 bg-background/50 border-2 transition-all duration-300 rounded-lg hover:border-border/60 ${
+                            form.formState.errors.firstName 
+                              ? "border-red-400 focus:border-red-500 bg-red-50/50" 
+                              : field.value && !form.formState.errors.firstName 
+                              ? "border-green-400 focus:border-green-500 bg-green-50/50" 
+                              : "border-border/40 focus:border-primary/60 focus:bg-background"
+                          }`}
+                        />
+                        {field.value && (
+                          <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                            {form.formState.errors.firstName ? (
+                              <X className="h-4 w-4 text-red-500" />
+                            ) : (
+                              <Check className="h-4 w-4 text-green-500" />
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="lastName"
+                render={({ field }) => (
+                  <FormItem className="group">
+                    <FormLabel className="text-sm font-medium text-foreground/80 group-focus-within:text-primary transition-colors">Nom</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Input
+                          placeholder="Djoumessi"
+                          {...field}
+                          disabled={isCreating}
+                          className={`h-10 pl-4 pr-10 bg-background/50 border-2 transition-all duration-300 rounded-lg hover:border-border/60 ${
+                            form.formState.errors.lastName 
+                              ? "border-red-400 focus:border-red-500 bg-red-50/50" 
+                              : field.value && !form.formState.errors.lastName 
+                              ? "border-green-400 focus:border-green-500 bg-green-50/50" 
+                              : "border-border/40 focus:border-primary/60 focus:bg-background"
+                          }`}
+                        />
+                        {field.value && (
+                          <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                            {form.formState.errors.lastName ? (
+                              <X className="h-4 w-4 text-red-500" />
+                            ) : (
+                              <Check className="h-4 w-4 text-green-500" />
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="lastName">Nom</Label>
-              <Input
-                id="lastName"
-                value={formData.lastName}
-                onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
-                required
+            
+            <FormField
+              control={form.control}
+              name="userName"
+              render={({ field }) => (
+                <FormItem className="group">
+                  <FormLabel className="text-sm font-medium text-foreground/80 group-focus-within:text-primary transition-colors">Nom d'utilisateur</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Input
+                        placeholder="pdjoumessi"
+                        {...field}
+                        disabled={isCreating}
+                        className={`h-10 pl-4 pr-10 bg-background/50 border-2 transition-all duration-300 rounded-lg hover:border-border/60 ${
+                          form.formState.errors.userName 
+                            ? "border-red-400 focus:border-red-500 bg-red-50/50" 
+                            : field.value && !form.formState.errors.userName 
+                            ? "border-green-400 focus:border-green-500 bg-green-50/50" 
+                            : "border-border/40 focus:border-primary/60 focus:bg-background"
+                        }`}
+                      />
+                      {field.value && (
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                          {form.formState.errors.userName ? (
+                            <X className="h-4 w-4 text-red-500" />
+                          ) : (
+                            <Check className="h-4 w-4 text-green-500" />
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem className="group">
+                  <FormLabel className="text-sm font-medium text-foreground/80 group-focus-within:text-primary transition-colors">Email</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Input
+                        type="email"
+                        placeholder="patrick.djoumessi@gmail.com"
+                        {...field}
+                        disabled={isCreating}
+                        className={`h-10 pl-4 pr-10 bg-background/50 border-2 transition-all duration-300 rounded-lg hover:border-border/60 ${
+                          form.formState.errors.email 
+                            ? "border-red-400 focus:border-red-500 bg-red-50/50" 
+                            : field.value && !form.formState.errors.email 
+                            ? "border-green-400 focus:border-green-500 bg-green-50/50" 
+                            : "border-border/40 focus:border-primary/60 focus:bg-background"
+                        }`}
+                      />
+                      {field.value && (
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                          {form.formState.errors.email ? (
+                            <X className="h-4 w-4 text-red-500" />
+                          ) : (
+                            <Check className="h-4 w-4 text-green-500" />
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem className="group">
+                  <FormLabel className="text-sm font-medium text-foreground/80 group-focus-within:text-primary transition-colors">Mot de passe</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="••••••••"
+                        {...field}
+                        disabled={isCreating}
+                        className={`h-10 pl-4 pr-20 bg-background/50 border-2 transition-all duration-300 rounded-lg hover:border-border/60 ${
+                          form.formState.errors.password 
+                            ? "border-red-400 focus:border-red-500 bg-red-50/50" 
+                            : field.value && !form.formState.errors.password 
+                            ? "border-green-400 focus:border-green-500 bg-green-50/50" 
+                            : "border-border/40 focus:border-primary/60 focus:bg-background"
+                        }`}
+                      />
+                      {field.value && (
+                        <div className="absolute right-12 top-1/2 -translate-y-1/2">
+                          {form.formState.errors.password ? (
+                            <X className="h-4 w-4 text-red-500" />
+                          ) : (
+                            <Check className="h-4 w-4 text-green-500" />
+                          )}
+                        </div>
+                      )}
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-lg hover:bg-muted/50 transition-colors"
+                        onClick={() => setShowPassword(!showPassword)}
+                        disabled={isCreating}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
+                        ) : (
+                          <Eye className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
+                        )}
+                      </Button>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="image"
+              render={({ field }) => (
+                <FormItem className="group">
+                  <FormLabel className="text-sm font-medium text-foreground/80 group-focus-within:text-primary transition-colors">Photo de profil (optionnel)</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="url"
+                      placeholder="https://example.com/photo.jpg"
+                      {...field}
+                      disabled={isCreating}
+                      className="h-10 pl-4 pr-4 bg-background/50 border-2 border-border/40 focus:border-primary/60 focus:bg-background transition-all duration-300 rounded-lg hover:border-border/60"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <div className="space-y-4 pt-4 border-t border-border/30">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-primary/60 rounded-full" />
+                <h3 className="text-sm font-medium text-foreground/80">Adresse (optionnel)</h3>
+              </div>
+              
+              <FormField
+                control={form.control}
+                name="address1"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Adresse 1</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Avenue Charles Atangana"
+                        {...field}
+                        disabled={isCreating}
+                        className="h-10"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="address2"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Adresse 2</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Quartier Mvog-Ada"
+                        {...field}
+                        disabled={isCreating}
+                        className="h-10"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="city"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Ville</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Yaoundé"
+                          {...field}
+                          disabled={isCreating}
+                          className="h-10"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="postalCode"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Code postal (optionnel)</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="23703"
+                          {...field}
+                          disabled={isCreating}
+                          className="h-10"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              
+              <FormField
+                control={form.control}
+                name="country"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Pays (optionnel)</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Cameroon"
+                        {...field}
+                        disabled={isCreating}
+                        className="h-10"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
             </div>
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="userName">Nom d'utilisateur</Label>
-            <Input
-              id="userName"
-              value={formData.userName}
-              onChange={(e) => setFormData(prev => ({ ...prev, userName: e.target.value }))}
-              required
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              value={formData.email}
-              onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-              required
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="password">Mot de passe</Label>
-            <Input
-              id="password"
-              type="password"
-              value={formData.password}
-              onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-              required
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="role">Rôle</Label>
-            <Select value={formData.roleName} onValueChange={(value) => setFormData(prev => ({ ...prev, roleName: value }))}>
-              <SelectTrigger>
-                <SelectValue placeholder="Sélectionner un rôle" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ROLE_USER">Utilisateur</SelectItem>
-                <SelectItem value="ROLE_SALES">Commercial</SelectItem>
-                <SelectItem value="ROLE_MANAGER">Manager</SelectItem>
-                <SelectItem value="ROLE_ADMIN">Administrateur</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Annuler
-            </Button>
-            <Button type="submit">
-              Créer l'utilisateur
-            </Button>
-          </DialogFooter>
-        </form>
+            
+            <div className="flex justify-end gap-3 pt-4">
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isCreating}>
+                Annuler
+              </Button>
+              <Button type="submit" disabled={isCreating}>
+                {isCreating ? "Création..." : "Créer l'utilisateur"}
+              </Button>
+            </div>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   )

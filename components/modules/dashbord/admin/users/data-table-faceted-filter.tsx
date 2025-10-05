@@ -38,8 +38,33 @@ export function DataTableFacetedFilter<TData, TValue>({
   title,
   options,
 }: DataTableFacetedFilterProps<TData, TValue>) {
-  const facets = column?.getFacetedUniqueValues()
-  const selectedValues = new Set(column?.getFilterValue() as string[])
+  // Protection contre les colonnes ou options undefined
+  if (!column || !Array.isArray(options) || !options.length) {
+    return null
+  }
+  
+  const [facets, setFacets] = React.useState(new Map())
+  const [selectedValues, setSelectedValues] = React.useState(new Set())
+  
+  React.useEffect(() => {
+    if (!column) return
+    
+    try {
+      const uniqueValues = column.getFacetedUniqueValues()
+      if (uniqueValues) {
+        setFacets(uniqueValues)
+      }
+      
+      const filterValue = column.getFilterValue()
+      setSelectedValues(new Set(Array.isArray(filterValue) ? filterValue : []))
+    } catch (error) {
+      console.error('Error updating faceted filter:', error)
+      setFacets(new Map())
+      setSelectedValues(new Set())
+    }
+  }, [column])
+  
+  const safeOptions = options
 
   return (
     <Popover>
@@ -65,7 +90,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                     {selectedValues.size} sélectionnés
                   </Badge>
                 ) : (
-                  options
+                  safeOptions
                     .filter((option) => selectedValues.has(option.value))
                     .map((option) => (
                       <Badge
@@ -88,21 +113,30 @@ export function DataTableFacetedFilter<TData, TValue>({
           <CommandList>
             <CommandEmpty>Aucun résultat trouvé.</CommandEmpty>
             <CommandGroup>
-              {options.map((option) => {
+              {safeOptions.map((option) => {
                 const isSelected = selectedValues.has(option.value)
                 return (
                   <CommandItem
                     key={option.value}
                     onSelect={() => {
+                      if (!column) return
+                      
+                      const newSelectedValues = new Set(selectedValues)
                       if (isSelected) {
-                        selectedValues.delete(option.value)
+                        newSelectedValues.delete(option.value)
                       } else {
-                        selectedValues.add(option.value)
+                        newSelectedValues.add(option.value)
                       }
-                      const filterValues = Array.from(selectedValues)
-                      column?.setFilterValue(
-                        filterValues.length ? filterValues : undefined
-                      )
+                      
+                      const filterValues = Array.from(newSelectedValues)
+                      try {
+                        column.setFilterValue(
+                          filterValues.length ? filterValues : undefined
+                        )
+                        setSelectedValues(newSelectedValues)
+                      } catch (error) {
+                        console.error('Error setting filter value:', error)
+                      }
                     }}
                   >
                     <div
@@ -133,7 +167,15 @@ export function DataTableFacetedFilter<TData, TValue>({
                 <CommandSeparator />
                 <CommandGroup>
                   <CommandItem
-                    onSelect={() => column?.setFilterValue(undefined)}
+                    onSelect={() => {
+                      if (!column) return
+                      try {
+                        column.setFilterValue(undefined)
+                        setSelectedValues(new Set())
+                      } catch (error) {
+                        console.error('Error clearing filters:', error)
+                      }
+                    }}
                     className="justify-center text-center"
                   >
                     Effacer les filtres

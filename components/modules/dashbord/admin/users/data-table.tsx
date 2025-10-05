@@ -45,6 +45,13 @@ export function DataTable<TData, TValue>({
   enableToolbar = true,
   onRowSelectionChange,
 }: DataTableProps<TData, TValue>) {
+  // Protection contre les données undefined/null
+  const safeData = Array.isArray(data) ? data : []
+  const safeColumns = Array.isArray(columns) ? columns : []
+  
+  console.log('DataTable - data:', data)
+  console.log('DataTable - safeData:', safeData)
+  console.log('DataTable - columns:', columns)
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
@@ -62,8 +69,8 @@ export function DataTable<TData, TValue>({
   }, [onRowSelectionChange, rowSelection])
 
   const table = useReactTable({
-    data,
-    columns,
+    data: safeData,
+    columns: safeColumns,
     state: {
       sorting,
       columnVisibility,
@@ -128,10 +135,10 @@ export function DataTable<TData, TValue>({
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                  colSpan={safeColumns.length || 1}
                   className="h-24 text-center text-muted-foreground"
                 >
-                  {data.length === 0 
+                  {safeData.length === 0 
                     ? "Aucune donnée disponible" 
                     : "Aucun résultat trouvé avec les filtres actuels"
                   }

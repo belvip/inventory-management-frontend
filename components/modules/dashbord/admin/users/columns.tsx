@@ -92,7 +92,7 @@ export const columns: ColumnDef<User>[] = [
     },
   },
   {
-    accessorKey: "status",
+    id: "status",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Statut" />
     ),
@@ -105,14 +105,16 @@ export const columns: ColumnDef<User>[] = [
       if (!user.accountNonLocked) {
         return <Badge variant="secondary">Verrouillé</Badge>
       }
-      return <Badge variant="success">Actif</Badge>
+      return <Badge variant="default">Actif</Badge>
     },
     filterFn: (row, id, value) => {
       const user = row.original
-      if (value === "active") return user.enabled && user.accountNonLocked
-      if (value === "locked") return !user.accountNonLocked
-      if (value === "disabled") return !user.enabled
-      return true
+      return value.some((status: string) => {
+        if (status === "active") return user.enabled && user.accountNonLocked
+        if (status === "locked") return !user.accountNonLocked
+        if (status === "disabled") return !user.enabled
+        return false
+      })
     },
   },
   {
