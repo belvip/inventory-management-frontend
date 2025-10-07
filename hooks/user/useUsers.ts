@@ -119,20 +119,23 @@ export const useUsers = () => {
 
     const updateRole = useMutation({
         mutationFn: (data: UpdateRoleRequest) => userService.updateRole(data),
-        onSuccess: (_, variables) => {
-            handleMutationSuccess(
-                queryClient,
-                "Rôle mis à jour avec succès", 
-                ['Users']
-            );
+        onSuccess: async (response, variables) => {
+            console.log('Role update success:', response, variables);
             
-            // Invalidation de l'utilisateur modifié
-            queryClient.invalidateQueries({
-                queryKey: [UsersCacheKeys.Users, variables.userId]
+            // Utiliser le message de réponse du serveur ou un message par défaut
+            const successMessage = typeof response === 'string' ? response : "Rôle mis à jour avec succès";
+            
+            // Forcer le refetch immédiat de la liste des utilisateurs
+            await queryClient.refetchQueries({
+                queryKey: [UsersCacheKeys.Users]
             });
+            
+            toast.success("Succès", { description: successMessage });
         },
-        onError: (error: ApiError) => 
-            handleMutationError(error, "Impossible de mettre à jour le rôle")
+        onError: (error: ApiError) => {
+            console.error('Role update error:', error);
+            handleMutationError(error, "Impossible de mettre à jour le rôle");
+        }
     });
 
     const deleteUser = useMutation({

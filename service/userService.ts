@@ -21,10 +21,7 @@ export const userService = {
 
     // UPDATE USER ROLE
     updateRole: async (data: UpdateRoleRequest): Promise<string> => {
-        const validRoles = Object.values(UserRoles)
-        if (!validRoles.includes(data.roleName as any)) {
-            throw new Error(`Rôle invalide: ${data.roleName}. Rôles valides: ${validRoles.join(', ')}`)
-        }
+        console.log('Updating role with data:', data)
         return apiClient.put<string>(`${BASE_URL}/update/role`, data)
     },
 

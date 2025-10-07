@@ -112,18 +112,23 @@ class ApiClient {
       return {} as T
     }
 
+    // Lire le body une seule fois
+    let responseText: string
+    try {
+      responseText = await response.text()
+    } catch (error) {
+      throw new Error("Impossible de lire la réponse du serveur")
+    }
+
     if (!response.ok) {
-      // Essayer de parser l'erreur comme JSON, sinon comme texte
       let errorMessage = `Erreur ${response.status}`
       
-      try {
-        const errorRes = await response.json()
-        errorMessage = errorRes.message || errorRes.details || errorMessage
-      } catch {
+      if (responseText) {
         try {
-          errorMessage = await response.text()
+          const errorRes = JSON.parse(responseText)
+          errorMessage = errorRes.message || errorRes.details || errorMessage
         } catch {
-          // Garder le message d'erreur par défaut
+          errorMessage = responseText || errorMessage
         }
       }
       
@@ -135,11 +140,13 @@ class ApiClient {
     }
 
     // Parser la réponse JSON
-    const data = await response.json().catch(async () => {
-      // Si le parsing JSON échoue, essayer de récupérer le texte
-      const text = await response.text()
-      throw new Error(`Réponse invalide du serveur: ${text}`)
-    })
+    let data: T
+    try {
+      data = responseText ? JSON.parse(responseText) : ({} as T)
+    } catch (error) {
+      // Si ce n'est pas du JSON, retourner le texte comme données
+      data = responseText as unknown as T
+    }
 
     if (showSuccessToast && successMessage) {
       toast.success(successMessage)

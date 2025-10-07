@@ -43,16 +43,38 @@ export function DataTableFacetedFilter<TData, TValue>({
     return null
   }
   
+  // Vérification supplémentaire des méthodes de la colonne
+  if (typeof column.getFacetedUniqueValues !== 'function' || 
+      typeof column.getFilterValue !== 'function' || 
+      typeof column.setFilterValue !== 'function') {
+    return null
+  }
+  
   const [facets, setFacets] = React.useState(new Map())
   const [selectedValues, setSelectedValues] = React.useState(new Set())
   
   React.useEffect(() => {
-    if (!column) return
+    // Protection complète contre les colonnes undefined/null
+    if (!column) {
+      setFacets(new Map())
+      setSelectedValues(new Set())
+      return
+    }
+    
+    // Vérifier que toutes les méthodes existent
+    if (typeof column.getFacetedUniqueValues !== 'function' || 
+        typeof column.getFilterValue !== 'function') {
+      setFacets(new Map())
+      setSelectedValues(new Set())
+      return
+    }
     
     try {
       const uniqueValues = column.getFacetedUniqueValues()
-      if (uniqueValues) {
+      if (uniqueValues && typeof uniqueValues.get === 'function') {
         setFacets(uniqueValues)
+      } else {
+        setFacets(new Map())
       }
       
       const filterValue = column.getFilterValue()
