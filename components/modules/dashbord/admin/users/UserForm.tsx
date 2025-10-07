@@ -91,14 +91,15 @@ export function UserForm({ open, onOpenChange, roles, user, mode = 'create' }: U
     console.log('Form data submitted:', data)
     const { address1, address2, city, postalCode, country, password, ...baseData } = data
     
-    // Address is now required in UpdateUserRequest
-    const address = {
+    // For edit: address is required, for create: address is optional
+    const hasAddressData = address1 || address2 || city || postalCode || country
+    const address = hasAddressData ? {
       address1: address1 || "",
       address2: address2 || "",
       city: city || "",
       postalCode: postalCode || "",
       country: country || "",
-    }
+    } : undefined
     
     if (isEditMode) {
       const updateData = {
@@ -106,7 +107,7 @@ export function UserForm({ open, onOpenChange, roles, user, mode = 'create' }: U
         lastName: baseData.lastName,
         userName: baseData.userName,
         email: baseData.email,
-        address
+        ...(address && { address })
       }
       console.log('Update data being sent:', updateData)
       updateUser({
@@ -115,10 +116,13 @@ export function UserForm({ open, onOpenChange, roles, user, mode = 'create' }: U
       })
     } else {
       const createData = {
-        ...baseData,
+        firstName: baseData.firstName,
+        lastName: baseData.lastName,
+        userName: baseData.userName,
+        email: baseData.email,
         password,
-        image: baseData.image || undefined,
-        address,
+        ...(baseData.image && { image: baseData.image }),
+        ...(address && { address }),
         signUpMethod: "email"
       }
       console.log('Create data being sent:', createData)

@@ -47,7 +47,7 @@ export interface UpdateUserRequest {
     lastName: string;
     userName: string;
     email: string;
-    address: AddressDto;
+    address?: AddressDto;
 }
 
 export interface UpdateUserResponse {
