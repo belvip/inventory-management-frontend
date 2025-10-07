@@ -19,16 +19,22 @@ export interface ApiError {
     response?: {
         data?: {
             timestamp?: string;
+            status?: number;
+            error?: string;
             message?: string;
             details?: string;
+            errors?: Record<string, string>; // For validation errors
         };
     };
 }
 
 export interface ErrorResponse {
     timestamp: string;
-    message: string;
-    details: string;
+    status: number;
+    error: string;
+    message?: string;
+    details?: string;
+    errors?: Record<string, string>; // For field-specific validation errors
 }
 
 export interface MessageResponse {

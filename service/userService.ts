@@ -1,7 +1,7 @@
 import { apiClient } from "@/lib/apiClient"
 import { UserRoles, MessageResponse } from "@/types/common"
 import { 
-    RegisterRequest, UpdateUserRequest, User,
+    RegisterRequest, UpdateUserRequest, UpdateUserResponse, User,
     UpdateRoleRequest, UpdatePasswordRequest,
     UpdateLockStatusRequest, UpdateEnabledStatusRequest,
     UpdateExpiryStatusRequest
@@ -15,8 +15,8 @@ export const userService = {
     },
 
     // UPDATE USER
-    update: async (id: number, data: UpdateUserRequest): Promise<User> => {
-        return apiClient.put<User>(`${BASE_URL}/update/${id}`, data)
+    update: async (id: number, data: UpdateUserRequest): Promise<UpdateUserResponse> => {
+        return apiClient.put<UpdateUserResponse>(`${BASE_URL}/update/${id}`, data)
     },
 
     // UPDATE USER ROLE

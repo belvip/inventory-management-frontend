@@ -43,10 +43,20 @@ export interface SigninResponse {
 }
 
 export interface UpdateUserRequest {
-    userName: string;
-    email: string;
     firstName: string;
     lastName: string;
+    userName: string;
+    email: string;
+    address: AddressDto;
+}
+
+export interface UpdateUserResponse {
+    userId: number;
+    firstName: string;
+    lastName: string;
+    userName: string;
+    email: string;
+    address: AddressDto;
 }
 
 // Types spécifiques pour les requêtes utilisateur
@@ -80,5 +90,5 @@ export interface RoleResponse {
 }
 
 export type CreateUserMutation = UseMutationResult<User, ApiError, { data: RegisterRequest }, unknown>;
-export type UpdateUserMutation = UseMutationResult<User, ApiError, { id: number; data: UpdateUserRequest }, unknown>;
+export type UpdateUserMutation = UseMutationResult<UpdateUserResponse, ApiError, { id: number; data: UpdateUserRequest }, unknown>;
 export type DeleteUserMutation = UseMutationResult<unknown, ApiError, number, unknown>;

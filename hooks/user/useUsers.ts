@@ -17,7 +17,22 @@ import { UsersCacheKeys } from "@/lib/const";
 
 // Helpers pour réduire la duplication
 const handleMutationError = (error: ApiError, defaultMessage: string) => {
-    const errorMessage = error.response?.data?.message ?? defaultMessage;
+    const errorData = error.response?.data;
+    
+    // Si on a des erreurs de validation spécifiques
+    if (errorData?.errors && Object.keys(errorData.errors).length > 0) {
+        const validationErrors = Object.entries(errorData.errors)
+            .map(([field, message]) => `${field}: ${message}`)
+            .join('\n');
+        toast.error("Erreurs de validation", { 
+            description: validationErrors,
+            duration: 5000
+        });
+        return;
+    }
+    
+    // Sinon, utiliser le message d'erreur général
+    const errorMessage = errorData?.message || errorData?.error || defaultMessage;
     toast.error("Erreur", { description: errorMessage });
 };
 

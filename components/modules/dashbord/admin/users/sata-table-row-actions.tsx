@@ -23,6 +23,7 @@ import {
   UserX
 } from "lucide-react"
 import { useUsers } from "@/hooks/user"
+import { useUserContext } from "./UserContext"
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>
@@ -32,6 +33,7 @@ export function DataTableRowActions<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
   const user = row.original as User
+  const { onEditUser } = useUserContext()
   const {
     updateLockStatus,
     updateEnabledStatus,
@@ -51,7 +53,7 @@ export function DataTableRowActions<TData>({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[160px]">
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={() => onEditUser(user)}>
           <Edit className="mr-2 h-4 w-4" />
           Modifier
         </DropdownMenuItem>

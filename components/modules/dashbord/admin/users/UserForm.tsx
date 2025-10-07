@@ -24,8 +24,9 @@ import {
 import { Eye, EyeOff, Check, X } from "lucide-react"
 import { useUsersAdmin } from "@/hooks/user"
 import { toast } from "sonner"
+import { User } from "@/types"
 
-const UserSchema = z.object({
+const createUserSchema = z.object({
   firstName: z.string().min(3, "Le prénom doit contenir au moins 3 caractères").max(20, "Le prénom ne peut pas dépasser 20 caractères"),
   lastName: z.string().min(3, "Le nom doit contenir au moins 3 caractères").max(20, "Le nom ne peut pas dépasser 20 caractères"),
   userName: z.string().min(4, "Le nom d'utilisateur doit contenir au moins 4 caractères").max(10, "Le nom d'utilisateur ne peut pas dépasser 10 caractères"),
@@ -39,51 +40,90 @@ const UserSchema = z.object({
   country: z.string().optional(),
 })
 
+const editUserSchema = z.object({
+  firstName: z.string().min(3, "Le prénom doit contenir au moins 3 caractères").max(20, "Le prénom ne peut pas dépasser 20 caractères"),
+  lastName: z.string().min(3, "Le nom doit contenir au moins 3 caractères").max(20, "Le nom ne peut pas dépasser 20 caractères"),
+  userName: z.string().min(4, "Le nom d'utilisateur doit contenir au moins 4 caractères").max(10, "Le nom d'utilisateur ne peut pas dépasser 10 caractères"),
+  email: z.string().email("Email invalide").max(50, "L'email ne peut pas dépasser 50 caractères"),
+  password: z.string().optional(),
+  image: z.string().url("URL invalide").optional().or(z.literal("")),
+  address1: z.string().optional(),
+  address2: z.string().optional(),
+  city: z.string().optional(),
+  postalCode: z.string().optional(),
+  country: z.string().optional(),
+})
+
 interface UserFormProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   roles: Array<{id: number, roleName: string}>
+  user?: User | null
+  mode?: 'create' | 'edit'
 }
 
-export function UserForm({ open, onOpenChange, roles }: UserFormProps) {
+export function UserForm({ open, onOpenChange, roles, user, mode = 'create' }: UserFormProps) {
   const [showPassword, setShowPassword] = useState(false)
-  const { createUser, isCreating } = useUsersAdmin()
+  const { createUser, updateUser, isCreating, isUpdating } = useUsersAdmin()
+  const isEditMode = mode === 'edit' && user
   
-  const form = useForm<z.infer<typeof UserSchema>>({
-    resolver: zodResolver(UserSchema),
+  const schema = isEditMode ? editUserSchema : createUserSchema
+  
+  const form = useForm<z.infer<typeof schema>>({
+    resolver: zodResolver(schema),
     mode: "onChange",
     defaultValues: {
-      firstName: "",
-      lastName: "",
-      userName: "",
-      email: "",
+      firstName: user?.firstName || "",
+      lastName: user?.lastName || "",
+      userName: user?.userName || "",
+      email: user?.email || "",
       password: "",
-      image: "",
-      address1: "",
-      address2: "",
-      city: "",
-      postalCode: "",
-      country: "",
+      image: user?.image || "",
+      address1: user?.address?.address1 || "",
+      address2: user?.address?.address2 || "",
+      city: user?.address?.city || "",
+      postalCode: user?.address?.postalCode || "",
+      country: user?.address?.country || "",
     },
   })
 
-  async function onSubmit(data: z.infer<typeof UserSchema>) {
-    const { address1, address2, city, postalCode, country, ...baseData } = data
+  async function onSubmit(data: any) {
+    console.log('Form data submitted:', data)
+    const { address1, address2, city, postalCode, country, password, ...baseData } = data
     
-    const address = (address1 || address2 || city || postalCode || country) ? {
-      address1: address1 || undefined,
-      address2: address2 || undefined,
-      city: city || undefined,
-      postalCode: postalCode || undefined,
-      country: country || undefined,
-    } : undefined
+    // Address is now required in UpdateUserRequest
+    const address = {
+      address1: address1 || "",
+      address2: address2 || "",
+      city: city || "",
+      postalCode: postalCode || "",
+      country: country || "",
+    }
     
-    createUser({
-      ...baseData,
-      image: baseData.image || undefined,
-      address,
-      signUpMethod: "email"
-    })
+    if (isEditMode) {
+      const updateData = {
+        firstName: baseData.firstName,
+        lastName: baseData.lastName,
+        userName: baseData.userName,
+        email: baseData.email,
+        address
+      }
+      console.log('Update data being sent:', updateData)
+      updateUser({
+        id: user.userId,
+        data: updateData
+      })
+    } else {
+      const createData = {
+        ...baseData,
+        password,
+        image: baseData.image || undefined,
+        address,
+        signUpMethod: "email"
+      }
+      console.log('Create data being sent:', createData)
+      createUser(createData)
+    }
     form.reset()
     onOpenChange(false)
   }
@@ -92,9 +132,9 @@ export function UserForm({ open, onOpenChange, roles }: UserFormProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Créer un utilisateur</DialogTitle>
+          <DialogTitle>{isEditMode ? 'Modifier l\'utilisateur' : 'Créer un utilisateur'}</DialogTitle>
           <DialogDescription>
-            Ajoutez un nouvel utilisateur au système.
+            {isEditMode ? 'Modifiez les informations de l\'utilisateur.' : 'Ajoutez un nouvel utilisateur au système.'}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -245,56 +285,58 @@ export function UserForm({ open, onOpenChange, roles }: UserFormProps) {
               )}
             />
             
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem className="group">
-                  <FormLabel className="text-sm font-medium text-foreground/80 group-focus-within:text-primary transition-colors">Mot de passe</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Input
-                        type={showPassword ? "text" : "password"}
-                        placeholder="••••••••"
-                        {...field}
-                        disabled={isCreating}
-                        className={`h-10 pl-4 pr-20 bg-background/50 border-2 transition-all duration-300 rounded-lg hover:border-border/60 ${
-                          form.formState.errors.password 
-                            ? "border-red-400 focus:border-red-500 bg-red-50/50" 
-                            : field.value && !form.formState.errors.password 
-                            ? "border-green-400 focus:border-green-500 bg-green-50/50" 
-                            : "border-border/40 focus:border-primary/60 focus:bg-background"
-                        }`}
-                      />
-                      {field.value && (
-                        <div className="absolute right-12 top-1/2 -translate-y-1/2">
-                          {form.formState.errors.password ? (
-                            <X className="h-4 w-4 text-red-500" />
-                          ) : (
-                            <Check className="h-4 w-4 text-green-500" />
-                          )}
-                        </div>
-                      )}
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-lg hover:bg-muted/50 transition-colors"
-                        onClick={() => setShowPassword(!showPassword)}
-                        disabled={isCreating}
-                      >
-                        {showPassword ? (
-                          <EyeOff className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
-                        ) : (
-                          <Eye className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
+            {!isEditMode && (
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem className="group">
+                    <FormLabel className="text-sm font-medium text-foreground/80 group-focus-within:text-primary transition-colors">Mot de passe</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Input
+                          type={showPassword ? "text" : "password"}
+                          placeholder="••••••••"
+                          {...field}
+                          disabled={isCreating}
+                          className={`h-10 pl-4 pr-20 bg-background/50 border-2 transition-all duration-300 rounded-lg hover:border-border/60 ${
+                            form.formState.errors.password 
+                              ? "border-red-400 focus:border-red-500 bg-red-50/50" 
+                              : field.value && !form.formState.errors.password 
+                              ? "border-green-400 focus:border-green-500 bg-green-50/50" 
+                              : "border-border/40 focus:border-primary/60 focus:bg-background"
+                          }`}
+                        />
+                        {field.value && (
+                          <div className="absolute right-12 top-1/2 -translate-y-1/2">
+                            {form.formState.errors.password ? (
+                              <X className="h-4 w-4 text-red-500" />
+                            ) : (
+                              <Check className="h-4 w-4 text-green-500" />
+                            )}
+                          </div>
                         )}
-                      </Button>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-lg hover:bg-muted/50 transition-colors"
+                          onClick={() => setShowPassword(!showPassword)}
+                          disabled={isCreating}
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
+                          ) : (
+                            <Eye className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
+                          )}
+                        </Button>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
             
             <FormField
               control={form.control}
@@ -420,11 +462,14 @@ export function UserForm({ open, onOpenChange, roles }: UserFormProps) {
             </div>
             
             <div className="flex justify-end gap-3 pt-4">
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isCreating}>
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isCreating || isUpdating}>
                 Annuler
               </Button>
-              <Button type="submit" disabled={isCreating}>
-                {isCreating ? "Création..." : "Créer l'utilisateur"}
+              <Button type="submit" disabled={isCreating || isUpdating}>
+                {isEditMode 
+                  ? (isUpdating ? "Modification..." : "Modifier l'utilisateur")
+                  : (isCreating ? "Création..." : "Créer l'utilisateur")
+                }
               </Button>
             </div>
           </form>

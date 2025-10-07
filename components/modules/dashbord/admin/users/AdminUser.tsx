@@ -10,11 +10,33 @@ import { UserForm } from "./UserForm"
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { UserProvider } from "./UserContext"
+import type { User } from "@/types/user"
+import { toast } from "sonner"
 
 export function AdminUser() {
-  const { user: currentUser, isAuthenticated, isLoading: authLoading } = useAuth()
+  const { user: currentUser, isAuthenticated, isLoading: authLoading, accessToken } = useAuth()
   const { users, isLoading, roles } = useUsersAdmin()
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [editingUser, setEditingUser] = useState<User | null>(null)
+
+  // Fonction pour gérer l'édition avec vérification du token
+  const handleEditUser = (user: User) => {
+    console.log('handleEditUser called with:', user)
+    console.log('Current accessToken:', accessToken ? 'Present' : 'Missing')
+    console.log('Current user:', currentUser)
+    
+    if (!accessToken) {
+      console.error('No access token available')
+      toast.error("Session expirée", { 
+        description: "Veuillez vous reconnecter" 
+      })
+      return
+    }
+    
+    console.log('Setting editing user:', user)
+    setEditingUser(user)
+  }
 
   // Debug: Vérifier l'utilisateur actuel
   useEffect(() => {
@@ -161,7 +183,9 @@ export function AdminUser() {
           <CardTitle>Liste des Utilisateurs</CardTitle>
         </CardHeader>
         <CardContent>
-          <DataTable columns={columns} data={users || []} />
+          <UserProvider onEditUser={handleEditUser}>
+            <DataTable columns={columns} data={users || []} />
+          </UserProvider>
         </CardContent>
       </Card>
 
@@ -169,8 +193,20 @@ export function AdminUser() {
       <UserForm 
         open={isCreateModalOpen}
         onOpenChange={setIsCreateModalOpen}
+        mode="create"
         roles={roles || []}
       />
+      
+      {/* Edit User Modal */}
+      {editingUser && (
+        <UserForm 
+          open={!!editingUser}
+          onOpenChange={(open) => !open && setEditingUser(null)}
+          mode="edit"
+          user={editingUser}
+          roles={roles || []}
+        />
+      )}
     </div>
   )
 }
