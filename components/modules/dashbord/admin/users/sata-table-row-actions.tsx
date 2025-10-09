@@ -65,7 +65,7 @@ export function DataTableRowActions<TData>({
           <DropdownMenuItem
             onClick={() => updateLockStatus.mutate({ 
               userId: user.userId, 
-              lock: !user.accountNonLocked 
+              lock: user.accountNonLocked 
             })}
           >
             {user.accountNonLocked ? (

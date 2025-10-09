@@ -38,20 +38,13 @@ export function DataTableFacetedFilter<TData, TValue>({
   title,
   options,
 }: DataTableFacetedFilterProps<TData, TValue>) {
-  // Protection contre les colonnes ou options undefined
-  if (!column || !Array.isArray(options) || !options.length) {
-    return null
-  }
-  
-  // Vérification supplémentaire des méthodes de la colonne
-  if (typeof column.getFacetedUniqueValues !== 'function' || 
+  // Protection robuste contre les colonnes undefined
+  if (!column || 
+      !Array.isArray(options) || 
+      !options.length ||
+      typeof column.getFacetedUniqueValues !== 'function' || 
       typeof column.getFilterValue !== 'function' || 
       typeof column.setFilterValue !== 'function') {
-    return null
-  }
-  
-  // Vérification de l'état de la colonne pendant le rendu
-  if (!column || column === undefined) {
     return null
   }
   
@@ -59,41 +52,19 @@ export function DataTableFacetedFilter<TData, TValue>({
   const [selectedValues, setSelectedValues] = React.useState(new Set())
   
   React.useEffect(() => {
-    // Protection complète contre les colonnes undefined/null
-    if (!column || column === undefined || column === null) {
-      return
-    }
+    if (!column) return
     
-    // Vérifier que toutes les méthodes existent
-    if (typeof column.getFacetedUniqueValues !== 'function' || 
-        typeof column.getFilterValue !== 'function') {
-      return
-    }
-    
-    // Délai pour éviter les conflits pendant le refetch
-    const timeoutId = setTimeout(() => {
-      // Double vérification avant l'exécution
-      if (!column || 
-          column === undefined || 
-          typeof column.getFacetedUniqueValues !== 'function' ||
-          typeof column.getFilterValue !== 'function') {
-        return
+    try {
+      const uniqueValues = column.getFacetedUniqueValues()
+      if (uniqueValues && typeof uniqueValues.get === 'function') {
+        setFacets(uniqueValues)
       }
       
-      try {
-        const uniqueValues = column.getFacetedUniqueValues()
-        if (uniqueValues && typeof uniqueValues.get === 'function') {
-          setFacets(uniqueValues)
-        }
-        
-        const filterValue = column.getFilterValue()
-        setSelectedValues(new Set(Array.isArray(filterValue) ? filterValue : []))
-      } catch (error) {
-        console.warn('Column temporarily unavailable during update')
-      }
-    }, 150)
-    
-    return () => clearTimeout(timeoutId)
+      const filterValue = column.getFilterValue()
+      setSelectedValues(new Set(Array.isArray(filterValue) ? filterValue : []))
+    } catch (error) {
+      // Ignorer silencieusement les erreurs pendant les mises à jour
+    }
   }, [column])
   
   const safeOptions = options

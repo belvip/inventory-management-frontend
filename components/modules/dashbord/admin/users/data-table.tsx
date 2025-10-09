@@ -46,12 +46,8 @@ export function DataTable<TData, TValue>({
   onRowSelectionChange,
 }: DataTableProps<TData, TValue>) {
   // Protection contre les données undefined/null
-  const safeData = React.useMemo(() => Array.isArray(data) ? data : [], [data])
-  const safeColumns = React.useMemo(() => Array.isArray(columns) ? columns : [], [columns])
-  
-  // Éviter les re-rendus inutiles pendant les mises à jour du cache
-  const stableData = React.useMemo(() => safeData, [safeData.length])
-  const stableColumns = React.useMemo(() => safeColumns, [safeColumns.length])
+  const safeData = Array.isArray(data) ? data : []
+  const safeColumns = Array.isArray(columns) ? columns : []
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
@@ -69,8 +65,8 @@ export function DataTable<TData, TValue>({
   }, [onRowSelectionChange, rowSelection])
 
   const table = useReactTable({
-    data: stableData,
-    columns: stableColumns,
+    data: safeData,
+    columns: safeColumns,
     state: {
       sorting,
       columnVisibility,
@@ -88,8 +84,7 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
-    // Stabiliser la table pendant les mises à jour
-    autoResetAll: false,
+
   })
 
   return (

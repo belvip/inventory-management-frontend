@@ -176,32 +176,13 @@ export const useUsers = () => {
             onSuccess: async (response, variables) => {
                 console.log('Status mutation success:', response, variables);
                 
-                // Si la réponse est un objet User, faire une mise à jour optimiste
-                if (response && typeof response === 'object' && 'userId' in response) {
-                    const updatedUser = response as User;
-                    
-                    // Mettre à jour le cache avec les nouvelles données
-                    queryClient.setQueryData(
-                        [UsersCacheKeys.Users],
-                        (oldData: User[] | undefined) => {
-                            if (!oldData) return [updatedUser];
-                            return oldData.map(user => 
-                                user.userId === updatedUser.userId ? updatedUser : user
-                            );
-                        }
-                    );
-                    
-                    console.log('Cache updated optimistically with:', updatedUser);
-                    toast.success("Succès", { description: successMessage });
-                } else {
-                    // Sinon, refetch les données
-                    await queryClient.refetchQueries({ 
-                        queryKey: [UsersCacheKeys.Users]
-                    });
-                    
-                    const message = typeof response === 'string' ? response : successMessage;
-                    toast.success("Succès", { description: message });
-                }
+                // Refetch simple pour éviter les problèmes de cache
+                await queryClient.refetchQueries({ 
+                    queryKey: [UsersCacheKeys.Users]
+                });
+                
+                const message = typeof response === 'string' ? response : successMessage;
+                toast.success("Succès", { description: message });
             },
             onError: (error: ApiError) => 
                 handleMutationError(error, "Impossible de mettre à jour le statut")
