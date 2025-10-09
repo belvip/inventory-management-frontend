@@ -62,9 +62,9 @@ export const userService = {
         return apiClient.get<Array<{id: number, roleName: string}>>(`${BASE_URL}/roles`)
     },
 
-    // STATUS UPDATE METHODS (all return string messages)
-    updateLockStatus: async (data: UpdateLockStatusRequest): Promise<string> => {
-        return apiClient.put<string>(`${BASE_URL}/update-lock-status`, data)
+    // STATUS UPDATE METHODS
+    updateLockStatus: async (data: UpdateLockStatusRequest): Promise<User> => {
+        return apiClient.put<User>(`${BASE_URL}/update-lock-status`, data)
     },
 
     updateCredentialsExpiryStatus: async (data: UpdateExpiryStatusRequest): Promise<string> => {

@@ -103,7 +103,7 @@ export const columns: ColumnDef<User>[] = [
         return <Badge variant="destructive">Désactivé</Badge>
       }
       if (!user.accountNonLocked) {
-        return <Badge variant="secondary">Verrouillé</Badge>
+        return <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-200 border-orange-200">Verrouillé</Badge>
       }
       return <Badge className="bg-green-100 text-green-800 hover:bg-green-200">Actif</Badge>
     },

@@ -50,40 +50,50 @@ export function DataTableFacetedFilter<TData, TValue>({
     return null
   }
   
+  // Vérification de l'état de la colonne pendant le rendu
+  if (!column || column === undefined) {
+    return null
+  }
+  
   const [facets, setFacets] = React.useState(new Map())
   const [selectedValues, setSelectedValues] = React.useState(new Set())
   
   React.useEffect(() => {
     // Protection complète contre les colonnes undefined/null
-    if (!column) {
-      setFacets(new Map())
-      setSelectedValues(new Set())
+    if (!column || column === undefined || column === null) {
       return
     }
     
     // Vérifier que toutes les méthodes existent
     if (typeof column.getFacetedUniqueValues !== 'function' || 
         typeof column.getFilterValue !== 'function') {
-      setFacets(new Map())
-      setSelectedValues(new Set())
       return
     }
     
-    try {
-      const uniqueValues = column.getFacetedUniqueValues()
-      if (uniqueValues && typeof uniqueValues.get === 'function') {
-        setFacets(uniqueValues)
-      } else {
-        setFacets(new Map())
+    // Délai pour éviter les conflits pendant le refetch
+    const timeoutId = setTimeout(() => {
+      // Double vérification avant l'exécution
+      if (!column || 
+          column === undefined || 
+          typeof column.getFacetedUniqueValues !== 'function' ||
+          typeof column.getFilterValue !== 'function') {
+        return
       }
       
-      const filterValue = column.getFilterValue()
-      setSelectedValues(new Set(Array.isArray(filterValue) ? filterValue : []))
-    } catch (error) {
-      console.error('Error updating faceted filter:', error)
-      setFacets(new Map())
-      setSelectedValues(new Set())
-    }
+      try {
+        const uniqueValues = column.getFacetedUniqueValues()
+        if (uniqueValues && typeof uniqueValues.get === 'function') {
+          setFacets(uniqueValues)
+        }
+        
+        const filterValue = column.getFilterValue()
+        setSelectedValues(new Set(Array.isArray(filterValue) ? filterValue : []))
+      } catch (error) {
+        console.warn('Column temporarily unavailable during update')
+      }
+    }, 150)
+    
+    return () => clearTimeout(timeoutId)
   }, [column])
   
   const safeOptions = options
