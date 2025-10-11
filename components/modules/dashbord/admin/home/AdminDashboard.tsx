@@ -8,6 +8,7 @@ import { MetricCard, DashboardHeader, ControlsSection } from "@/components/share
 import { UserCheck, Archive, Lock, Settings } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { userService } from "@/service/userService"
 
 export function AdminDashboard() {
     // Vérification des permissions admin
@@ -36,17 +37,13 @@ export function AdminDashboard() {
             setIsLoading(true)
             setError(null)
             
-            // Simulation d'appel API avec délai
-            await new Promise(resolve => setTimeout(resolve, 1000))
+            // Récupérer le nombre réel d'utilisateurs
+            const users = await userService.getAll()
+            const usersCount = users.length
             
-            // Simulation d'erreur occasionnelle
-            if (Math.random() > 0.8 && retryCount < 2) {
-                throw new Error('Erreur de connexion au serveur')
-            }
-            
-            // Données simulées
+            // Données avec le vrai nombre d'utilisateurs
             setDashboardData({
-                totalUsers: 156,
+                totalUsers: usersCount,
                 totalProducts: 1247,
                 totalOrders: 89,
                 monthlyRevenue: 125000,
@@ -223,14 +220,12 @@ export function AdminDashboard() {
                 <MetricCard
                     title="Total Utilisateurs"
                     value={totalUsers}
-                    description="Tous les utilisateurs système"
+                    description="Utilisateurs du système"
                     icon={Users}
                     iconColor="text-blue-500"
                     isLoading={isLoading}
                     isError={!!error}
                     errorMessage="Échec du chargement des utilisateurs. Vérifiez votre connexion."
-                    progress={75}
-                    change="+12%"
                     onRetry={handleManualRetry}
                     onClick={handleUserClick}
                     isEmpty={!isLoading && !error && totalUsers === 0}
@@ -246,8 +241,6 @@ export function AdminDashboard() {
                     isLoading={isLoading}
                     isError={!!error}
                     errorMessage="Impossible d'accéder aux données produits. Réessayez plus tard."
-                    progress={85}
-                    change="+8%"
                     onRetry={handleManualRetry}
                     onClick={handleProductsClick}
                     isEmpty={!isLoading && !error && !hasData.products}
@@ -263,8 +256,6 @@ export function AdminDashboard() {
                     isLoading={isLoading}
                     isError={!!error}
                     errorMessage="Données de commandes indisponibles. Problème de synchronisation."
-                    progress={60}
-                    change="+15%"
                     onRetry={handleManualRetry}
                     onClick={handleOrdersClick}
                     isEmpty={!isLoading && !error && !hasData.orders}
@@ -280,8 +271,6 @@ export function AdminDashboard() {
                     isLoading={isLoading}
                     isError={!!error}
                     errorMessage="Données financières temporairement inaccessibles. Contactez le support."
-                    progress={90}
-                    change="+22%"
                     onRetry={handleManualRetry}
                     onClick={handleRevenueClick}
                     isEmpty={!isLoading && !error && !hasData.revenue}

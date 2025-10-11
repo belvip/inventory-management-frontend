@@ -62,7 +62,7 @@ export function UserProfileModal({ open, onOpenChange }: UserProfileModalProps) 
             </Avatar>
             <div>
               <h3 className="text-xl font-semibold">{fullName}</h3>
-              <p className="text-sm text-muted-foreground">@{user.username}</p>
+              <p className="text-sm text-muted-foreground">@{user.userName}</p>
             </div>
           </div>
 
@@ -86,11 +86,9 @@ export function UserProfileModal({ open, onOpenChange }: UserProfileModalProps) 
                   <div className="flex-1">
                     <p className="text-sm font-medium">Rôle</p>
                     <div className="flex gap-2 mt-1">
-                      {user.roles.map((role) => (
-                        <Badge key={role} variant="secondary">
-                          {getRoleLabel(role)}
-                        </Badge>
-                      ))}
+                      <Badge variant="secondary">
+                        {getRoleLabel(user.roleName)}
+                      </Badge>
                     </div>
                   </div>
                 </div>

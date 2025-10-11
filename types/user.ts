@@ -1,35 +1,33 @@
 import { UseMutationResult } from "@tanstack/react-query";
-import { AddressDto } from "./index";
-import type { ApiError } from "./index";
+import { AddressDto } from "./common";
+import type { ApiError } from "./common";
 
 export type User = {
     userId: number;
     firstName: string;
     lastName: string;
-    username: string;
+    userName: string;
     email: string;
-    image?: string;
-    address?: AddressDto;
+    enabled: boolean;
     accountNonLocked: boolean;
     accountNonExpired: boolean;
     credentialsNonExpired: boolean;
-    enabled: boolean;
-    credentialsExpiryDate?: string;
-    accountExpiryDate?: string;
-    isTwoFactorEnabled: boolean;
-    signUpMethod?: string;
-    roles: string[];
+    roleName: string;
+    image?: string;
+    address?: AddressDto;
+    createdDate?: string;
+    updatedDate?: string;
 };
 
 export interface RegisterRequest {
-    username: string;
-    email: string;
-    password: string;
     firstName: string;
     lastName: string;
+    userName: string;
+    email: string;
+    password: string;
     image?: string;
-    signUpMethod?: string;
     address?: AddressDto;
+    signUpMethod?: string;
 }
 
 export interface LoginRequest {
@@ -47,13 +45,50 @@ export interface SigninResponse {
 export interface UpdateUserRequest {
     firstName: string;
     lastName: string;
-    username: string;
+    userName: string;
     email: string;
-    password?: string;
-    image?: string;
     address?: AddressDto;
 }
 
+export interface UpdateUserResponse {
+    userId: number;
+    firstName: string;
+    lastName: string;
+    userName: string;
+    email: string;
+    address: AddressDto;
+}
+
+// Types spécifiques pour les requêtes utilisateur
+export interface UpdateRoleRequest {
+    userId: number
+    roleName: string
+}
+
+export interface UpdatePasswordRequest {
+    password: string
+}
+
+export interface UpdateLockStatusRequest {
+    userId: number
+    lock: boolean
+}
+
+export interface UpdateEnabledStatusRequest {
+    userId: number
+    enabled: boolean
+}
+
+export interface UpdateExpiryStatusRequest {
+    userId: number
+    expire: boolean
+}
+
+export interface RoleResponse {
+  id: number;
+  roleName: string;
+}
+
 export type CreateUserMutation = UseMutationResult<User, ApiError, { data: RegisterRequest }, unknown>;
-export type UpdateUserMutation = UseMutationResult<User, ApiError, { id: number; data: UpdateUserRequest }, unknown>;
+export type UpdateUserMutation = UseMutationResult<UpdateUserResponse, ApiError, { id: number; data: UpdateUserRequest }, unknown>;
 export type DeleteUserMutation = UseMutationResult<unknown, ApiError, number, unknown>;

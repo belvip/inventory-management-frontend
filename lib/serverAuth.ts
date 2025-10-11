@@ -53,10 +53,10 @@ export async function authorize(
     allowedRoles: string[],
     redirectPath = "/unauthorized"
 ): Promise<boolean> {
-    const hasPermission = user.roles.some(role => allowedRoles.includes(role));
+    const hasPermission = user.roleName === allowedRoles[0];
 
     if (!hasPermission) {
-        console.warn("Unauthorized access by roles:", user.roles);
+        console.warn("Unauthorized access by role:", user.roleName);
         redirect(redirectPath);
         return false;
     }

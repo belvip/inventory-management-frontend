@@ -1,4 +1,4 @@
-// stores/userStore.ts
+
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { User } from '@/types/user';
@@ -10,7 +10,7 @@ interface UserStore {
 	setUser: (user: User) => void;
 	setTokens: (accessToken: string, refreshToken: string) => void;
 	clearUser: () => void;
-	isAuthenticated: boolean; // 🔥 CHANGEMENT : Supprimer la fonction
+	isAuthenticated: boolean; 
 }
 
 const customSessionStorage = {
@@ -34,30 +34,26 @@ export const useUserStore = create<UserStore>()(
 			user: null,
 			accessToken: null,
 			refreshToken: null,
-			isAuthenticated: false, // 🔥 CHANGEMENT : Variable simple
+			isAuthenticated: false, 
 			
 			setUser: (user) => {
-				const normalizedUser = {
-					...user,
-					roles: Array.isArray(user.roles) ? user.roles : [user.roles || 'ROLE_USER']
-				};
 				set({ 
-					user: normalizedUser,
-					isAuthenticated: true // 🔥 Mettre à jour l'état
+					user,
+					isAuthenticated: true 
 				});
 			},
 			
 			setTokens: (accessToken, refreshToken) => set({ 
 				accessToken, 
 				refreshToken,
-				isAuthenticated: true // 🔥 Mettre à jour l'état
+				isAuthenticated: true 
 			}),
 			
 			clearUser: () => set({ 
 				user: null, 
 				accessToken: null, 
 				refreshToken: null,
-				isAuthenticated: false // 🔥 Réinitialiser l'état
+				isAuthenticated: false 
 			}),
 		}),
 		{

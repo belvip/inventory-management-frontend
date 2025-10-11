@@ -1,4 +1,3 @@
-// lib/apiClient.ts
 import { toast } from "sonner"
 import { useUserStore } from '@/stores/userStore'
 
@@ -38,9 +37,17 @@ class ApiClient {
       skipAuth = false 
     } = clientOptions
 
-    const headers: Record<string, string> = {
-      "Content-Type": "application/json",
-      ...options.headers as Record<string, string>,
+    // Ne pas définir Content-Type pour FormData (le navigateur le fera automatiquement)
+    const isFormData = options.body instanceof FormData
+    const headers: Record<string, string> = {}
+    
+    if (!isFormData) {
+      headers["Content-Type"] = "application/json"
+    }
+
+    // Ajouter les headers personnalisés s'ils existent
+    if (options.headers) {
+      Object.assign(headers, options.headers)
     }
 
     // Ajouter le token seulement si nécessaire et disponible
@@ -58,15 +65,15 @@ class ApiClient {
       })
       
       return await this.handleResponse<T>(response, showErrorToast, showSuccessToast, successMessage)
-    } catch (error) {
-      if (error instanceof TypeError && error.message === 'Failed to fetch') {
+    } catch (err) {
+      if (err instanceof TypeError && err.message === 'Failed to fetch') {
         const corsError = 'Erreur de connexion au serveur. Le backend doit autoriser votre domaine Vercel.'
         if (showErrorToast) {
           toast.error('Problème CORS', { description: corsError })
         }
         throw new Error(corsError)
       }
-      throw error
+      throw err
     }
   }
 
@@ -80,7 +87,6 @@ class ApiClient {
     if (response.status === 401 || response.status === 403) {
       const { clearUser } = useUserStore.getState()
       clearUser() // 👈 Nettoyage automatique du store
-      this.onUnauthorized?.()
       
       if (showErrorToast) {
         toast.error("Session expirée", { 
@@ -88,12 +94,43 @@ class ApiClient {
         })
       }
       
+      // Redirection vers login seulement si pas déjà sur une page d'auth
+      if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
+        setTimeout(() => {
+          window.location.href = '/login'
+        }, 1000)
+      }
+      
       throw new Error("Non autorisé")
     }
 
+    // Gestion des réponses vides (204 No Content)
+    if (response.status === 204) {
+      if (showSuccessToast && successMessage) {
+        toast.success(successMessage)
+      }
+      return {} as T
+    }
+
+    // Lire le body une seule fois
+    let responseText: string
+    try {
+      responseText = await response.text()
+    } catch {
+      throw new Error("Impossible de lire la réponse du serveur")
+    }
+
     if (!response.ok) {
-      const errorRes = await response.json().catch(() => ({}))
-      const errorMessage = errorRes.message || `Erreur ${response.status}`
+      let errorMessage = `Erreur ${response.status}`
+      
+      if (responseText) {
+        try {
+          const errorRes = JSON.parse(responseText)
+          errorMessage = errorRes.message || errorRes.details || errorMessage
+        } catch {
+          errorMessage = responseText || errorMessage
+        }
+      }
       
       if (showErrorToast) {
         toast.error("Erreur", { description: errorMessage })
@@ -102,7 +139,14 @@ class ApiClient {
       throw new Error(errorMessage)
     }
 
-    const data = await response.json().catch(() => ({}))
+    // Parser la réponse JSON
+    let data: T
+    try {
+      data = responseText ? JSON.parse(responseText) : ({} as T)
+    } catch {
+      // Si ce n'est pas du JSON, retourner le texte comme données
+      data = responseText as unknown as T
+    }
 
     if (showSuccessToast && successMessage) {
       toast.success(successMessage)
@@ -120,7 +164,7 @@ class ApiClient {
       endpoint,
       {
         method: "POST",
-        body: data ? JSON.stringify(data) : undefined,
+        body: data ? (data instanceof FormData ? data : JSON.stringify(data)) : undefined,
       },
       options
     )
@@ -131,7 +175,7 @@ class ApiClient {
       endpoint,
       {
         method: "PUT",
-        body: data ? JSON.stringify(data) : undefined,
+        body: data ? (data instanceof FormData ? data : JSON.stringify(data)) : undefined,
       },
       options
     )
@@ -142,7 +186,7 @@ class ApiClient {
       endpoint,
       {
         method: "PATCH",
-        body: data ? JSON.stringify(data) : undefined,
+        body: data ? (data instanceof FormData ? data : JSON.stringify(data)) : undefined,
       },
       options
     )
@@ -150,6 +194,11 @@ class ApiClient {
 
   async delete<T>(endpoint: string, options?: ApiClientOptions): Promise<T> {
     return this.request<T>(endpoint, { method: "DELETE" }, options)
+  }
+
+  // Méthode utilitaire pour obtenir l'URL de base (utile pour les appels FormData personnalisés)
+  getBaseURL(): string {
+    return this.baseURL
   }
 }
 

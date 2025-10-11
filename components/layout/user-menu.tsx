@@ -36,7 +36,7 @@ export function UserMenu() {
   )
   
   const userEmail = user?.email || ""
-  const username = user?.username || ""
+  const username = user?.userName || ""
   const initials = useMemo(() => 
     getInitials(user?.firstName, user?.lastName),
     [user?.firstName, user?.lastName]

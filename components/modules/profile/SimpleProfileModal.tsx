@@ -24,8 +24,8 @@ export function SimpleProfileModal({ open, onOpenChange }: SimpleProfileModalPro
             <>
               <p><strong>Nom:</strong> {user.firstName} {user.lastName}</p>
               <p><strong>Email:</strong> {user.email}</p>
-              <p><strong>Username:</strong> {user.username}</p>
-              <p><strong>Rôle:</strong> {user.roles.join(', ')}</p>
+              <p><strong>Username:</strong> {user.userName}</p>
+              <p><strong>Rôle:</strong> {user.roleName}</p>
             </>
           ) : (
             <p>Utilisateur non connecté</p>

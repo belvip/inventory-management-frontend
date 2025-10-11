@@ -26,17 +26,17 @@ export function AppSidebar() {
   const pathname = usePathname()
   
   // Récupération de la navigation basée sur les rôles de l'utilisateur
-  const navigationItems = user?.roles ? getNavigationForRole(user.roles) : []
+  const navigationItems = user?.roleName ? getNavigationForRole([user.roleName]) : []
   
   // Debug temporaire
-  console.log('Current user roles:', user?.roles)
+  console.log('Current user role:', user?.roleName)
   console.log('Navigation items for user:', navigationItems.map(item => item.title))
   
   const isActive = (href: string) => {
     if (href === "/dashboard") {
       return pathname === "/dashboard" || pathname === "/dashboard/admin" || pathname === "/dashboard/manager" || pathname === "/dashboard/sales"
     }
-    return pathname.startsWith(href)
+    return pathname === href
   }
 
   return (

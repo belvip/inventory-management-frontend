@@ -65,14 +65,13 @@ export function LoginForm() {
                 userId: 0,
                 firstName: "",
                 lastName: "",
-                username: result.username || data.username,
+                userName: result.username || data.username,
                 email: "",
                 accountNonLocked: true,
                 accountNonExpired: true,
                 credentialsNonExpired: true,
                 enabled: true,
-                isTwoFactorEnabled: false,
-                roles: result.roles || ['ROLE_USER'],
+                roleName: result.roles?.[0] || 'ROLE_USER',
             }
 
             console.log('Mise à jour du store avec:', user)
