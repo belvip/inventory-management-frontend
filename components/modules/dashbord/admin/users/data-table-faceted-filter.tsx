@@ -181,7 +181,9 @@ export function DataTableFacetedFilter<TData, TValue>({
                     }}
                     className="justify-center text-center"
                   >
-                    Effacer les filtres
+                    <div className="flex flex-col md:flex-row items-center">
+                      Effacer les filtres
+                    </div>
                   </CommandItem>
                 </CommandGroup>
               </>

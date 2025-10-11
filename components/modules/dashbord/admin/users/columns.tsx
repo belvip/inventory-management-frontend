@@ -13,13 +13,13 @@ export const columns: ColumnDef<User>[] = [
     id: "select",
     header: ({ table }) => (
       <Checkbox
+        className="translate-y-[2px] w-full md:w-auto"
         checked={
           table.getIsAllPageRowsSelected() ||
           (table.getIsSomePageRowsSelected() && "indeterminate")
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
-        className="translate-y-[2px]"
       />
     ),
     cell: ({ row }) => (
