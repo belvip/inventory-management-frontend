@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { DataTableViewOptions } from "./data-table-view-options"
 import { X } from "lucide-react"
 import { DataTableFacetedFilter } from "./data-table-faceted-filter"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>
@@ -32,40 +33,38 @@ export function DataTableToolbar<TData>({
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0
 
+  const handleFilterChange = (value: string) => {
+    // Réinitialiser tous les filtres
+    table.resetColumnFilters()
+    
+    if (value === "all") return
+    
+    // Appliquer le filtre selon la valeur sélectionnée
+    if (["active", "locked", "disabled"].includes(value)) {
+      table.getColumn("status")?.setFilterValue([value])
+    } else if (["ROLE_ADMIN", "ROLE_MANAGER", "ROLE_SALES", "ROLE_USER"].includes(value)) {
+      table.getColumn("roleName")?.setFilterValue([value])
+    }
+  }
+
   return (
-    <div className="flex flex-col md:flex-row items-center justify-between">
-      <div className="flex flex-1 items-center space-x-2">
-        <Input
-          placeholder="Rechercher utilisateurs..."
-          value={(table.getColumn("userName")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("userName")?.setFilterValue(event.target.value)
-          }
-          className="h-8 w-[150px] lg:w-[200px]"
-        />
-        <Input
-          type="date"
-          placeholder="Date de création"
-          value={(table.getColumn("createdDate")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("createdDate")?.setFilterValue(event.target.value)
-          }
-          className="h-8 w-[150px]"
-        />
-        {table.getColumn("roleName") && (
-          <DataTableFacetedFilter
-            column={table.getColumn("roleName")}
-            title="Rôle"
-            options={roles}
-          />
-        )}
-        {table.getColumn("status") && (
-          <DataTableFacetedFilter
-            column={table.getColumn("status")}
-            title="Statut"
-            options={statuses}
-          />
-        )}
+    <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+      <div className="flex flex-col xs:flex-row gap-2 w-full sm:w-auto">
+        <Select onValueChange={handleFilterChange}>
+          <SelectTrigger className="h-8 w-full xs:w-[200px] sm:w-[220px]">
+            <SelectValue placeholder="Rechercher des utilisateurs..." />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Tous les utilisateurs</SelectItem>
+            <SelectItem value="active">Actif</SelectItem>
+            <SelectItem value="disabled">Désactivé</SelectItem>
+            <SelectItem value="locked">Verrouillé</SelectItem>
+            <SelectItem value="ROLE_MANAGER">Manager</SelectItem>
+            <SelectItem value="ROLE_ADMIN">Admin</SelectItem>
+            <SelectItem value="ROLE_USER">User</SelectItem>
+            <SelectItem value="ROLE_SALES">Sales</SelectItem>
+          </SelectContent>
+        </Select>
         {isFiltered && (
           <Button
             variant="ghost"
@@ -77,6 +76,7 @@ export function DataTableToolbar<TData>({
           </Button>
         )}
       </div>
+      
       <DataTableViewOptions table={table} />
     </div>
   )
