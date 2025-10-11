@@ -36,7 +36,7 @@ interface DataTableProps<TData, TValue> {
   enableRowSelection?: boolean
   enablePagination?: boolean
   enableToolbar?: boolean
-  onRowSelectionChange?: (selected: any) => void
+  onRowSelectionChange?: (selected: unknown) => void
 }
 
 export function DataTable<TData, TValue>({
@@ -48,9 +48,9 @@ export function DataTable<TData, TValue>({
   onRowSelectionChange,
 }: DataTableProps<TData, TValue>) {
   // Protection contre les données undefined/null
-  const safeData = Array.isArray(data) ? data : []
+  const safeData: TData[] = Array.isArray(data) ? data : []
   const safeColumns = Array.isArray(columns) ? columns : []
-  const [rowSelection, setRowSelection] = React.useState({})
+  const [rowSelection, setRowSelection] = React.useState<Record<string, boolean>>({})
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [sorting, setSorting] = React.useState<SortingState>([])
@@ -69,7 +69,7 @@ export function DataTable<TData, TValue>({
   }, [])
 
   // Gérer les changements de sélection
-  const handleRowSelectionChange = React.useCallback((updater: any) => {
+  const handleRowSelectionChange = React.useCallback((updater: React.SetStateAction<Record<string, boolean>>) => {
     setRowSelection(updater)
     if (onRowSelectionChange) {
       const newSelection = typeof updater === 'function' 
@@ -126,8 +126,8 @@ export function DataTable<TData, TValue>({
         
         <div className="space-y-4">
           {table.getRowModel().rows.map((row) => {
-            const statusColumn = safeColumns.find(col => (col as any).accessorKey === 'status')
-            const statusCell = statusColumn ? row.getVisibleCells().find(cell => (cell.column.columnDef as any).accessorKey === 'status') : null
+            const statusColumn = safeColumns.find(col => (col as { accessorKey?: string }).accessorKey === 'status')
+            const statusCell = statusColumn ? row.getVisibleCells().find(cell => (cell.column.columnDef as { accessorKey?: string }).accessorKey === 'status') : null
             
             return (
               <Card key={row.id} className={row.getIsSelected() ? "bg-muted/50 border-primary" : ""}>
@@ -142,7 +142,7 @@ export function DataTable<TData, TValue>({
                         )
                       ) : (
                         // Fallback si la cellule n'est pas disponible
-                        String(row.getValue((safeColumns[0] as any).accessorKey) || '')
+                        String(row.getValue((safeColumns[0] as { accessorKey?: string }).accessorKey || '') || '')
                       )}
                     </span>
                     
@@ -159,8 +159,8 @@ export function DataTable<TData, TValue>({
                 </CardHeader>
                 <CardContent className="space-y-2 text-sm">
                   {/* Toutes les colonnes sauf la première */}
-                  {row.getVisibleCells().slice(1).map((cell, index) => {
-                    const accessorKey = (cell.column.columnDef as any).accessorKey
+                  {row.getVisibleCells().slice(1).map((cell) => {
+                    const accessorKey = (cell.column.columnDef as { accessorKey?: string }).accessorKey
                     // On saute la colonne status car déjà affichée dans le header
                     if (accessorKey === 'status') return null
 
@@ -202,8 +202,8 @@ export function DataTable<TData, TValue>({
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
-                      const accessorKey = (header.column.columnDef as any).accessorKey
-                      const frenchHeader = getFrenchColumnHeader(accessorKey)
+                      const accessorKey = (header.column.columnDef as { accessorKey?: string }).accessorKey
+                      const frenchHeader = getFrenchColumnHeader(accessorKey || '')
                       
                       return (
                         <TableHead key={header.id} colSpan={header.colSpan}>
@@ -258,8 +258,8 @@ export function DataTable<TData, TValue>({
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
-                  const accessorKey = (header.column.columnDef as any).accessorKey
-                  const frenchHeader = getFrenchColumnHeader(accessorKey)
+                  const accessorKey = (header.column.columnDef as { accessorKey?: string }).accessorKey
+                  const frenchHeader = getFrenchColumnHeader(accessorKey || '')
                   
                   return (
                     <TableHead key={header.id} colSpan={header.colSpan}>

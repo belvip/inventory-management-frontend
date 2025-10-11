@@ -41,7 +41,6 @@ export function DataTableRowActions<TData>({
     updateLockStatus,
     updateEnabledStatus,
     deleteUser,
-    updateRole,
     getRoles
   } = useUsers()
 

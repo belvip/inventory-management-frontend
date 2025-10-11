@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Users, UserCheck, UserX, Shield, Clock, TrendingUp } from "lucide-react"
+import { Users, UserCheck, UserX, Shield } from "lucide-react"
 import { useUserStats } from "@/hooks/user"
 
 export function UserStats() {

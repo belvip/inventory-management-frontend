@@ -1,32 +1,18 @@
-// components/users/data-table-toolbar.tsx
+
 "use client"
 
 import * as React from "react"
 import { Table } from "@tanstack/react-table"
-import { User } from "@/types"
-import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { DataTableViewOptions } from "./data-table-view-options"
 import { X } from "lucide-react"
-import { DataTableFacetedFilter } from "./data-table-faceted-filter"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>
 }
 
-const roles = [
-  { label: "Admin", value: "ROLE_ADMIN" },
-  { label: "Manager", value: "ROLE_MANAGER" },
-  { label: "Sales", value: "ROLE_SALES" },
-  { label: "User", value: "ROLE_USER" },
-]
 
-const statuses = [
-  { label: "Actif", value: "active" },
-  { label: "Verrouillé", value: "locked" },
-  { label: "Désactivé", value: "disabled" },
-]
 
 export function DataTableToolbar<TData>({
   table,

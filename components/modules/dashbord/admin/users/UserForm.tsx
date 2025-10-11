@@ -14,23 +14,17 @@ import {
 } from "@/components/ui/dialog"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+
 import { Eye, EyeOff, Check, X } from "lucide-react"
 import { useUsersAdmin } from "@/hooks/user"
-import { toast } from "sonner"
+
 import { User } from "@/types"
 
 const createUserSchema = z.object({
   firstName: z.string().min(3, "Le prénom doit contenir au moins 3 caractères").max(20, "Le prénom ne peut pas dépasser 20 caractères"),
   lastName: z.string().min(3, "Le nom doit contenir au moins 3 caractères").max(20, "Le nom ne peut pas dépasser 20 caractères"),
-  userName: z.string().min(4, "Le nom d'utilisateur doit contenir au moins 4 caractères").max(10, "Le nom d'utilisateur ne peut pas dépasser 10 caractères"),
-  email: z.string().email("Email invalide").max(50, "L'email ne peut pas dépasser 50 caractères"),
+  userName: z.string().min(4, "Le nom d&apos;utilisateur doit contenir au moins 4 caractères").max(10, "Le nom d&apos;utilisateur ne peut pas dépasser 10 caractères"),
+  email: z.string().email("Email invalide").max(50, "L&apos;email ne peut pas dépasser 50 caractères"),
   password: z.string().min(6, "Le mot de passe doit contenir au moins 6 caractères").max(40, "Le mot de passe ne peut pas dépasser 40 caractères"),
   image: z.string().url("URL invalide").optional().or(z.literal("")),
   address1: z.string().optional(),
@@ -43,8 +37,8 @@ const createUserSchema = z.object({
 const editUserSchema = z.object({
   firstName: z.string().min(3, "Le prénom doit contenir au moins 3 caractères").max(20, "Le prénom ne peut pas dépasser 20 caractères"),
   lastName: z.string().min(3, "Le nom doit contenir au moins 3 caractères").max(20, "Le nom ne peut pas dépasser 20 caractères"),
-  userName: z.string().min(4, "Le nom d'utilisateur doit contenir au moins 4 caractères").max(10, "Le nom d'utilisateur ne peut pas dépasser 10 caractères"),
-  email: z.string().email("Email invalide").max(50, "L'email ne peut pas dépasser 50 caractères"),
+  userName: z.string().min(4, "Le nom d&apos;utilisateur doit contenir au moins 4 caractères").max(10, "Le nom d&apos;utilisateur ne peut pas dépasser 10 caractères"),
+  email: z.string().email("Email invalide").max(50, "L&apos;email ne peut pas dépasser 50 caractères"),
   password: z.string().optional(),
   image: z.string().url("URL invalide").optional().or(z.literal("")),
   address1: z.string().optional(),
@@ -57,12 +51,11 @@ const editUserSchema = z.object({
 interface UserFormProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  roles: Array<{id: number, roleName: string}>
   user?: User | null
   mode?: 'create' | 'edit'
 }
 
-export function UserForm({ open, onOpenChange, roles, user, mode = 'create' }: UserFormProps) {
+export function UserForm({ open, onOpenChange, user, mode = 'create' }: UserFormProps) {
   const [showPassword, setShowPassword] = useState(false)
   const { createUser, updateUser, isCreating, isUpdating } = useUsersAdmin()
   const isEditMode = mode === 'edit' && user
@@ -87,7 +80,7 @@ export function UserForm({ open, onOpenChange, roles, user, mode = 'create' }: U
     },
   })
 
-  async function onSubmit(data: any) {
+  async function onSubmit(data: z.infer<typeof schema>) {
     console.log('Form data submitted:', data)
     const { address1, address2, city, postalCode, country, password, ...baseData } = data
     
@@ -120,7 +113,7 @@ export function UserForm({ open, onOpenChange, roles, user, mode = 'create' }: U
         lastName: baseData.lastName,
         userName: baseData.userName,
         email: baseData.email,
-        password,
+        password: password || "",
         ...(baseData.image && { image: baseData.image }),
         ...(address && { address }),
         signUpMethod: "email"
@@ -136,9 +129,17 @@ export function UserForm({ open, onOpenChange, roles, user, mode = 'create' }: U
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{isEditMode ? 'Modifier l\'utilisateur' : 'Créer un utilisateur'}</DialogTitle>
+            <DialogTitle>
+              {isEditMode 
+                ? "Modifier l'utilisateur" 
+                : 'Créer un utilisateur'
+              }
+            </DialogTitle>
           <DialogDescription>
-            {isEditMode ? 'Modifiez les informations de l\'utilisateur.' : 'Ajoutez un nouvel utilisateur au système.'}
+            {isEditMode 
+              ? "Modifiez les informations de l'utilisateur." 
+              : 'Ajoutez un nouvel utilisateur au système.'
+            }
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -221,7 +222,7 @@ export function UserForm({ open, onOpenChange, roles, user, mode = 'create' }: U
               name="userName"
               render={({ field }) => (
                 <FormItem className="group">
-                  <FormLabel className="text-sm font-medium text-foreground/80 group-focus-within:text-primary transition-colors">Nom d'utilisateur</FormLabel>
+                  <FormLabel className="text-sm font-medium text-foreground/80 group-focus-within:text-primary transition-colors">Nom d&apos;utilisateur</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Input
@@ -471,7 +472,7 @@ export function UserForm({ open, onOpenChange, roles, user, mode = 'create' }: U
               </Button>
               <Button type="submit" disabled={isCreating || isUpdating}>
                 {isEditMode 
-                  ? (isUpdating ? "Modification..." : "Modifier l'utilisateur")
+                  ? (isUpdating ? "Modification..." : "Modifier lutilisateur")
                   : (isCreating ? "Création..." : "Créer l'utilisateur")
                 }
               </Button>

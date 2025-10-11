@@ -9,14 +9,14 @@ import { Plus, Users, UserCheck, UserX, Shield, Lock } from "lucide-react"
 import { UserForm } from "./UserForm"
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+
 import { UserProvider } from "./UserContext"
 import type { User } from "@/types/user"
 import { toast } from "sonner"
 
 export function AdminUser() {
   const { user: currentUser, isAuthenticated, isLoading: authLoading, accessToken } = useAuth()
-  const { users, isLoading, roles } = useUsersAdmin()
+  const { users, isLoading } = useUsersAdmin()
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [editingUser, setEditingUser] = useState<User | null>(null)
 
@@ -48,7 +48,7 @@ export function AdminUser() {
 
   // Vérifier si l'utilisateur a le rôle ADMIN
   const isAdmin = currentUser?.roleName === 'ROLE_ADMIN' || 
-                  (currentUser as any)?.roles?.includes('ROLE_ADMIN')
+                  (currentUser as { roles?: string[] })?.roles?.includes('ROLE_ADMIN')
   
   if (authLoading) {
     return (
@@ -77,7 +77,7 @@ export function AdminUser() {
         <Card>
           <CardContent className="p-6">
             <h2 className="text-xl font-semibold mb-2">Accès refusé</h2>
-            <p className="text-muted-foreground">Vous n'avez pas les permissions nécessaires pour accéder à cette page.</p>
+            <p className="text-muted-foreground">Vous n&apos;avez pas les permissions nécessaires pour accéder à cette page.</p>
           </CardContent>
         </Card>
       </div>
@@ -194,7 +194,6 @@ export function AdminUser() {
         open={isCreateModalOpen}
         onOpenChange={setIsCreateModalOpen}
         mode="create"
-        roles={roles || []}
       />
       
       {/* Edit User Modal */}
@@ -204,7 +203,6 @@ export function AdminUser() {
           onOpenChange={(open) => !open && setEditingUser(null)}
           mode="edit"
           user={editingUser}
-          roles={roles || []}
         />
       )}
     </div>

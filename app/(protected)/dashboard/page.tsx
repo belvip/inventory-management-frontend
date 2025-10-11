@@ -12,7 +12,7 @@ export default function DashboardPage() {
     
     useEffect(() => {
         if (!isLoading && isAuthenticated && user) {
-            const role = user.roles[0]
+            const role = user.roleName
             if (role === 'ROLE_ADMIN') {
                 router.push('/dashboard/admin')
             } else if (role === 'ROLE_MANAGER') {

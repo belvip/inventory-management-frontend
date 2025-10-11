@@ -12,7 +12,7 @@ export function useAuthGuard(requiredRoles?: string[]) {
       return
     }
 
-    if (user && requiredRoles && !requiredRoles.some(role => user.roles.includes(role))) {
+    if (user && requiredRoles && !requiredRoles.includes(user.roleName)) {
       router.push('/unauthorized')
       return
     }
@@ -22,6 +22,6 @@ export function useAuthGuard(requiredRoles?: string[]) {
     user,
     isLoading,
     isAuthenticated,
-    hasRequiredRole: !requiredRoles || (user && requiredRoles.some(role => user.roles.includes(role)))
+    hasRequiredRole: !requiredRoles || (user && requiredRoles.includes(user.roleName))
   }
 }

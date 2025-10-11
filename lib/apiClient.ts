@@ -65,15 +65,15 @@ class ApiClient {
       })
       
       return await this.handleResponse<T>(response, showErrorToast, showSuccessToast, successMessage)
-    } catch (error) {
-      if (error instanceof TypeError && error.message === 'Failed to fetch') {
+    } catch (err) {
+      if (err instanceof TypeError && err.message === 'Failed to fetch') {
         const corsError = 'Erreur de connexion au serveur. Le backend doit autoriser votre domaine Vercel.'
         if (showErrorToast) {
           toast.error('Problème CORS', { description: corsError })
         }
         throw new Error(corsError)
       }
-      throw error
+      throw err
     }
   }
 
@@ -116,7 +116,7 @@ class ApiClient {
     let responseText: string
     try {
       responseText = await response.text()
-    } catch (error) {
+    } catch {
       throw new Error("Impossible de lire la réponse du serveur")
     }
 
@@ -143,7 +143,7 @@ class ApiClient {
     let data: T
     try {
       data = responseText ? JSON.parse(responseText) : ({} as T)
-    } catch (error) {
+    } catch {
       // Si ce n'est pas du JSON, retourner le texte comme données
       data = responseText as unknown as T
     }

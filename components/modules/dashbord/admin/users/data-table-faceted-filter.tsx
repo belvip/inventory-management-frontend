@@ -39,15 +39,6 @@ export function DataTableFacetedFilter<TData, TValue>({
   options,
 }: DataTableFacetedFilterProps<TData, TValue>) {
   // Protection robuste contre les colonnes undefined
-  if (!column || 
-      !Array.isArray(options) || 
-      !options.length ||
-      typeof column.getFacetedUniqueValues !== 'function' || 
-      typeof column.getFilterValue !== 'function' || 
-      typeof column.setFilterValue !== 'function') {
-    return null
-  }
-  
   const [facets, setFacets] = React.useState(new Map())
   const [selectedValues, setSelectedValues] = React.useState(new Set())
   
@@ -60,9 +51,9 @@ export function DataTableFacetedFilter<TData, TValue>({
         setFacets(uniqueValues)
       }
       
-      const filterValue = column.getFilterValue()
+      const filterValue: unknown = column.getFilterValue()
       setSelectedValues(new Set(Array.isArray(filterValue) ? filterValue : []))
-    } catch (error) {
+    } catch {
       // Ignorer silencieusement les erreurs pendant les mises à jour
     }
   }, [column])
@@ -137,8 +128,8 @@ export function DataTableFacetedFilter<TData, TValue>({
                           filterValues.length ? filterValues : undefined
                         )
                         setSelectedValues(newSelectedValues)
-                      } catch (error) {
-                        console.error('Error setting filter value:', error)
+                      } catch {
+                        console.error('Error setting filter value:')
                       }
                     }}
                   >

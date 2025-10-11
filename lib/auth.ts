@@ -49,16 +49,15 @@ export function useAuth() {
       
       const userData = {
         userId: payload.sub || payload.userId || 0,
-        username: displayUsername,
+        userName: displayUsername,
         email: payload.email,
         firstName: firstName,
         lastName: lastName,
-        roles: roles,
+        roleName: roles[0] || 'ROLE_USER',
         accountNonLocked: true,
         accountNonExpired: true,
         credentialsNonExpired: true,
-        enabled: true,
-        isTwoFactorEnabled: false
+        enabled: true
       }
       
       // 🔥 CHANGEMENT : Appel simple et direct
