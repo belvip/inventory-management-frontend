@@ -101,6 +101,23 @@ export function DataTable<TData, TValue>({
     getFacetedUniqueValues: getFacetedUniqueValues(),
   })
 
+  // Fonction utilitaire pour obtenir l'en-tête d'une colonne en français
+  const getFrenchColumnHeader = (accessorKey: string) => {
+    const frenchHeaders: { [key: string]: string } = {
+      'username': 'Nom',
+      'userName': 'Nom',
+      'email': 'Email',
+      'role': 'Rôle',
+      'roleName': 'Rôle',
+      'status': 'Statut',
+      'createdAt': 'Date de création',
+      'createdDate': 'Date de création',
+      'actions': 'Actions'
+    }
+    
+    return frenchHeaders[accessorKey] || accessorKey
+  }
+
   // Version mobile avec cartes
   if (isMobile && safeData.length > 0) {
     return (
@@ -108,55 +125,63 @@ export function DataTable<TData, TValue>({
         {enableToolbar && <DataTableToolbar table={table} />}
         
         <div className="space-y-4">
-          {table.getRowModel().rows.map((row) => (
-            <Card key={row.id} className={row.getIsSelected() ? "bg-muted/50 border-primary" : ""}>
-              <CardHeader className="pb-3">
-                <CardTitle className="flex justify-between items-center text-base">
-                  {/* Première colonne (généralement le username) */}
-                  <span>
-                    {flexRender(
-                      safeColumns[0].cell,
-                      { ...row.getVisibleCells()[0].getContext() }
-                    )}
-                  </span>
-                  
-                  {/* Badge pour le statut (si disponible) */}
-                  {safeColumns.find(col => (col as any).accessorKey === 'status') && (
-                    <Badge variant="secondary">
-                      {flexRender(
-                        safeColumns.find(col => (col as any).accessorKey === 'status')?.cell,
-                        { ...row.getVisibleCells().find(cell => (cell.column.columnDef as any).accessorKey === 'status')?.getContext() }
+          {table.getRowModel().rows.map((row) => {
+            const statusColumn = safeColumns.find(col => (col as any).accessorKey === 'status')
+            const statusCell = statusColumn ? row.getVisibleCells().find(cell => (cell.column.columnDef as any).accessorKey === 'status') : null
+            
+            return (
+              <Card key={row.id} className={row.getIsSelected() ? "bg-muted/50 border-primary" : ""}>
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex justify-between items-center text-base">
+                    {/* Première colonne (généralement le nom) */}
+                    <span>
+                      {row.getVisibleCells()[0] ? (
+                        flexRender(
+                          row.getVisibleCells()[0].column.columnDef.cell,
+                          row.getVisibleCells()[0].getContext()
+                        )
+                      ) : (
+                        // Fallback si la cellule n'est pas disponible
+                        String(row.getValue((safeColumns[0] as any).accessorKey) || '')
                       )}
-                    </Badge>
-                  )}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2 text-sm">
-                {/* Colonnes restantes (sauf la première et le statut) */}
-                {safeColumns.slice(1).map((column, index) => {
-                  const accessorKey = (column as any).accessorKey
-                  if (accessorKey === 'status') return null
-                  
-                  const cellIndex = index + 1
-                  if (cellIndex >= row.getVisibleCells().length) return null
-                  
-                  return (
-                    <div key={accessorKey || index} className="flex justify-between">
-                      <span className="font-medium capitalize">
-                        {accessorKey?.replace(/([A-Z])/g, ' $1') || 'Field'}:
-                      </span>
-                      <span className="text-right">
-                        {column.cell && flexRender(
-                          column.cell,
-                          { ...row.getVisibleCells()[cellIndex].getContext() }
+                    </span>
+                    
+                    {/* Badge pour le statut (si disponible) */}
+                    {statusCell && (
+                      <Badge variant="secondary">
+                        {flexRender(
+                          statusCell.column.columnDef.cell,
+                          statusCell.getContext()
                         )}
-                      </span>
-                    </div>
-                  )
-                })}
-              </CardContent>
-            </Card>
-          ))}
+                      </Badge>
+                    )}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2 text-sm">
+                  {/* Toutes les colonnes sauf la première */}
+                  {row.getVisibleCells().slice(1).map((cell, index) => {
+                    const accessorKey = (cell.column.columnDef as any).accessorKey
+                    // On saute la colonne status car déjà affichée dans le header
+                    if (accessorKey === 'status') return null
+
+                    return (
+                      <div key={cell.id} className="flex justify-between">
+                        <span className="font-medium">
+                          {accessorKey ? getFrenchColumnHeader(accessorKey) : 'Actions'}:
+                        </span>
+                        <span className="text-right">
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </span>
+                      </div>
+                    )
+                  })}
+                </CardContent>
+              </Card>
+            )
+          })}
         </div>
         
         {enablePagination && <DataTablePagination table={table} />}
@@ -164,35 +189,39 @@ export function DataTable<TData, TValue>({
     )
   }
 
-  // Version desktop originale avec améliorations
-  return (
-    <div className="space-y-4">
-      {enableToolbar && <DataTableToolbar table={table} />}
-      
-      <div className="rounded-md border">
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead key={header.id} colSpan={header.colSpan}>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                      </TableHead>
-                    )
-                  })}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
+  // Version desktop avec tableau
+  if (safeData.length > 0) {
+    return (
+      <div className="space-y-4">
+        {enableToolbar && <DataTableToolbar table={table} />}
+        
+        <div className="rounded-md border">
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => {
+                      const accessorKey = (header.column.columnDef as any).accessorKey
+                      const frenchHeader = getFrenchColumnHeader(accessorKey)
+                      
+                      return (
+                        <TableHead key={header.id} colSpan={header.colSpan}>
+                          {header.isPlaceholder
+                            ? null
+                            : accessorKey ? frenchHeader : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )
+                          }
+                        </TableHead>
+                      )
+                    })}
+                  </TableRow>
+                ))}
+              </TableHeader>
+              <TableBody>
+                {table.getRowModel().rows.map((row) => (
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
@@ -207,28 +236,61 @@ export function DataTable<TData, TValue>({
                       </TableCell>
                     ))}
                   </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={safeColumns.length || 1}
-                    className="h-24 text-center text-muted-foreground"
-                  >
-                    <div className="overflow-x-auto flex flex-col md:flex-row items-center justify-between space-y-2">
-                      {safeData.length === 0 
-                        ? <div className="text-sm">Aucune donnée disponible</div> 
-                        : <div className="text-sm">Aucun résultat trouvé avec les filtres actuels</div>
-                      }
-                    </div>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </div>
+        
+        {enablePagination && <DataTablePagination table={table} />}
       </div>
+    )
+  }
+
+  // État vide
+  return (
+    <div className="space-y-4">
+      {enableToolbar && <DataTableToolbar table={table} />}
       
-      {enablePagination && <DataTablePagination table={table} />}
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                  const accessorKey = (header.column.columnDef as any).accessorKey
+                  const frenchHeader = getFrenchColumnHeader(accessorKey)
+                  
+                  return (
+                    <TableHead key={header.id} colSpan={header.colSpan}>
+                      {header.isPlaceholder
+                        ? null
+                        : accessorKey ? frenchHeader : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )
+                      }
+                    </TableHead>
+                  )
+                })}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            <TableRow>
+              <TableCell
+                colSpan={safeColumns.length || 1}
+                className="h-24 text-center text-muted-foreground"
+              >
+                {safeData.length === 0 
+                  ? "Aucune donnée disponible" 
+                  : "Aucun résultat trouvé avec les filtres actuels"
+                }
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </div>
     </div>
   )
 }

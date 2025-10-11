@@ -42,6 +42,18 @@ export function DataTableViewOptions<TData>({
               typeof column.accessorFn !== "undefined" && column.getCanHide()
           )
           .map((column) => {
+            // Fonction pour obtenir le titre français
+            const getFrenchTitle = (columnId: string) => {
+              const frenchTitles: { [key: string]: string } = {
+                'userName': 'Nom',
+                'email': 'Email',
+                'roleName': 'Rôle',
+                'status': 'Statut',
+                'createdDate': 'Date de création'
+              }
+              return frenchTitles[columnId] || columnId
+            }
+            
             return (
               <DropdownMenuCheckboxItem
                 key={column.id}
@@ -49,7 +61,7 @@ export function DataTableViewOptions<TData>({
                 checked={column.getIsVisible()}
                 onCheckedChange={(value) => column.toggleVisibility(!!value)}
               >
-                {column.id}
+                {getFrenchTitle(column.id)}
               </DropdownMenuCheckboxItem>
             )
           })}
