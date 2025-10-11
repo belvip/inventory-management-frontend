@@ -32,8 +32,10 @@ export function DataTableToolbar<TData>({
   table,
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0
+  const [selectValue, setSelectValue] = React.useState("")
 
   const handleFilterChange = (value: string) => {
+    setSelectValue(value)
     // Réinitialiser tous les filtres
     table.resetColumnFilters()
     
@@ -50,7 +52,7 @@ export function DataTableToolbar<TData>({
   return (
     <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
       <div className="flex flex-col xs:flex-row gap-2 w-full sm:w-auto">
-        <Select onValueChange={handleFilterChange}>
+        <Select value={selectValue} onValueChange={handleFilterChange}>
           <SelectTrigger className="h-8 w-full xs:w-[200px] sm:w-[220px]">
             <SelectValue placeholder="Rechercher des utilisateurs..." />
           </SelectTrigger>
@@ -68,7 +70,10 @@ export function DataTableToolbar<TData>({
         {isFiltered && (
           <Button
             variant="ghost"
-            onClick={() => table.resetColumnFilters()}
+            onClick={() => {
+              table.resetColumnFilters()
+              setSelectValue("")
+            }}
             className="h-8 px-2 lg:px-3"
           >
             Réinitialiser
