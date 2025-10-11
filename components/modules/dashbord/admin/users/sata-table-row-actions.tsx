@@ -50,15 +50,9 @@ export function DataTableRowActions<TData>({
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
-            className="flex h-8 w-8 p-0 data-[state=open]:bg-muted relative"
+            className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
           >
             <MoreHorizontal className="h-4 w-4" />
-            <Badge 
-              variant="outline" 
-              className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center bg-primary text-primary-foreground"
-            >
-              <span className="text-[10px]">⋮</span>
-            </Badge>
             <span className="sr-only">Actions</span>
           </Button>
         </DropdownMenuTrigger>
