@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import {
   Dialog,
   DialogContent,
@@ -467,14 +468,28 @@ export function UserForm({ open, onOpenChange, user, mode = 'create' }: UserForm
             </div>
             
             <div className="flex justify-end gap-3 pt-4">
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isCreating || isUpdating}>
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isCreating || isUpdating} className="relative">
+                <Badge variant="secondary" className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0">
+                  <X className="h-3 w-3" />
+                </Badge>
                 Annuler
               </Button>
-              <Button type="submit" disabled={isCreating || isUpdating}>
-                {isEditMode 
-                  ? (isUpdating ? "Modification..." : "Modifier lutilisateur")
-                  : (isCreating ? "Création..." : "Créer l'utilisateur")
-                }
+              <Button type="submit" disabled={isCreating || isUpdating} className="relative">
+                {isEditMode ? (
+                  <>
+                    <Badge variant="outline" className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 bg-yellow-100 text-yellow-800 border-yellow-200">
+                      <span className="text-xs">✏️</span>
+                    </Badge>
+                    {isUpdating ? "Modification..." : "Modifier l'utilisateur"}
+                  </>
+                ) : (
+                  <>
+                    <Badge variant="outline" className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 bg-green-100 text-green-800 border-green-200">
+                      <span className="text-xs">+</span>
+                    </Badge>
+                    {isCreating ? "Création..." : "Créer l'utilisateur"}
+                  </>
+                )}
               </Button>
             </div>
           </form>
