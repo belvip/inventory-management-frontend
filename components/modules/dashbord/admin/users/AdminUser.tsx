@@ -2,8 +2,8 @@
 
 import { useUsersAdmin } from "@/hooks/user"
 import { useAuth } from "@/hooks/useAuth"
-import { DataTable } from "./data-table"
-import { columns } from "./columns"
+import { DataTable } from "./DataTable"
+import { columns } from "./Columns"
 import { Button } from "@/components/ui/button"
 import { Plus, Users, UserCheck, UserX, Shield, Lock } from "lucide-react"
 import { UserForm } from "./UserForm"
