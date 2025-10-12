@@ -12,6 +12,12 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import { 
   MoreHorizontal, 
   Edit, 
@@ -49,16 +55,26 @@ export function DataTableRowActions<TData>({
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
-          >
-            <MoreHorizontal className="h-4 w-4" />
-            <span className="sr-only">Actions</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-[180px]">
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 hover:bg-muted/50 data-[state=open]:bg-muted transition-colors duration-200 rounded-md"
+                >
+                  <MoreHorizontal className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
+                  <span className="sr-only">Actions pour {user.firstName} {user.lastName}</span>
+                </Button>
+              </DropdownMenuTrigger>
+            </TooltipTrigger>
+            <TooltipContent side="left">
+              <p>Actions utilisateur</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        <DropdownMenuContent align="end" className="w-[200px] shadow-lg border-border/50">
           <DropdownMenuItem onClick={() => onEditUser(user)} className="text-blue-600 hover:text-blue-700">
             <Edit className="mr-2 h-4 w-4" />
             <span>Modifier</span>
