@@ -12,6 +12,12 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import { 
   MoreHorizontal, 
   Edit, 
@@ -25,6 +31,7 @@ import {
 import { useUsers } from "@/hooks/user"
 import { useUserContext } from "./UserContext"
 import { RoleChangeDialog } from "./RoleChangeDialog"
+import { DeleteConfirmDialog } from "@/components/global/DeleteConfirmDialog"
 import { useState } from "react"
 
 interface DataTableRowActionsProps<TData> {
@@ -37,6 +44,7 @@ export function DataTableRowActions<TData>({
   const user = row.original as User
   const { onEditUser } = useUserContext()
   const [isRoleDialogOpen, setIsRoleDialogOpen] = useState(false)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const {
     updateLockStatus,
     updateEnabledStatus,
@@ -47,16 +55,26 @@ export function DataTableRowActions<TData>({
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
-          >
-            <MoreHorizontal className="h-4 w-4" />
-            <span className="sr-only">Actions</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-[180px]">
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 hover:bg-muted/50 data-[state=open]:bg-muted transition-colors duration-200 rounded-md"
+                >
+                  <MoreHorizontal className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
+                  <span className="sr-only">Actions pour {user.firstName} {user.lastName}</span>
+                </Button>
+              </DropdownMenuTrigger>
+            </TooltipTrigger>
+            <TooltipContent side="left">
+              <p>Actions utilisateur</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        <DropdownMenuContent align="end" className="w-[200px] shadow-lg border-border/50">
           <DropdownMenuItem onClick={() => onEditUser(user)} className="text-blue-600 hover:text-blue-700">
             <Edit className="mr-2 h-4 w-4" />
             <span>Modifier</span>
@@ -106,7 +124,7 @@ export function DataTableRowActions<TData>({
           
           <DropdownMenuItem
             className="text-red-600 hover:text-red-700 focus:text-red-700"
-            onClick={() => deleteUser.mutate(user.userId)}
+            onClick={() => setIsDeleteDialogOpen(true)}
           >
             <Trash2 className="mr-2 h-4 w-4" />
             <span>Supprimer</span>
@@ -120,6 +138,17 @@ export function DataTableRowActions<TData>({
         onOpenChange={setIsRoleDialogOpen}
         user={user}
         roles={getRoles.data || []}
+      />
+      
+      <DeleteConfirmDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        onConfirm={() => {
+          deleteUser.mutate(user.userId)
+          setIsDeleteDialogOpen(false)
+        }}
+        itemName={`${user.firstName} ${user.lastName}`}
+        isLoading={deleteUser.isPending}
       />
     </>
   )

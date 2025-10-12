@@ -26,9 +26,10 @@ import {
 } from "@/components/ui/table"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { EmptyState } from "@/components/global/EmptyState"
 
-import { DataTableToolbar } from "./data-table-toolbar"
-import { DataTablePagination } from "./data-table-pagination"
+import { DataTableToolbar } from "./DataTableToolbar"
+import { DataTablePagination } from "./DataTablePagination"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -190,38 +191,38 @@ export function DataTable<TData, TValue>({
   }
 
   // Version desktop avec tableau
-  if (safeData.length > 0) {
-    return (
-      <div className="space-y-4">
-        {enableToolbar && <DataTableToolbar table={table} />}
-        
-        <div className="rounded-md border">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => {
-                      const accessorKey = (header.column.columnDef as { accessorKey?: string }).accessorKey
-                      const frenchHeader = getFrenchColumnHeader(accessorKey || '')
-                      
-                      return (
-                        <TableHead key={header.id} colSpan={header.colSpan}>
-                          {header.isPlaceholder
-                            ? null
-                            : accessorKey ? frenchHeader : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )
-                          }
-                        </TableHead>
-                      )
-                    })}
-                  </TableRow>
-                ))}
-              </TableHeader>
-              <TableBody>
-                {table.getRowModel().rows.map((row) => (
+  return (
+    <div className="space-y-4">
+      {enableToolbar && <DataTableToolbar table={table} />}
+      
+      <div className="rounded-md border">
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    const accessorKey = (header.column.columnDef as { accessorKey?: string }).accessorKey
+                    const frenchHeader = getFrenchColumnHeader(accessorKey || '')
+                    
+                    return (
+                      <TableHead key={header.id} colSpan={header.colSpan}>
+                        {header.isPlaceholder
+                          ? null
+                          : accessorKey ? frenchHeader : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )
+                        }
+                      </TableHead>
+                    )
+                  })}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
@@ -236,61 +237,26 @@ export function DataTable<TData, TValue>({
                       </TableCell>
                     ))}
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </div>
-        
-        {enablePagination && <DataTablePagination table={table} />}
-      </div>
-    )
-  }
-
-  // État vide
-  return (
-    <div className="space-y-4">
-      {enableToolbar && <DataTableToolbar table={table} />}
-      
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  const accessorKey = (header.column.columnDef as { accessorKey?: string }).accessorKey
-                  const frenchHeader = getFrenchColumnHeader(accessorKey || '')
-                  
-                  return (
-                    <TableHead key={header.id} colSpan={header.colSpan}>
-                      {header.isPlaceholder
-                        ? null
-                        : accessorKey ? frenchHeader : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={safeColumns.length || 1} className="p-0">
+                    <EmptyState 
+                      title={safeData.length === 0 ? "Aucune donnée" : "Aucun résultat"}
+                      description={safeData.length === 0 
+                        ? "Aucun utilisateur n'a été trouvé" 
+                        : "Aucun utilisateur ne correspond aux filtres actuels"
                       }
-                    </TableHead>
-                  )
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            <TableRow>
-              <TableCell
-                colSpan={safeColumns.length || 1}
-                className="h-24 text-center text-muted-foreground"
-              >
-                {safeData.length === 0 
-                  ? "Aucune donnée disponible" 
-                  : "Aucun résultat trouvé avec les filtres actuels"
-                }
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
+                    />
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
+      
+      {enablePagination && <DataTablePagination table={table} />}
     </div>
   )
 }

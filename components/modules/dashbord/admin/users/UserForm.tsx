@@ -81,6 +81,15 @@ export function UserForm({ open, onOpenChange, user, mode = 'create' }: UserForm
     },
   })
 
+  // Vérifier si tous les champs obligatoires sont remplis
+  const watchedValues = form.watch()
+  const isFormValid = form.formState.isValid
+  const hasRequiredFields = isEditMode 
+    ? watchedValues.firstName && watchedValues.lastName && watchedValues.userName && watchedValues.email
+    : watchedValues.firstName && watchedValues.lastName && watchedValues.userName && watchedValues.email && watchedValues.password
+  
+  const isSubmitDisabled = !isFormValid || !hasRequiredFields || isCreating || isUpdating
+
   async function onSubmit(data: z.infer<typeof schema>) {
     console.log('Form data submitted:', data)
     const { address1, address2, city, postalCode, country, password, ...baseData } = data
@@ -474,7 +483,7 @@ export function UserForm({ open, onOpenChange, user, mode = 'create' }: UserForm
                 </Badge>
                 Annuler
               </Button>
-              <Button type="submit" disabled={isCreating || isUpdating} className="relative">
+              <Button type="submit" disabled={isSubmitDisabled} className="relative">
                 {isEditMode ? (
                   <>
                     <Badge variant="outline" className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 bg-yellow-100 text-yellow-800 border-yellow-200">
