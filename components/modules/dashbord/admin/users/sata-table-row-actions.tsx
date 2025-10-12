@@ -25,6 +25,7 @@ import {
 import { useUsers } from "@/hooks/user"
 import { useUserContext } from "./UserContext"
 import { RoleChangeDialog } from "./RoleChangeDialog"
+import { DeleteConfirmDialog } from "@/components/global/DeleteConfirmDialog"
 import { useState } from "react"
 
 interface DataTableRowActionsProps<TData> {
@@ -37,6 +38,7 @@ export function DataTableRowActions<TData>({
   const user = row.original as User
   const { onEditUser } = useUserContext()
   const [isRoleDialogOpen, setIsRoleDialogOpen] = useState(false)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const {
     updateLockStatus,
     updateEnabledStatus,
@@ -106,7 +108,7 @@ export function DataTableRowActions<TData>({
           
           <DropdownMenuItem
             className="text-red-600 hover:text-red-700 focus:text-red-700"
-            onClick={() => deleteUser.mutate(user.userId)}
+            onClick={() => setIsDeleteDialogOpen(true)}
           >
             <Trash2 className="mr-2 h-4 w-4" />
             <span>Supprimer</span>
@@ -120,6 +122,17 @@ export function DataTableRowActions<TData>({
         onOpenChange={setIsRoleDialogOpen}
         user={user}
         roles={getRoles.data || []}
+      />
+      
+      <DeleteConfirmDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        onConfirm={() => {
+          deleteUser.mutate(user.userId)
+          setIsDeleteDialogOpen(false)
+        }}
+        itemName={`${user.firstName} ${user.lastName}`}
+        isLoading={deleteUser.isPending}
       />
     </>
   )

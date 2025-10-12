@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/table"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { EmptyState } from "@/components/global/EmptyState"
 
 import { DataTableToolbar } from "./data-table-toolbar"
 import { DataTablePagination } from "./data-table-pagination"
@@ -278,14 +279,14 @@ export function DataTable<TData, TValue>({
           </TableHeader>
           <TableBody>
             <TableRow>
-              <TableCell
-                colSpan={safeColumns.length || 1}
-                className="h-24 text-center text-muted-foreground"
-              >
-                {safeData.length === 0 
-                  ? "Aucune donnée disponible" 
-                  : "Aucun résultat trouvé avec les filtres actuels"
-                }
+              <TableCell colSpan={safeColumns.length || 1} className="p-0">
+                <EmptyState 
+                  title={safeData.length === 0 ? "Aucune donnée" : "Aucun résultat"}
+                  description={safeData.length === 0 
+                    ? "Aucun utilisateur n'a été trouvé" 
+                    : "Aucun utilisateur ne correspond aux filtres actuels"
+                  }
+                />
               </TableCell>
             </TableRow>
           </TableBody>
