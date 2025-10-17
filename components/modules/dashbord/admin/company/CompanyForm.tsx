@@ -75,18 +75,18 @@ export function CompanyForm({ open, onOpenChange, company, mode = 'create' }: Co
   async function onSubmit(data: z.infer<typeof companySchema>) {
     const { address1, address2, city, postalCode, country, ...baseData } = data
     
-    const hasAddressData = address1 || address2 || city || postalCode || country
-    const address = hasAddressData ? {
+    // Toujours créer un objet address, même vide
+    const address = {
       address1: address1 || "",
       address2: address2 || "",
       city: city || "",
       postalCode: postalCode || "",
       country: country || "",
-    } : undefined
+    }
 
     const companyData = {
       ...baseData,
-      ...(address && { address }),
+      address,
     }
     
     if (isEditMode) {
